@@ -1,0 +1,16 @@
+Name:                egison-tutorial
+Version:             3.0.4
+Synopsis:            A Tutorial Program for The Programming Language Egison
+Description:         A tutorial program for the programming language Egison.
+Homepage:            http://egison.pira.jp
+License:             MIT
+License-file:        LICENSE
+Author:              Satoshi Egi
+Maintainer:          egisatoshi@gmail.com
+Category:            Compilers/Interpreters
+Build-type:          Simple
+Cabal-version:       >=1.8
+
+Executable egison-tutorial
+  Main-is:             Main.hs
+  Build-depends:       egison, base >= 4.0 && < 5, array, containers, unordered-containers, haskeline, transformers, mtl, parsec >= 3.0, directory, ghc, ghc-paths, filepath, regex-posix, strict-io, bytestring
