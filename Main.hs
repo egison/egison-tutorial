@@ -95,22 +95,32 @@ repl env prompt = do
     settings :: MonadIO m => FilePath -> Settings m
     settings home = defaultSettings { historyFile = Just (home </> ".egison_tutorial_history") }
     
-    loop :: Env -> String -> String -> InputT IO ()
-    loop env prompt' rest = do
+    loop :: [Tutorial] -> Env -> String -> String -> InputT IO ()
+    loop ts env prompt' rest = do
       input <- getInputLine prompt'
       case input of
         Nothing -> return () 
         Just "quit" -> return () 
-        Just "" ->  loop env prompt ""
+        Just "" ->  loop ts env prompt ""
         Just input' -> do
           let newInput = rest ++ input'
           result <- liftIO $ runEgisonTopExpr env newInput
           case result of
             Left err | show err =~ "unexpected end of input" -> do
-              loop env (take (length prompt) (repeat ' ')) $ newInput ++ "\n"
+              loop ts env (take (length prompt) (repeat ' ')) $ newInput ++ "\n"
             Left err -> do
               liftIO $ putStrLn $ show err
-              loop env prompt ""
+              loop ts env prompt ""
             Right env' ->
-              loop env' prompt ""
-    
+              loop ts env' prompt ""
+        
+runEgisonTutorial :: (EgisonTopExpr -> IO (Bool, String)) -> Env -> String -> IO (Either EgisonError Env)
+runEgisonTutorial after env input = runEgisonTopExpr env input
+        
+type Tutorial = (String, (EgisonTopExpr -> IO (Bool, String)))
+
+tutorials :: [Tutorial]
+tutorials = [
+  ("before-explanation1", \topexpr -> return (True, "after-explanation1")),
+  ("before-explanation2", \topexpr -> return (True, "after-explanation2"))
+  ]
