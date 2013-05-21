@@ -82,6 +82,12 @@ showBanner = do
   putStrLn $ "Egison Tutrial for Version " ++ showVersion version ++ " (C) 2013 Satoshi Egi"
   putStrLn $ "http://egison.pira.jp"
   putStrLn $ "Welcome to Egison Tutorial!"
+  putStrLn $ "next : proceed to the next tutorial, quit : quit the program"
+
+showFinishMessage :: IO ()
+showFinishMessage = do
+  putStrLn $ "You finished all tutorials!"
+  putStrLn $ "Thank you!"
 
 showByebyeMessage :: IO ()
 showByebyeMessage = do
@@ -98,46 +104,39 @@ repl env prompt = do
     loop :: [Tutorial] -> Env -> String -> InputT IO ()
     loop [] env prompt' = do
       loop' [] env prompt' ""
-    loop ts@((before, _, _, _):_) env prompt' = do
-      liftIO $ putStrLn before
+    loop (tutorial:ts) env prompt' = do
+      liftIO $ putStrLn tutorial
       loop' ts env prompt' ""
+      
     loop' :: [Tutorial] -> Env -> String -> String -> InputT IO ()
     loop' ts env prompt' rest = do
       input <- getInputLine prompt'
       case input of
         Nothing -> return () 
         Just "quit" -> return () 
-        Just "" ->  loop' ts env prompt ""
+        Just "next" ->
+          case ts of
+            [] -> do
+              liftIO $ showFinishMessage
+              loop [] env prompt'
+            ts -> loop ts env prompt'
+        Just "" ->  loop' ts env prompt' ""
         Just input' -> do
           let newInput = rest ++ input'
           result <- liftIO $ runEgisonTopExpr env newInput
           case result of
             Left err | show err =~ "unexpected end of input" -> do
-              loop' ts env (take (length prompt) (repeat ' ')) $ newInput ++ "\n"
+              loop' ts env (take (length prompt') (repeat ' ')) $ newInput ++ "\n"
             Left err -> do
               liftIO $ putStrLn $ show err
-              loop' ts env prompt ""
+              loop' ts env prompt' ""
             Right env' ->
-              case ts of
-                [] -> loop [] env' prompt
-                (before, expAfter, valAfter, endMsg):ts' -> do
-                  case undefined of
-                    Just valMsg -> do
-                      liftIO $ putStrLn valMsg
-                      loop ts env' prompt
-                    Nothing ->
-                      case undefined of
-                        Just expMsg -> do
-                          liftIO $ putStrLn expMsg
-                          loop ts env' prompt
-                        Nothing -> do
-                          liftIO $ putStrLn endMsg
-                          loop ts' env prompt
+              loop ts env' prompt'
         
-type Tutorial = (String, (EgisonTopExpr -> Maybe String), (EgisonValue -> Maybe String), String)
+type Tutorial = String
 
 tutorials :: [Tutorial]
 tutorials = [
-  ("before-explanation1", \topexpr -> return "after-explanation1", \val -> return "after-explanation1", "good"),
-  ("before-explanation2", \topexpr -> return "after-explanation2", \val -> return "after-explanation2", "good")
+  "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(test (+ 1 2))`.",
+  "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(test (* 1 2))`."
   ]
