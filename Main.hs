@@ -90,37 +90,54 @@ showByebyeMessage = do
 repl :: Env -> String -> IO ()
 repl env prompt = do
   home <- getHomeDirectory
-  liftIO (runInputT (settings home) $ loop env prompt "")
+  liftIO $ runInputT (settings home) $ loop tutorials env prompt
   where
     settings :: MonadIO m => FilePath -> Settings m
     settings home = defaultSettings { historyFile = Just (home </> ".egison_tutorial_history") }
     
-    loop :: [Tutorial] -> Env -> String -> String -> InputT IO ()
-    loop ts env prompt' rest = do
+    loop :: [Tutorial] -> Env -> String -> InputT IO ()
+    loop [] env prompt' = do
+      loop' [] env prompt' ""
+    loop ts@((before, _, _, _):_) env prompt' = do
+      liftIO $ putStrLn before
+      loop' ts env prompt' ""
+    loop' :: [Tutorial] -> Env -> String -> String -> InputT IO ()
+    loop' ts env prompt' rest = do
       input <- getInputLine prompt'
       case input of
         Nothing -> return () 
         Just "quit" -> return () 
-        Just "" ->  loop ts env prompt ""
+        Just "" ->  loop' ts env prompt ""
         Just input' -> do
           let newInput = rest ++ input'
           result <- liftIO $ runEgisonTopExpr env newInput
           case result of
             Left err | show err =~ "unexpected end of input" -> do
-              loop ts env (take (length prompt) (repeat ' ')) $ newInput ++ "\n"
+              loop' ts env (take (length prompt) (repeat ' ')) $ newInput ++ "\n"
             Left err -> do
               liftIO $ putStrLn $ show err
-              loop ts env prompt ""
+              loop' ts env prompt ""
             Right env' ->
-              loop ts env' prompt ""
+              case ts of
+                [] -> loop [] env' prompt
+                (before, expAfter, valAfter, endMsg):ts' -> do
+                  case undefined of
+                    Just valMsg -> do
+                      liftIO $ putStrLn valMsg
+                      loop ts env' prompt
+                    Nothing ->
+                      case undefined of
+                        Just expMsg -> do
+                          liftIO $ putStrLn expMsg
+                          loop ts env' prompt
+                        Nothing -> do
+                          liftIO $ putStrLn endMsg
+                          loop ts' env prompt
         
-runEgisonTutorial :: (EgisonTopExpr -> IO (Bool, String)) -> Env -> String -> IO (Either EgisonError Env)
-runEgisonTutorial after env input = runEgisonTopExpr env input
-        
-type Tutorial = (String, (EgisonTopExpr -> IO (Bool, String)))
+type Tutorial = (String, (EgisonTopExpr -> Maybe String), (EgisonValue -> Maybe String), String)
 
 tutorials :: [Tutorial]
 tutorials = [
-  ("before-explanation1", \topexpr -> return (True, "after-explanation1")),
-  ("before-explanation2", \topexpr -> return (True, "after-explanation2"))
+  ("before-explanation1", \topexpr -> return "after-explanation1", \val -> return "after-explanation1", "good"),
+  ("before-explanation2", \topexpr -> return "after-explanation2", \val -> return "after-explanation2", "good")
   ]
