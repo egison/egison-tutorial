@@ -82,15 +82,22 @@ showBanner = do
   putStrLn $ "Egison Tutrial for Version " ++ showVersion version ++ " (C) 2013 Satoshi Egi"
   putStrLn $ "http://egison.pira.jp"
   putStrLn $ "Welcome to Egison Tutorial!"
-  putStrLn $ "next : proceed to the next tutorial, quit : quit the program"
+  putStrLn $ ""
+  putStrLn $ "Command list"
+  putStrLn $ "    next : proceed to the next tutorial"
+  putStrLn $ "    quit : quit the program"
+  putStrLn $ ""
 
 showFinishMessage :: IO ()
 showFinishMessage = do
+  putStrLn $ ""
   putStrLn $ "You finished all tutorials!"
   putStrLn $ "Thank you!"
+  putStrLn $ ""
 
 showByebyeMessage :: IO ()
 showByebyeMessage = do
+  putStrLn $ ""
   putStrLn $ "Leaving Egison Tutorial.\nByebye."
 
 repl :: Env -> String -> IO ()
@@ -105,7 +112,9 @@ repl env prompt = do
     loop [] env prompt' = do
       loop' [] env prompt' ""
     loop (tutorial:ts) env prompt' = do
+      liftIO $ putStrLn $ ""
       liftIO $ putStrLn tutorial
+      liftIO $ putStrLn $ ""
       loop' ts env prompt' ""
       
     loop' :: [Tutorial] -> Env -> String -> String -> InputT IO ()
