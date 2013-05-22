@@ -126,8 +126,8 @@ repl env prompt = do
           case ts of
             [] -> do
               liftIO $ showFinishMessage
-              loop [] env prompt'
-            _ -> loop ts env prompt'
+              loop [] env prompt
+            _ -> loop ts env prompt
         Just "" ->  loop' ts env prompt' ""
         Just input' -> do
           let newInput = rest ++ input'
@@ -137,9 +137,9 @@ repl env prompt = do
               loop' ts env (take (length prompt') (repeat ' ')) $ newInput ++ "\n"
             Left err -> do
               liftIO $ putStrLn $ show err
-              loop' ts env prompt' ""
+              loop' ts env prompt ""
             Right env' ->
-              loop' ts env' prompt' ""
+              loop' ts env' prompt ""
         
 type Tutorial = String
 
