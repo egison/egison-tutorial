@@ -86,7 +86,6 @@ showBanner = do
   putStrLn $ "Command list"
   putStrLn $ "    next : proceed to the next tutorial"
   putStrLn $ "    quit : quit the program"
-  putStrLn $ ""
 
 showFinishMessage :: IO ()
 showFinishMessage = do
@@ -128,7 +127,7 @@ repl env prompt = do
             [] -> do
               liftIO $ showFinishMessage
               loop [] env prompt'
-            ts -> loop ts env prompt'
+            _ -> loop ts env prompt'
         Just "" ->  loop' ts env prompt' ""
         Just input' -> do
           let newInput = rest ++ input'
@@ -140,12 +139,13 @@ repl env prompt = do
               liftIO $ putStrLn $ show err
               loop' ts env prompt' ""
             Right env' ->
-              loop ts env' prompt'
+              loop' ts env' prompt' ""
         
 type Tutorial = String
 
 tutorials :: [Tutorial]
 tutorials = [
   "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(test (+ 1 2))`.",
+  "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(test (- 1 2))`.",
   "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(test (* 1 2))`."
   ]
