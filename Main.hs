@@ -30,9 +30,7 @@ main = do args <- getArgs
                 env <- primitiveEnv >>= loadLibraries
                 case nonOpts of
                     [] -> showBanner >> repl env prompt >> showByebyeMessage
-                    (file:args) -> do
-                        result <- evalEgisonTopExprs env [LoadFile file, Execute args]
-                        either print (const $ return ()) result
+                    _ -> printHelp
 
 data Options = Options {
     optShowVersion :: Bool,
@@ -63,7 +61,7 @@ options = [
 
 printHelp :: IO ()
 printHelp = do
-  putStrLn "Usage: egison [options] file"
+  putStrLn "Usage: egison-tutorial [options]"
   putStrLn ""
   putStrLn "Options:"
   putStrLn "  --help                Display this information"
@@ -80,23 +78,16 @@ printVersionNumber = do
 showBanner :: IO ()
 showBanner = do
   putStrLn $ "Egison Tutorial for Version " ++ showVersion version ++ " (C) 2013 Satoshi Egi"
-  putStrLn $ "http://egison.pira.jp"
+  putStrLn $ "http://www.egison.org"
   putStrLn $ "Welcome to Egison Tutorial!"
-  putStrLn $ ""
-  putStrLn $ "Command list"
-  putStrLn $ "    next : proceed to the next tutorial"
-  putStrLn $ "    quit : quit the program"
 
 showFinishMessage :: IO ()
 showFinishMessage = do
-  putStrLn $ ""
   putStrLn $ "You finished all tutorials!"
   putStrLn $ "Thank you!"
-  putStrLn $ ""
 
 showByebyeMessage :: IO ()
 showByebyeMessage = do
-  putStrLn $ ""
   putStrLn $ "Leaving Egison Tutorial.\nByebye."
 
 repl :: Env -> String -> IO ()
@@ -134,18 +125,29 @@ repl env prompt = do
           result <- liftIO $ runEgisonTopExpr env newInput
           case result of
             Left err | show err =~ "unexpected end of input" -> do
-              loop' ts env (take (length prompt') (repeat ' ')) $ newInput ++ "\n"
+              loop env (take (length prompt) (repeat ' ')) $ newInput ++ "\n"
+            Left err | show err =~ "expecting (top-level|\"define\")" -> do
+              result <- liftIO $ fromEgisonM (readExpr newInput) >>= either (return . Left) (evalEgisonExpr env)
+              case result of
+                Left err | show err =~ "unexpected end of input" -> do
+                  loop env (take (length prompt) (repeat ' ')) $ newInput ++ "\n"
+                Left err -> do
+                  liftIO $ putStrLn $ show err
+                  loop env prompt ""
+                Right val -> do
+                  liftIO $ putStrLn $ show val
+                  loop env prompt ""
             Left err -> do
               liftIO $ putStrLn $ show err
-              loop' ts env prompt ""
+              loop env prompt ""
             Right env' ->
-              loop' ts env' prompt ""
+              loop env' prompt ""
         
 type Tutorial = String
 
 tutorials :: [Tutorial]
 tutorials = [
-  "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(test (+ 1 2))`.",
-  "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(test (- 1 2))`.",
-  "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(test (* 1 2))`."
+  "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(+ 1 2)`.",
+  "You can bind a value to a variable with a `define` expression. Try it as `(define $x 10))`.",
+  "You can get a value you binded to the variable. Try them as `x`."
   ]
