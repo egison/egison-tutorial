@@ -11,6 +11,7 @@ import Text.Parsec
 import Text.Parsec.ByteString.Lazy
 import Text.Regex.Posix
 
+import System.IO
 import System.Environment
 import System.Directory (getHomeDirectory)
 import System.FilePath ((</>))
@@ -91,6 +92,17 @@ showByebyeMessage :: IO ()
 showByebyeMessage = do
   putStrLn $ "Leaving Egison Tutorial.\nByebye."
 
+askUser :: String -> IO Bool
+askUser question = do
+  putStr $ question
+  putStr $ " (y/n): "
+  hFlush stdout
+  input <- getLine
+  case input of
+   ('y':_) -> return True
+   ('n':_) -> return False
+   _ -> askUser question
+
 repl :: Env -> String -> IO ()
 repl env prompt = do
   home <- getHomeDirectory
@@ -110,37 +122,49 @@ repl env prompt = do
       input <- getInputLine prompt'
       case input of
         Nothing -> do
-          liftIO $ showByebyeMessage
-          return () 
+          response1 <- liftIO $ askUser "Do you want to proceed next?"
+          case response1 of
+            True -> loop env prompt' rest rs True
+            False -> do
+              response2 <- liftIO $ askUser "Do you want to quit egison-tutorial?"
+              case response2 of
+                True -> do
+                  liftIO $ showByebyeMessage
+                  return ()
+                False -> loop env prompt' rest ts False
         Just "quit" -> do
           liftIO $ showByebyeMessage
           return () 
         Just "" ->
           case rest of
-            "" -> loop env prompt rest ts flg
-            _ -> loop env (take (length prompt) (repeat ' ')) rest ts flg
+            "" -> do
+              response1 <- liftIO $ askUser "Do you want to proceed next?"
+              case response1 of
+                True -> loop env prompt' rest rs True
+                False -> loop env prompt' rest ts False
+            _ -> loop env (take (length prompt) (repeat ' ')) rest ts False
         Just input' -> do
           let newInput = rest ++ input'
           result <- liftIO $ runEgisonTopExpr env newInput
           case result of
             Left err | show err =~ "unexpected end of input" -> do
-              loop env (take (length prompt) (repeat ' ')) (newInput ++ "\n") ts flg
+              loop env (take (length prompt) (repeat ' ')) (newInput ++ "\n") ts False
             Left err | show err =~ "expecting (top-level|\"define\")" -> do
               result <- liftIO $ fromEgisonM (readExpr newInput) >>= either (return . Left) (evalEgisonExpr env)
               case result of
                 Left err | show err =~ "unexpected end of input" -> do
-                  loop env (take (length prompt) (repeat ' ')) (newInput ++ "\n") ts flg
+                  loop env (take (length prompt) (repeat ' ')) (newInput ++ "\n") ts False
                 Left err -> do
                   liftIO $ putStrLn $ show err
-                  loop env prompt "" ts flg
+                  loop env prompt "" ts False
                 Right val -> do
                   liftIO $ putStrLn $ show val
-                  loop env prompt "" ts flg
+                  loop env prompt "" ts False
             Left err -> do
               liftIO $ putStrLn $ show err
-              loop env prompt "" ts flg
+              loop env prompt "" ts False
             Right env' ->
-              loop env' prompt "" ts flg
+              loop env' prompt "" ts False
         
 type Tutorial = String
 
