@@ -29,7 +29,7 @@ main = do args <- getArgs
             Options {optPrompt = prompt} -> do
                 env <- primitiveEnv >>= loadLibraries
                 case nonOpts of
-                    [] -> showBanner >> repl env prompt >> showByebyeMessage
+                    [] -> showBanner >> repl env prompt
                     _ -> printHelp
 
 data Options = Options {
@@ -85,6 +85,7 @@ showFinishMessage :: IO ()
 showFinishMessage = do
   putStrLn $ "You finished all tutorials!"
   putStrLn $ "Thank you!"
+  putStrLn $ "Let's enjoy Egison!"
 
 showByebyeMessage :: IO ()
 showByebyeMessage = do
@@ -93,55 +94,53 @@ showByebyeMessage = do
 repl :: Env -> String -> IO ()
 repl env prompt = do
   home <- getHomeDirectory
-  liftIO $ runInputT (settings home) $ loop tutorials env prompt
+  liftIO (runInputT (settings home) $ loop env prompt "" tutorials True)
   where
     settings :: MonadIO m => FilePath -> Settings m
     settings home = defaultSettings { historyFile = Just (home </> ".egison_tutorial_history") }
     
-    loop :: [Tutorial] -> Env -> String -> InputT IO ()
-    loop [] env prompt' = do
-      loop' [] env prompt' ""
-    loop (tutorial:ts) env prompt' = do
-      liftIO $ putStrLn $ ""
-      liftIO $ putStrLn tutorial
-      liftIO $ putStrLn $ ""
-      loop' ts env prompt' ""
-      
-    loop' :: [Tutorial] -> Env -> String -> String -> InputT IO ()
-    loop' ts env prompt' rest = do
+    loop :: Env -> String -> String -> [Tutorial] -> Bool -> InputT IO ()
+    loop _ _ _ [] _ = do
+      liftIO $ showFinishMessage
+      return ()
+    loop env prompt' rest ts@(t:rs) True = do
+      liftIO $ putStrLn t
+      loop env prompt' rest ts False
+    loop env prompt' rest ts@(t:rs) False = do
       input <- getInputLine prompt'
       case input of
-        Nothing -> return () 
-        Just "quit" -> return () 
-        Just "next" ->
-          case ts of
-            [] -> do
-              liftIO $ showFinishMessage
-              loop [] env prompt
-            _ -> loop ts env prompt
-        Just "" ->  loop' ts env prompt' ""
+        Nothing -> do
+          liftIO $ showByebyeMessage
+          return () 
+        Just "quit" -> do
+          liftIO $ showByebyeMessage
+          return () 
+        Just "" ->
+          case rest of
+            "" -> loop env prompt rest ts flg
+            _ -> loop env (take (length prompt) (repeat ' ')) rest ts flg
         Just input' -> do
           let newInput = rest ++ input'
           result <- liftIO $ runEgisonTopExpr env newInput
           case result of
             Left err | show err =~ "unexpected end of input" -> do
-              loop env (take (length prompt) (repeat ' ')) $ newInput ++ "\n"
+              loop env (take (length prompt) (repeat ' ')) (newInput ++ "\n") ts flg
             Left err | show err =~ "expecting (top-level|\"define\")" -> do
               result <- liftIO $ fromEgisonM (readExpr newInput) >>= either (return . Left) (evalEgisonExpr env)
               case result of
                 Left err | show err =~ "unexpected end of input" -> do
-                  loop env (take (length prompt) (repeat ' ')) $ newInput ++ "\n"
+                  loop env (take (length prompt) (repeat ' ')) (newInput ++ "\n") ts flg
                 Left err -> do
                   liftIO $ putStrLn $ show err
-                  loop env prompt ""
+                  loop env prompt "" ts flg
                 Right val -> do
                   liftIO $ putStrLn $ show val
-                  loop env prompt ""
+                  loop env prompt "" ts flg
             Left err -> do
               liftIO $ putStrLn $ show err
-              loop env prompt ""
+              loop env prompt "" ts flg
             Right env' ->
-              loop env' prompt ""
+              loop env' prompt "" ts flg
         
 type Tutorial = String
 
