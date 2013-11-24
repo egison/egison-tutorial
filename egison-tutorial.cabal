@@ -1,12 +1,12 @@
 Name:                egison-tutorial
-Version:             3.0.0
+Version:             3.0.1
 Synopsis:            A Tutorial Program for The Programming Language Egison
 Description:         A tutorial program for the programming language Egison.
-Homepage:            http://egison.pira.jp
+Homepage:            http://www.egison.org
 License:             MIT
 License-file:        LICENSE
 Author:              Satoshi Egi
-Maintainer:          egisatoshi@gmail.com
+Maintainer:          Satoshi Egi <egi@egison.org>
 Category:            Compilers/Interpreters
 Build-type:          Simple
 Cabal-version:       >=1.8
