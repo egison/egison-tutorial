@@ -19,6 +19,7 @@ import System.Console.Haskeline
 import System.Console.GetOpt
 import System.Exit (ExitCode (..), exitWith, exitFailure)
 import Language.Egison
+import qualified Paths_egison_tutorial as P
 
 main :: IO ()
 main = do args <- getArgs
@@ -73,7 +74,7 @@ printHelp = do
 
 printVersionNumber :: IO ()
 printVersionNumber = do
-  putStrLn $ showVersion version 
+  putStrLn $ showVersion P.version 
   exitWith ExitSuccess
 
 showBanner :: IO ()
