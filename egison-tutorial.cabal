@@ -11,6 +11,10 @@ Category:            Compilers/Interpreters
 Build-type:          Simple
 Cabal-version:       >=1.8
 
+source-repository head
+  type: git
+  location: https://github.com/egisatoshi/egison-tutorial.git
+
 Executable egison-tutorial
   Main-is:             Main.hs
   Build-depends:       egison >= 3.0.12, base >= 4.0 && < 5, array, containers, unordered-containers, haskeline, transformers, mtl, parsec >= 3.0, directory, ghc, ghc-paths, filepath, regex-posix, strict-io, bytestring

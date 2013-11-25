@@ -191,7 +191,7 @@ type Chapter = (String, [String])
 chapters :: [Chapter]
 chapters = [
   ("Basics", tutorialsForBasic),
-  ("Pattern-Matching", [])
+  ("Pattern-Matching", tutorialsForPatternMatch)
   ]
 
 tutorialsForBasic :: [String]
@@ -206,4 +206,9 @@ tutorialsForBasic = [
   "The collection after `@` in a collection is called a subcollection. Try it as `{1 @{2 3} @{4 @{5}} 6}`.",
   "You can construct a tuple with `[]`. Try it as `[1 2]`.",
   "A tuple which consists of only one elment is equal with that element itself. Try it as `[1]` or `[[[1]]]`."
+  ]
+
+tutorialsForPatternMatch :: [String]
+tutorialsForPatternMatch = [
+  "You can do pattern-matching against multisets. Try it as `(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])`."
   ]
