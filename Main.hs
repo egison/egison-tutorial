@@ -85,9 +85,8 @@ showBanner = do
 
 showFinishMessage :: IO ()
 showFinishMessage = do
-  putStrLn $ "You finished all tutorials!"
+  putStrLn $ "You have finished this chapter."
   putStrLn $ "Thank you!"
-  putStrLn $ "Let's enjoy Egison!"
 
 showByebyeMessage :: IO ()
 showByebyeMessage = do
@@ -132,9 +131,10 @@ repl env prompt = do
     settings home = defaultSettings { historyFile = Just (home </> ".egison_tutorial_history") }
     
     loop :: Env -> String -> String -> [String] -> Bool -> InputT IO ()
-    loop _ _ _ [] _ = do
+    loop env prompt' _ [] _ = do
       liftIO $ showFinishMessage
-      return ()
+      tutorials <- liftIO $ selectChapter chapters
+      loop env prompt' "" tutorials True
     loop env prompt' rest ts@(t:rs) True = do
       liftIO $ putStrLn t
       loop env prompt' rest ts False
