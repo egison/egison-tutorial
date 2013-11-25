@@ -190,25 +190,36 @@ type Chapter = (String, [String])
 
 chapters :: [Chapter]
 chapters = [
-  ("Basics", tutorialsForBasic),
+  ("Buildin Data", tutorialsForBuildinData),
+  ("Functions", tutorialsForFunction),
   ("Pattern-Matching", tutorialsForPatternMatch)
   ]
 
-tutorialsForBasic :: [String]
-tutorialsForBasic = [
+tutorialsForBuildinData :: [String]
+tutorialsForBuildinData = [
   "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(+ 1 2)` or `(* 10 20)`.",
   "You can bind a value to a variable with a `define` expression. Try it as `(define $x 10))`.",
   "You can get a value you binded to the variable. Try them as `x`.",
-  "You can define a function. Try them as `(define $f [$x] (+ x 1))`.",
-  "Try `if` expressions as `(if #t 1 2)` or `(if (eq? x 10) 1 2)`.",
-  "Now, you can define a factorial function that gets a natural number 'n' and returns 'n * n-1 * n-2 * ... * 1'. Let's try!",
-  "You can construct a collection with `{}`. Try it as `{1 2 3}`.",
-  "The collection after `@` in a collection is called a subcollection. Try it as `{1 @{2 3} @{4 @{5}} 6}`.",
+  "You can do boolean operations with `and`, `or`, `not`. Try them as `(and #t #f)`, `(or #t #f)` or `(not #t)`.",
   "You can construct a tuple with `[]`. Try it as `[1 2]`.",
-  "A tuple which consists of only one elment is equal with that element itself. Try it as `[1]` or `[[[1]]]`."
+  "A tuple which consists of only one elment is equal with that element itself. Try it as `[1]` or `[[[1]]]`.",
+  "You can construct a collection with `{}`. Try it as `{1 2 3}`.",
+  "The collection after `@` in a collection is called a subcollection. Try it as `{1 @{2 3} @{4 @{5}} 6}`."
   ]
+
+tutorialsForFunction :: [String]
+tutorialsForFunction = [
+  "You can define a function. Try it as `(define $f (lambda [$x] (+ x 1)))`.\nThen try the function as `(f 10)`.",
+  "You can define local variables with a `let` expression. Try it as `(let {[$x 10] [$y 20]} (+ x y))`.",
+  "Try `if` expressions as `(if #t 1 2)` or `(let {[$x 10]} (if (eq? x 10) 1 2))`.",
+  "Now, you can define a factorial function that gets a natural number 'n' and returns 'n * n-1 * n-2 * ... * 1'. Let's try!"
+  ]
+
 
 tutorialsForPatternMatch :: [String]
 tutorialsForPatternMatch = [
-  "You can do pattern-matching against multisets. Try it as `(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])`."
+  "You can do pattern-matching against multisets. Try it as `(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])`.",
+  "You can do non-linear pattern-matching as `(match-all {1 2 1 3} (multiset integer) [<cons $x <cons ,x _>> x])`.\nTry this expression against various targets.",
+  "A pattern that has `^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern.\nTry it as `(match-all {1 2 1 3} (multiset integer) [<cons $x ^<cons ,x _>> x])`.",
+  "You can change the way of pattern-matching by changing \"matcher\".\nTry following expressions.\n`(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])`\n`(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])`\n`(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])`\n"
   ]
