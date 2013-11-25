@@ -1,4 +1,4 @@
 egison-tutorial
 ===============
 
-Tutorial Program of Egison
+Tutorial Program for the programming language Egison.
