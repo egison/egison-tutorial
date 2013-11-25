@@ -79,7 +79,7 @@ printVersionNumber = do
 
 showBanner :: IO ()
 showBanner = do
-  putStrLn $ "Egison Tutorial for Version " ++ showVersion version ++ " (C) 2013 Satoshi Egi"
+  putStrLn $ "Egison Tutorial for Version " ++ showVersion P.version ++ " (C) 2013 Satoshi Egi"
   putStrLn $ "http://www.egison.org"
   putStrLn $ "Welcome to Egison Tutorial!"
 
@@ -174,4 +174,7 @@ tutorials = [
   "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(+ 1 2)`.",
   "You can bind a value to a variable with a `define` expression. Try it as `(define $x 10))`.",
   "You can get a value you binded to the variable. Try them as `x`."
+  "You can define a function. Try them as `(define $f [$x] (+ x 1))`."
+  "Try `if` expressions as `(if #t 1 2)` or `(if (eq? x 10) 1 2)`."
+  "Now, you can define a factorial function that gets a natural number 'n' and returns 'n * n-1 * n-2 * ... * 1'. Let's try!"
   ]
