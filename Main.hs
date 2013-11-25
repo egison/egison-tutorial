@@ -93,26 +93,45 @@ showByebyeMessage :: IO ()
 showByebyeMessage = do
   putStrLn $ "Leaving Egison Tutorial.\nByebye."
 
+selectChapter :: [Chapter] -> IO [String]
+selectChapter chaps = do
+  putStrLn "Select a chapter to learn."
+  foldM (\x chap -> do
+          putStr $ "  " ++ show x ++ ": "
+          putStrLn (fst chap)
+          return (x + 1))
+        1 chaps
+  let m = length chaps
+  putStr $ "(1-" ++ show m ++ "): "
+  hFlush stdout
+  input <- getLine
+  let n = (read input :: Int)
+  let chap = head $ drop (n - 1) chaps
+  return (snd chap)
+
 askUser :: String -> IO Bool
 askUser question = do
   putStr $ question
-  putStr $ " (y/n): "
+  putStr $ " (Y/n): "
   hFlush stdout
   input <- getLine
   case input of
+   [] -> return True
    ('y':_) -> return True
+   ('Y':_) -> return True
    ('n':_) -> return False
    _ -> askUser question
 
 repl :: Env -> String -> IO ()
 repl env prompt = do
   home <- getHomeDirectory
+  tutorials <- selectChapter chapters
   liftIO (runInputT (settings home) $ loop env prompt "" tutorials True)
   where
     settings :: MonadIO m => FilePath -> Settings m
     settings home = defaultSettings { historyFile = Just (home </> ".egison_tutorial_history") }
     
-    loop :: Env -> String -> String -> [Tutorial] -> Bool -> InputT IO ()
+    loop :: Env -> String -> String -> [String] -> Bool -> InputT IO ()
     loop _ _ _ [] _ = do
       liftIO $ showFinishMessage
       return ()
@@ -167,18 +186,24 @@ repl env prompt = do
             Right env' ->
               loop env' prompt "" ts False
         
-type Tutorial = String
+type Chapter = (String, [String])
 
-tutorials :: [Tutorial]
-tutorials = [
+chapters :: [Chapter]
+chapters = [
+  ("Basics", tutorialsForBasic),
+  ("Pattern-Matching", [])
+  ]
+
+tutorialsForBasic :: [String]
+tutorialsForBasic = [
   "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(+ 1 2)` or `(* 10 20)`.",
   "You can bind a value to a variable with a `define` expression. Try it as `(define $x 10))`.",
-  "You can get a value you binded to the variable. Try them as `x`."
-  "You can define a function. Try them as `(define $f [$x] (+ x 1))`."
-  "Try `if` expressions as `(if #t 1 2)` or `(if (eq? x 10) 1 2)`."
-  "Now, you can define a factorial function that gets a natural number 'n' and returns 'n * n-1 * n-2 * ... * 1'. Let's try!"
-  "You can construct a collection with `{}`. Try it as `{1 2 3}`."
-  "The collection after `@` in a collection is called a subcollection. Try it as `{1 @{2 3} @{4 @{5}} 6}`."
-  "You can construct a tuple with `[]`. Try it as `[1 2]`."
-  "A tuple which consists of only one elment is equal with that element itself. Try it as `[1]` or `[[[1]]]`.
+  "You can get a value you binded to the variable. Try them as `x`.",
+  "You can define a function. Try them as `(define $f [$x] (+ x 1))`.",
+  "Try `if` expressions as `(if #t 1 2)` or `(if (eq? x 10) 1 2)`.",
+  "Now, you can define a factorial function that gets a natural number 'n' and returns 'n * n-1 * n-2 * ... * 1'. Let's try!",
+  "You can construct a collection with `{}`. Try it as `{1 2 3}`.",
+  "The collection after `@` in a collection is called a subcollection. Try it as `{1 @{2 3} @{4 @{5}} 6}`.",
+  "You can construct a tuple with `[]`. Try it as `[1 2]`.",
+  "A tuple which consists of only one elment is equal with that element itself. Try it as `[1]` or `[[[1]]]`."
   ]
