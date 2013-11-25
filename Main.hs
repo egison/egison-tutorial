@@ -92,7 +92,20 @@ showByebyeMessage :: IO ()
 showByebyeMessage = do
   putStrLn $ "Leaving Egison Tutorial.\nByebye."
 
-selectChapter :: [Chapter] -> IO [String]
+askUser :: String -> IO Bool
+askUser question = do
+  putStr $ question
+  putStr $ " (Y/n): "
+  hFlush stdout
+  input <- getLine
+  case input of
+   [] -> return True
+   ('y':_) -> return True
+   ('Y':_) -> return True
+   ('n':_) -> return False
+   _ -> askUser question
+
+selectChapter :: [Chapter] -> IO [Tutorial]
 selectChapter chaps = do
   putStrLn "Select a chapter to learn."
   foldM (\x chap -> do
@@ -108,18 +121,19 @@ selectChapter chaps = do
   let chap = head $ drop (n - 1) chaps
   return (snd chap)
 
-askUser :: String -> IO Bool
-askUser question = do
-  putStr $ question
-  putStr $ " (Y/n): "
-  hFlush stdout
-  input <- getLine
-  case input of
-   [] -> return True
-   ('y':_) -> return True
-   ('Y':_) -> return True
-   ('n':_) -> return False
-   _ -> askUser question
+printTutorial :: Tutorial -> IO ()
+printTutorial (msg, examples) = do
+  putStrLn "===================="
+  putStrLn msg
+  case examples of
+    [] -> return ()
+    _ -> do
+      putStrLn "e.g."
+      mapM_ (\example -> do
+                putStr "  "
+                putStrLn example)
+        examples
+  putStrLn "===================="
 
 repl :: Env -> String -> IO ()
 repl env prompt = do
@@ -130,13 +144,13 @@ repl env prompt = do
     settings :: MonadIO m => FilePath -> Settings m
     settings home = defaultSettings { historyFile = Just (home </> ".egison_tutorial_history") }
     
-    loop :: Env -> String -> String -> [String] -> Bool -> InputT IO ()
+    loop :: Env -> String -> String -> [Tutorial] -> Bool -> InputT IO ()
     loop env prompt' _ [] _ = do
       liftIO $ showFinishMessage
       tutorials <- liftIO $ selectChapter chapters
       loop env prompt' "" tutorials True
     loop env prompt' rest ts@(t:rs) True = do
-      liftIO $ putStrLn t
+      liftIO $ printTutorial t
       loop env prompt' rest ts False
     loop env prompt' rest ts@(t:rs) False = do
       input <- getInputLine prompt'
@@ -186,40 +200,31 @@ repl env prompt = do
             Right env' ->
               loop env' prompt "" ts False
         
-type Chapter = (String, [String])
+type Chapter = (String, [Tutorial])
+type Tutorial = (String, [String])
 
 chapters :: [Chapter]
 chapters = [
-  ("Buildin Data", tutorialsForBuildinData),
-  ("Functions", tutorialsForFunction),
-  ("Pattern-Matching", tutorialsForPatternMatch)
+  ("Buildin Data", [
+    ("You can do arithmetic operations with `+`, `-`, `*`, `div`.", ["(+ 1 2)", "(* 10 20)"]),
+    ("You can bind a value to a variable with a `define` expression.\nYou can easily get the value you binded to the variable.", ["(define $x 10)", "x"]),
+    ("You can do boolean operations with `and`, `or`, `not`.", ["(and #t #f)", "(or #t #f)", "(not #t)"]),
+    ("You can construct a tuple with `[]`.", ["[1 2]", "[1 2 3]"]),
+    ("A tuple which consists of only one elment is equal with that element itself.", ["[1]", "[[[1]]]"]),
+    ("You can construct a collection with `{}`.", ["{1}", "{1 2 3}"]),
+    ("The collection after `@` in a collection is called a subcollection.", ["{1 @{2 3}}", "{1 @{2 3} @{4 @{5}} 6}"])
+    ]),
+  ("Functions", [
+    ("You can define a function. Let's define a function and test it.", ["(define $f (lambda [$x] (+ x 1)))", "(f 10)"]),
+    ("You can define local variables with a `let` expression.", ["(let {[$x 10] [$y 20]} (+ x y))"]),
+    ("Let's try `if` expressions.", ["(if #t 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]),
+    ("Now, you can define a factorial function that gets a natural number 'n' and returns 'n * n-1 * n-2 * ... * 1'. Let's try!", [])
+    ]),
+  ("Pattern-Matching", [
+    ("You can do pattern-matching against multisets.", ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]),
+    ("You can do non-linear pattern-matching. Try the following expression with various targets.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x <cons ,x _>> x])"]),
+    ("A pattern that has `^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x ^<cons ,x _>> x])"]),
+    ("You can change the way of pattern-matching by changing \"matcher\".\nTry following expressions.", ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"])
+    ])
   ]
 
-tutorialsForBuildinData :: [String]
-tutorialsForBuildinData = [
-  "You can do arithmetic operations with `+`, `-`, `*`, `div`. Try them as `(+ 1 2)` or `(* 10 20)`.",
-  "You can bind a value to a variable with a `define` expression. Try it as `(define $x 10))`.",
-  "You can get a value you binded to the variable. Try them as `x`.",
-  "You can do boolean operations with `and`, `or`, `not`. Try them as `(and #t #f)`, `(or #t #f)` or `(not #t)`.",
-  "You can construct a tuple with `[]`. Try it as `[1 2]`.",
-  "A tuple which consists of only one elment is equal with that element itself. Try it as `[1]` or `[[[1]]]`.",
-  "You can construct a collection with `{}`. Try it as `{1 2 3}`.",
-  "The collection after `@` in a collection is called a subcollection. Try it as `{1 @{2 3} @{4 @{5}} 6}`."
-  ]
-
-tutorialsForFunction :: [String]
-tutorialsForFunction = [
-  "You can define a function. Try it as `(define $f (lambda [$x] (+ x 1)))`.\nThen try the function as `(f 10)`.",
-  "You can define local variables with a `let` expression. Try it as `(let {[$x 10] [$y 20]} (+ x y))`.",
-  "Try `if` expressions as `(if #t 1 2)` or `(let {[$x 10]} (if (eq? x 10) 1 2))`.",
-  "Now, you can define a factorial function that gets a natural number 'n' and returns 'n * n-1 * n-2 * ... * 1'. Let's try!"
-  ]
-
-
-tutorialsForPatternMatch :: [String]
-tutorialsForPatternMatch = [
-  "You can do pattern-matching against multisets. Try it as `(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])`.",
-  "You can do non-linear pattern-matching as `(match-all {1 2 1 3} (multiset integer) [<cons $x <cons ,x _>> x])`.\nTry this expression against various targets.",
-  "A pattern that has `^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern.\nTry it as `(match-all {1 2 1 3} (multiset integer) [<cons $x ^<cons ,x _>> x])`.",
-  "You can change the way of pattern-matching by changing \"matcher\".\nTry following expressions.\n`(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])`\n`(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])`\n`(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])`\n"
-  ]
