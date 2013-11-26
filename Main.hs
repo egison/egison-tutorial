@@ -105,23 +105,25 @@ askUser question = do
    ('n':_) -> return False
    _ -> askUser question
 
-selectChapter :: Tutorial -> IO [Tutorial]
-selectChapter chaps = do
-  putStrLn "Select a chapter to learn."
-  foldM (\x chap -> do
+selectSection :: Tutorial -> IO [(String, [String])]
+selectSection (Sections secs)  = do
+  putStrLn "Select a section to learn."
+  foldM (\x sec -> do
           putStr $ "  " ++ show x ++ ": "
-          putStrLn (fst chap)
+          putStrLn (fst sec)
           return (x + 1))
-        1 chaps
-  let m = length chaps
+        1 secs
+  let m = length secs
   putStr $ "(1-" ++ show m ++ "): "
   hFlush stdout
   input <- getLine
   let n = (read input :: Int)
-  let chap = head $ drop (n - 1) chaps
-  return (snd chap)
+  let sec = head $ drop (n - 1) secs
+  case snd sec of
+    Contents contents -> return contents
+    _ -> undefined
 
-printTutorial :: Tutorial -> IO ()
+printTutorial :: (String, [String]) -> IO ()
 printTutorial (msg, examples) = do
   putStrLn "===================="
   putStrLn msg
@@ -138,17 +140,17 @@ printTutorial (msg, examples) = do
 repl :: Env -> String -> IO ()
 repl env prompt = do
   home <- getHomeDirectory
-  tutorials <- selectChapter chapters
-  liftIO (runInputT (settings home) $ loop env prompt "" tutorials True)
+  contents <- selectSection tutorial
+  liftIO (runInputT (settings home) $ loop env prompt "" contents True)
   where
     settings :: MonadIO m => FilePath -> Settings m
     settings home = defaultSettings { historyFile = Just (home </> ".egison_tutorial_history") }
     
-    loop :: Env -> String -> String -> [Tutorial] -> Bool -> InputT IO ()
+    loop :: Env -> String -> String -> [(String, [String])] -> Bool -> InputT IO ()
     loop env prompt' _ [] _ = do
       liftIO $ showFinishMessage
-      tutorials <- liftIO $ selectChapter chapters
-      loop env prompt' "" tutorials True
+      contents <- liftIO $ selectSection tutorial
+      loop env prompt' "" contents True
     loop env prompt' rest ts@(t:rs) True = do
       liftIO $ printTutorial t
       loop env prompt' rest ts False
@@ -201,10 +203,10 @@ repl env prompt = do
               loop env' prompt "" ts False
 
 data Tutorial =
-  Sections [(String, Tutorial)]
-  Contents [(String, [String])]
+    Sections [(String, Tutorial)]
+ |  Contents [(String, [String])]
 
-tutorial :: [Tutorial]
+tutorial :: Tutorial
 tutorial =
   Sections [
     ("Buildin Data",
