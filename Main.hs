@@ -105,7 +105,7 @@ askUser question = do
    ('n':_) -> return False
    _ -> askUser question
 
-selectChapter :: [Chapter] -> IO [Tutorial]
+selectChapter :: Tutorial -> IO [Tutorial]
 selectChapter chaps = do
   putStrLn "Select a chapter to learn."
   foldM (\x chap -> do
@@ -199,32 +199,37 @@ repl env prompt = do
               loop env prompt "" ts False
             Right env' ->
               loop env' prompt "" ts False
-        
-type Chapter = (String, [Tutorial])
-type Tutorial = (String, [String])
 
-chapters :: [Chapter]
-chapters = [
-  ("Buildin Data", [
-    ("You can do arithmetic operations with `+`, `-`, `*`, `div`.", ["(+ 1 2)", "(* 10 20)"]),
-    ("You can bind a value to a variable with a `define` expression.\nYou can easily get the value you binded to the variable.", ["(define $x 10)", "x"]),
-    ("You can do boolean operations with `and`, `or`, `not`.", ["(and #t #f)", "(or #t #f)", "(not #t)"]),
-    ("You can construct a tuple with `[]`.", ["[1 2]", "[1 2 3]"]),
-    ("A tuple which consists of only one elment is equal with that element itself.", ["[1]", "[[[1]]]"]),
-    ("You can construct a collection with `{}`.", ["{1}", "{1 2 3}"]),
-    ("The collection after `@` in a collection is called a subcollection.", ["{1 @{2 3}}", "{1 @{2 3} @{4 @{5}} 6}"])
-    ]),
-  ("Functions", [
-    ("You can define a function. Let's define a function and test it.", ["(define $f (lambda [$x] (+ x 1)))", "(f 10)"]),
-    ("You can define local variables with a `let` expression.", ["(let {[$x 10] [$y 20]} (+ x y))"]),
-    ("Let's try `if` expressions.", ["(if #t 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]),
-    ("Now, you can define a factorial function that gets a natural number 'n' and returns 'n * n-1 * n-2 * ... * 1'. Let's try!", [])
-    ]),
-  ("Pattern-Matching", [
-    ("You can do pattern-matching against multisets.", ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]),
-    ("You can do non-linear pattern-matching. Try the following expression with various targets.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x <cons ,x _>> x])"]),
-    ("A pattern that has `^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x ^<cons ,x _>> x])"]),
-    ("You can change the way of pattern-matching by changing \"matcher\".\nTry following expressions.", ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"])
-    ])
+data Tutorial =
+  Sections [(String, Tutorial)]
+  Contents [(String, [String])]
+
+tutorial :: [Tutorial]
+tutorial =
+  Sections [
+    ("Buildin Data",
+     Contents [
+       ("You can do arithmetic operations with `+`, `-`, `*`, `div`.", ["(+ 1 2)", "(* 10 20)"]),
+       ("You can bind a value to a variable with a `define` expression.\nYou can easily get the value you binded to the variable.", ["(define $x 10)", "x"]),
+       ("You can do boolean operations with `and`, `or`, `not`.", ["(and #t #f)", "(or #t #f)", "(not #t)"]),
+       ("You can construct a tuple with `[]`.", ["[1 2]", "[1 2 3]"]),
+       ("A tuple which consists of only one elment is equal with that element itself.", ["[1]", "[[[1]]]"]),
+       ("You can construct a collection with `{}`.", ["{1}", "{1 2 3}"]),
+       ("The collection after `@` in a collection is called a subcollection.", ["{1 @{2 3}}", "{1 @{2 3} @{4 @{5}} 6}"])
+       ]),
+    ("Functions",
+     Contents [
+       ("You can define a function. Let's define a function and test it.", ["(define $f (lambda [$x] (+ x 1)))", "(f 10)"]),
+       ("You can define local variables with a `let` expression.", ["(let {[$x 10] [$y 20]} (+ x y))"]),
+       ("Let's try `if` expressions.", ["(if #t 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]),
+       ("Now, you can define a factorial function that gets a natural number 'n' and returns 'n * n-1 * n-2 * ... * 1'. Let's try!", [])
+       ]),
+    ("Pattern-Matching",
+     Contents [
+       ("You can do pattern-matching against multisets.", ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]),
+       ("You can do non-linear pattern-matching. Try the following expression with various targets.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x <cons ,x _>> x])"]),
+       ("A pattern that has `^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x ^<cons ,x _>> x])"]),
+       ("You can change the way of pattern-matching by changing \"matcher\".\nTry following expressions.", ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"])
+       ])
   ]
 
