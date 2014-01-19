@@ -232,46 +232,49 @@ tutorial =
   Sections [
     ("Lv1 - Buildin data",
       Contents [
-        ("There are two boolean value `#t` and `#f`.", ["#t", "#f"]),
-        ("You can do boolean operations with `and`, `or`, `not`.", ["(and #t #f)", "(or #t #f)", "(not #t)"]),
-        ("You can do arithmetic operations with `+`, `-`, `*`, `div`.", ["(+ 1 2)", "(* 10 20)"]),
-        ("We have predicates for numbers.", ["(eq? 1 1)", "(gt-i? 1 1)", "(lt-i? 1 1)",  "(gte-i? 1 1)", "(lte-i? 1 1)"]),
-        ("You can construct a tuple with `[]`.", ["[1 2]", "[1 2 3]"]),
+        ("There are two boolean value '#t' and '#f'.", ["#t", "#f"]),
+        ("You can do boolean operations with 'and', 'or', 'not'.", ["(and #t #f)", "(or #t #f)", "(not #t)"]),
+        ("You can do arithmetic operations with `+', '-', '*'.", ["(+ 1 2)", "(* 10 20)"]),
+        ("We have predicates for numbers.", ["(eq-i? 1 1)", "(gt-i? 1 1)", "(lt-i? 1 1)",  "(gte-i? 1 1)", "(lte-i? 1 1)"]),
+        ("We are supporting rational numbers.", ["(+ 2/3 1/5)", "(/ 42 84)"]),
+        ("We are supporting floats, too.", ["(+ 10.2 1.3)", "(rtof 1/5)"]),
+        ("We have predicates for floats.", ["(eq-f? 1.0 1.0)", "(gt-f? 1.0 1.0)", "(lt-i? 1.0 1.0)",  "(gte-i? 1.0 1.0)", "(lte-i? 1.0 1.0)"]),
+        ("You can construct a tuple with '[]'.", ["[1 2]", "[1 2 3]"]),
         ("A tuple which consists of only one elment is equal with that element itself.", ["[1]", "[[[1]]]"]),
-        ("You can construct a collection with `{}`.", ["{1}", "{1 2 3}"]),
-        ("The collection after `@` in a collection is called a subcollection.", ["{1 @{2 3}}", "{1 @{2 3} @{4 @{5}} 6}"])
+        ("You can construct a collection with '{}'.", ["{1}", "{1 2 3}"]),
+        ("The collection after '@' in a collection is called a subcollection.", ["{1 @{2 3}}", "{1 @{2 3} @{4 @{5}} 6}"]),
+        ("We can define an array as follow. We can access the element of the array using '_'.", ["(define $a [| 11 22 33 |])", "a_2"]),
+        ("We can define an hash as follow. We can access the element of the hash using '_' as arrays.", ["(define $h {| [1 11] [2 22] [3 33] |})", "h_2"])
         ]),
-    ("Lv2 - Functions",
+    ("Lv2 - Functional programming",
      Contents [
-       ("You can bind a value to a variable with a `define` expression.\nYou can easily get the value you binded to the variable.", ["(define $x 10)", "x"]),
+       ("You can bind a value to a variable with a 'define' expression.\nYou can easily get the value you binded to the variable.", ["(define $x 10)", "x"]),
        ("You can define a function. Let's define a function and test it.", ["(define $f (lambda [$x] (+ x 1)))", "(f 10)", "(define $g (lambda [$x $y] (* x y)))", "(g 10 20)"]),
-       ("You can define local variables with a `let` expression.", ["(let {[$x 10] [$y 20]} (+ x y))"]),
-       ("Let's try `if` expressions.", ["(if #t 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]),
-       ("Now, you can define a factorial function that gets a natural number 'n' and returns 'n * n-1 * n-2 * ... * 1'. Let's try!", [])
+       ("You can define local variables with a 'let' expression.", ["(let {[$x 10] [$y 20]} (+ x y))"]),
+       ("Let's try 'if' expressions.", ["(if #t 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"])
        ]),
     ("Lv3 - Pattern-matching",
      Contents [
        ("You can do pattern-matching against multisets.", ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]),
        ("You can do non-linear pattern-matching. Try the following expression with various targets.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x <cons ,x _>> x])"]),
        ("You can change the way of pattern-matching by changing \"matcher\".\nTry the following expressions.", ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])"]),
-       ("`list` has a special pattern-constructor `join`.\n`join` divides a collection into two collections.\nTry the following expressions.", ["(match-all {1 2 3 4 5} (list integer) [<join $xs $ys> [xs ys]])", "(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])"]),
+       ("'list' has a special pattern-constructor 'join'.\n'join' divides a collection into two collections.\nTry the following expressions.", ["(match-all {1 2 3 4 5} (list integer) [<join $xs $ys> [xs ys]])", "(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])"]),
        ("We can do pattern-matching against a collection of collections as follow.", ["(match-all {{1 2 3 4 5} {4 5 1} {6 1 7 4}} (list (multiset integer)) [<cons <cons $n _> <cons <cons ,n _> <cons <cons ,n _> <nil>>>> n])"]),
-       ("A pattern that has `^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x ^<cons ,x _>> x])"]),
+       ("A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x ^<cons ,x _>> x])"]),
        ("An and-pattern matches when the all patterns matches the target.\nIt can be used like an as-pattern.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x (& ^<cons ,x _> $xs)> [x xs]])"]),
        ("An or-pattern matches when one of the patterns matches the target.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x (| <cons ,x _> ^<cons ,x _>)> x])"])
        ]),
     ("Lv4 - Infinite collections (Play with prime numbers)",
      Contents [
        ("First load a library for prime numers.", ["(load \"lib/math/prime.egi\")"]),
-       ("Get elements from the sequence of prime numebers using `take` function.", ["(take 10 primes)"]),
+       ("Get elements from the sequence of prime numebers using 'take' function.", ["(take 10 primes)"]),
        ("We can get twin primes or triplet primes using pattern-matching as follow.", ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) _>>> [n (+ n 2)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 4) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))"]),
        ("With predicate-patterns and and-patterns, we can do interesting things as follow.", ["(take 1 (match-all primes (list integer) [<join _ <cons $n <cons (& ?(gt-i? $ (+ 10 n)) $m) _>>> [n m]]))", "(take 1 (match-all primes (list integer) [<join _ <cons $n <cons (& ?(gt-i? $ (+ 20 n)) $m) _>>> [n m]]))"]),
        ("Play freely with the sequence of prime numbers.", [])
        ]),
     ("Lv5 - Loop-patterns",
      Contents [
-       ("Actually, we can define an array as follow. We can access the element of the array using `_.", ["(define $a [| 11 22 33 |])", "a_2"]),
-       ("Next, we introduce `between` function", ["(between 1 3)", "(between 2 10)"]),
+       ("Next, we introduce 'between' function", ["(between 1 3)", "(between 2 10)"]),
        ("We can write a pattern that include '...'. The following are demonstrations.", ["(match-all {1 2 3 4 5} (list integer) [(loop $i (between 1 2) <cons $a_i ...> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i (between 1 3) <cons $a_i ...> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i (between 1 2) <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i (between 1 3) <join _ <cons $a_i ...>> _) a])"])
        ])
 --    ("Lv6 (preparing) - Matcher definition (Play with graphs)",
