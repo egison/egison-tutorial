@@ -274,8 +274,7 @@ tutorial =
        ]),
     ("Lv5 - Loop-patterns",
      Contents [
-       ("Next, we introduce 'between' function", ["(between 1 3)", "(between 2 10)"]),
-       ("We can write a pattern that include '...'. The following are demonstrations.", ["(match-all {1 2 3 4 5} (list integer) [(loop $i (between 1 2) <cons $a_i ...> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i (between 1 3) <cons $a_i ...> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i (between 1 2) <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i (between 1 3) <join _ <cons $a_i ...>> _) a])"])
+       ("We can write a pattern that include '...'. The following are demonstrations.", ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,2] <cons $a_i ...> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,3] <cons $a_i ...> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,2] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,3] <join _ <cons $a_i ...>> _) a])"])
        ])
 --    ("Lv6 (preparing) - Matcher definition (Play with graphs)",
 --     Contents [
