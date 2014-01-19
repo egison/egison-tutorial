@@ -1,5 +1,5 @@
 Name:                egison-tutorial
-Version:             3.0.3
+Version:             3.2.0
 Synopsis:            A Tutorial Program for The Programming Language Egison
 Description:         A tutorial program for the programming language Egison.
 Homepage:            http://www.egison.org
@@ -17,4 +17,4 @@ source-repository head
 
 Executable egison-tutorial
   Main-is:             Main.hs
-  Build-depends:       egison >= 3.0.12, base >= 4.0 && < 5, array, containers, unordered-containers, haskeline, transformers, mtl, parsec >= 3.0, directory, ghc, ghc-paths, filepath, regex-posix, strict-io, bytestring
+  Build-depends:       egison >= 3.2.6, base >= 4.0 && < 5, array, containers, unordered-containers, haskeline, transformers, mtl, parsec >= 3.0, directory, ghc, ghc-paths, filepath, regex-posix, strict-io, bytestring
