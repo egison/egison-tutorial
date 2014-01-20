@@ -1,3 +1,5 @@
 dist/
 prof/
 .egison_tutorial_history
+.cabal-sandbox
+cabal.sandbox.config
