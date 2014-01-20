@@ -79,7 +79,7 @@ printVersionNumber = do
 
 showBanner :: IO ()
 showBanner = do
-  putStrLn $ "Egison Tutorial for Version " ++ showVersion P.version ++ " (C) 2013 Satoshi Egi"
+  putStrLn $ "Egison Tutorial for Version " ++ showVersion P.version ++ " (C) 2013-2014 Satoshi Egi"
   putStrLn $ "http://www.egison.org"
   putStrLn $ "Welcome to Egison Tutorial!"
 
@@ -137,6 +137,7 @@ readNumber m = do
     ('3':_) -> return 3
     ('4':_) -> return 4
     ('5':_) -> return 5
+    ('6':_) -> return 6
     _ -> do
       putStrLn "Invalid input!"
       readNumber m
@@ -246,14 +247,27 @@ tutorial =
         ("We can define an array as follow. We can access the element of the array using '_'.", ["(define $a [| 11 22 33 |])", "a_2"]),
         ("We can define an hash as follow. We can access the element of the hash using '_' as arrays.", ["(define $h {| [1 11] [2 22] [3 33] |})", "h_2"])
         ]),
-    ("Lv2 - Functional programming",
+    ("Lv2 - Functions that handle collections ('take', 'map', 'foldl')",
+     Contents [
+       ("With a 'take' function, you can extract a head part of the collection.", ["(take 0 {1 2 3 4 5})", "(take 3 {1 2 3 4 5})"]),
+       ("'nats' is an infinite list that contains all natural numbers. Get a collection of natural numbers of any length you like.", ["(take 100 nats)"]),
+       ("With a 'map' function, you can operate each element of the collection at onece.", ["(map (* $ 2) (take 100 nats))", "(take 100 (map (* $ 2) nats))", "(take 100 (map (quotient $ 2) nats))"]),
+       ("You can create a \"partial\" function using '$' as an argument.", ["((+ $ 10) 1)"]),
+       ("With a 'map2' function, you can combine two lists as follow.", ["(map2 + (take 100 nats) (take 100 nats))", "(take 100 (map2 * nats nats))"]),
+       ("With a 'foldl' function, you can gather together all elements of the collection using an operator you like.\nWould you try to get a sum of from 1 to 100?", ["(foldl + 0 {1 2 3 4 5})", "(foldl * 1 {1 2 3 4 5})"]),
+       ("Try to create a sequce of number '{2 2 4 4 6 6 8 8 ... 98 100 100}'.", []),
+       ("Try to create a sequce of number '{1 3 3 5 5 7 7 9 ... 99 99 101}'.", []),
+       ("Try to create a sequce of number '{2/1 2/3 4/3 4/5 6/5 6/7 8/7 8/9 ... 98/99 100/99 100/101}'.", [""]),
+       ("Try to calculate '2/1 * 2/3 * 4/3 * 4/5 * 6/5 * 6/7 * 8/7 * 8/9 * ... * 98/99 * 100/99 * 100/101'.", [""])
+       ]),
+    ("Lv3 - Define your own functions",
      Contents [
        ("You can bind a value to a variable with a 'define' expression.\nYou can easily get the value you binded to the variable.", ["(define $x 10)", "x"]),
        ("You can define a function. Let's define a function and test it.", ["(define $f (lambda [$x] (+ x 1)))", "(f 10)", "(define $g (lambda [$x $y] (* x y)))", "(g 10 20)"]),
        ("You can define local variables with a 'let' expression.", ["(let {[$x 10] [$y 20]} (+ x y))"]),
        ("Let's try 'if' expressions.", ["(if #t 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"])
        ]),
-    ("Lv3 - Pattern-matching",
+    ("Lv4 - Pattern-matching",
      Contents [
        ("You can do pattern-matching against multisets.", ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]),
        ("You can do non-linear pattern-matching. Try the following expression with various targets.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x <cons ,x _>> x])"]),
@@ -264,19 +278,18 @@ tutorial =
        ("An and-pattern matches when the all patterns matches the target.\nIt can be used like an as-pattern.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x (& ^<cons ,x _> $xs)> [x xs]])"]),
        ("An or-pattern matches when one of the patterns matches the target.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x (| <cons ,x _> ^<cons ,x _>)> x])"])
        ]),
-    ("Lv4 - Infinite collections (Play with prime numbers)",
+    ("Lv5 - Infinite collections (Play with prime numbers)",
      Contents [
-       ("First load a library for prime numers.", ["(load \"lib/math/prime.egi\")"]),
        ("Get elements from the sequence of prime numebers using 'take' function.", ["(take 10 primes)"]),
        ("We can get twin primes or triplet primes using pattern-matching as follow.", ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) _>>> [n (+ n 2)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 4) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))"]),
        ("With predicate-patterns and and-patterns, we can do interesting things as follow.", ["(take 1 (match-all primes (list integer) [<join _ <cons $n <cons (& ?(gt-i? $ (+ 10 n)) $m) _>>> [n m]]))", "(take 1 (match-all primes (list integer) [<join _ <cons $n <cons (& ?(gt-i? $ (+ 20 n)) $m) _>>> [n m]]))"]),
        ("Play freely with the sequence of prime numbers.", [])
        ]),
-    ("Lv5 - Loop-patterns",
+    ("Lv6 - Loop-patterns",
      Contents [
        ("We can write a pattern that include '...'. The following are demonstrations.", ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,2] <cons $a_i ...> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,3] <cons $a_i ...> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,2] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,3] <join _ <cons $a_i ...>> _) a])"])
        ])
---    ("Lv6 (preparing) - Matcher definition (Play with graphs)",
+--    ("Lv7 (preparing) - Matcher definition (Play with graphs)",
 --     Contents [
 --       ("Sorry, we are creating this section now.", [])
 --       ])
