@@ -1,5 +1,12 @@
 module Main where
 
+import Prelude hiding (catch)
+import Control.Exception ( SomeException(..),
+                           AsyncException(..),
+                           catch, handle, throw)
+import System.Posix.Signals
+import Control.Concurrent
+
 import Control.Applicative ((<$>), (<*>))
 import Control.Monad.Error
 
@@ -15,7 +22,7 @@ import System.IO
 import System.Environment
 import System.Directory (getHomeDirectory)
 import System.FilePath ((</>))
-import System.Console.Haskeline
+import System.Console.Haskeline hiding (handle, catch, throwTo)
 import System.Console.GetOpt
 import System.Exit (ExitCode (..), exitWith, exitFailure)
 import Language.Egison
@@ -159,6 +166,11 @@ printTutorial (msg, examples) = do
         examples
   putStrLn "===================="
 
+onAbort :: EgisonError -> IO (Either EgisonError a)
+onAbort e = do
+  let x = show e
+  return $ Left e
+
 repl :: Env -> String -> IO ()
 repl env prompt = do
   home <- getHomeDirectory
@@ -166,7 +178,8 @@ repl env prompt = do
   liftIO (runInputT (settings home) $ loop env prompt "" contents True)
   where
     settings :: MonadIO m => FilePath -> Settings m
-    settings home = defaultSettings { historyFile = Just (home </> ".egison_tutorial_history") }
+    settings home = do
+      setComplete noCompletion $ defaultSettings { historyFile = Just (home </> ".egison_tutorial_history") }
     
     loop :: Env -> String -> String -> [Content] -> Bool -> InputT IO ()
     loop env prompt' _ [] _ = do
@@ -177,7 +190,10 @@ repl env prompt = do
       liftIO $ printTutorial t
       loop env prompt' rest ts False
     loop env prompt' rest ts@(t:rs) False = do
+      _ <- liftIO $ installHandler keyboardSignal (Catch (do {putStr "^C"; hFlush stdout})) Nothing
       input <- getInputLine prompt'
+      tid <- liftIO $ myThreadId
+      _ <- liftIO $ installHandler keyboardSignal (Catch (throwTo tid UserInterruption)) Nothing
       case input of
         Nothing -> do
           response1 <- liftIO $ askUser "Do you want to proceed next?"
@@ -203,12 +219,12 @@ repl env prompt = do
             _ -> loop env (take (length prompt) (repeat ' ')) rest ts False
         Just input' -> do
           let newInput = rest ++ input'
-          result <- liftIO $ runEgisonTopExpr env newInput
+          result <- liftIO $ handle onAbort $ runEgisonTopExpr env newInput
           case result of
             Left err | show err =~ "unexpected end of input" -> do
               loop env (take (length prompt) (repeat ' ')) (newInput ++ "\n") ts False
             Left err | show err =~ "expecting (top-level|\"define\")" -> do
-              result <- liftIO $ fromEgisonM (readExpr newInput) >>= either (return . Left) (evalEgisonExpr env)
+              result <- liftIO $ handle onAbort $ fromEgisonM (readExpr newInput) >>= either (return . Left) (evalEgisonExpr env)
               case result of
                 Left err | show err =~ "unexpected end of input" -> do
                   loop env (take (length prompt) (repeat ' ')) (newInput ++ "\n") ts False
@@ -274,7 +290,7 @@ tutorial =
        ("You can define local variables with a 'let' expression.", ["(let {[$x 10] [$y 20]} (+ x y))"]),
        ("Let's try 'if' expressions.", ["(if #t 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]),
        ("Using 'define' and 'if', you can write recursive functions as follow.", ["(define $your-take (lambda [$n $xs] (if (eq? n 0) {} {(car xs) @(your-take (- n 1) (cdr xs))})))", "(your-take 10 nats)"]),
-       ("Try to write a 'your-map' function.", []),
+       ("Try to write a 'your-map' function.\nYou may need 'empty?' function inside 'your-map' function.", ["(empty? {})"]),
        ("You can view all library functions on collection at \"http://www.egison.org/libraries/core/collection.html\".", [])
        ]),
     ("Lv4 - Basic of pattern-matching",
@@ -293,7 +309,7 @@ tutorial =
        ]),
     ("Lv5 - Pattern-matching against infinite collections",
      Contents [
-       ("We can write a pattern-matching against infinite lists even if that has infinite results.", ["(take 10 (match-all nats (multiset integer) [<cons $m _> m]))", "(take 10 (match-all nats (multiset integer) [<cons $m <cons $n _>> [m n]]))"]),
+       ("We can write a pattern-matching against infinite lists even if that has infinite results.\nPlease note that Egison really enumurate all pairs of two natural numbers in the following example.", ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>> [m n]]))"]),
        ("We can enumerate all two combinations of natural numbers as follow.", ["(define $two-combs (match-all nats (list integer) [<join _ (& <cons $x _> <join _ <cons $y _>>)> [x y]]))", "(take 100 two-combs)"]),
        ("We can enumerate all pythagoras numbers as follow.", ["(define $pyths (map (lambda [$x $y] (+ (* x x) (* y y))) two-combs))", "(take 100 pyths)"]),
        ("We have an infinite list of prime numers in 'primes'.\nPlease check it with a 'take' function.", ["(take 10 primes)"]),
