@@ -1,7 +1,10 @@
 Name:                egison-tutorial
-Version:             3.2.1
-Synopsis:            A Tutorial Program for The Programming Language Egison
+Version:             3.2.2
+Synopsis:            A tutorial program for the programming language Egison
 Description:         A tutorial program for the programming language Egison.
+                     Egison is the programming langugage that realized non-linear pattern-matching with unfree data types.
+                     With Egison, you can represent pattern-matching with unfree data types intuitively, especially for collection data, such as lists, multisets, sets.
+                     Please learn Egison with this tutorial program!
 Homepage:            http://www.egison.org
 License:             MIT
 License-file:        LICENSE
