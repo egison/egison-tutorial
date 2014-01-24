@@ -118,7 +118,7 @@ selectSection tutorial  = selectSectionHelper [] tutorial
 selectSectionHelper :: [(Int, String)] -> Tutorial -> IO [Content]
 selectSectionHelper hs (Sections secs)  = do
   putStrLn "===================="
-  putStrLn "Select a section to learn."
+  putStrLn "List of tutorials."
   foldM (\x sec -> do
           putStr $ "" ++ show x ++ ": "
           putStrLn (fst sec)
@@ -134,7 +134,7 @@ selectSectionHelper hs (Sections secs)  = do
 
 readNumber :: Int -> IO Int
 readNumber m = do
-  putStr $ "(1-" ++ show m ++ "): "
+  putStr $ "Please select a section to learn.\n(1-" ++ show m ++ "): "
   hFlush stdout
   input <- getLine
 --  let n = (read input :: Int)
@@ -249,12 +249,13 @@ type Content = (String, [String])
 tutorial :: Tutorial
 tutorial =
   Sections [
-    ("Lv1 - Culculate numbers",
+    ("Lv1 - Calculate numbers",
      Contents [
        ("We can do arithmetic operations with `+', '-', '*'.", ["(+ 1 2)", "(* 10 20)"]),
        ("We can write nested expression as follow.", ["(+ (* 10 20) 2)", "(/ (* 10 20) (+ 10 20))"]),
        ("We are supporting rational numbers.", ["(+ 2/3 1/5)", "(/ 42 84)"]),
-       ("We are supporting floats, too.", ["(+ 10.2 1.3)", "(rtof 1/5)"]),
+       ("We are supporting floats, too.", ["(+ 10.2 1.3)", "(* 10.2 1.3)"]),
+       ("you can convert a rational number to a float number with 'rtof'.", ["(rtof 1/5)"]),
        ("We can handle collections of numbers.\n We construct then with '{}'.", ["{}", "{10}","{1 2 3 4 5}"]),
        ("With a 'take' function, we can extract a head part of the collection.\nWe can construct a collection with '{}'.", ["(take 0 {1 2 3 4 5})", "(take 3 {1 2 3 4 5})"]),
        ("We can handle infinite lists.\nFor example, 'nats' is an infinite list that contains all natural numbers.\nGet a collection of natural numbers of any length you like.", ["(take 100 nats)"]),
@@ -262,14 +263,14 @@ tutorial =
        ("We can create a \"partial\" function using '$' as an argument.", ["((+ $ 10) 1)"]),
        ("With a 'foldl' function, we can gather together all elements of the collection using an operator you like.\nWould you try to get a sum of from 1 to 100?", ["(foldl + 0 {1 2 3 4 5})", "(foldl * 1 {1 2 3 4 5})"]),
        ("Try to create a sequce of numbers '{1 1/2 1/3 1/4 ... 1/100}'.", []),
-       ("Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.", []),
+       ("Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.\nPlease remember that you can convert a rational number to a float number with 'rtof'.", ["(rtof 2/3)"]),
        ("Try to calculate '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2'.", [])
        ]),
     ("Lv2 - Basics of functional programming",
      Contents [
        ("We can compare numbers using functions that return '#t' or '#f'.\n'#t' means the true.\n#f means the false.\nFunctions that return '#t' or '#f' are called \"predicates\".", ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]),
        ("With a 'while' function, we can extract all head elements that satisfy the predicate.\n'primes' is a infinites list that contains all prime numbers.", ["(while (lt? $ 100) primes)", "(while (lt? $ 1000) primes)"]),
-       ("With a 'filter' function, we can extract all elements that satisfy the predicate.\n'We extract all prime numbers that are congruent to 1 modulo 4.", ["(take 100 (filter? (lambda [$p] (eq? (modulo p 4) 1)) primes))", "(take 200 (filter? (lambda [$p] (eq? (modulo p 4) 1)) primes))"]),
+       ("With a 'filter' function, we can extract all elements that satisfy the predicate.\n'We extract all prime numbers that are congruent to 1 modulo 4.", ["(take 100 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))", "(take 200 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))"]),
        ("We use 'lambda' expressions to create functions.\n Here are simple 'lambda' examples.", ["((lambda [$x] (+ x 1)) 10)", "((lambda [$x] (* x x)) 10)", "((lambda [$x $y] (* x y)) 10 20)"]),
        ("With a 'map2' function, we can combine two lists as follow.", ["(take 100 (map2 * nats nats))", "(take 100 (map2 (lambda [$n $p] [n p]) nats primes))"]),
        ("We combine numbers using '[]'.\nThese things are called 'tuples'.", ["[1 2]", "[1 2 3]"]),
@@ -288,7 +289,7 @@ tutorial =
        ("Let's try 'if' expressions.", ["(if #t 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]),
        ("Using 'define' and 'if', we can write recursive functions as follow.", ["(define $your-take (lambda [$n $xs] (if (eq? n 0) {} {(car xs) @(your-take (- n 1) (cdr xs))})))", "(your-take 10 nats)"]),
        ("Try to write a 'your-map' function.\nWe may need 'empty?' function inside 'your-map' function.", ["(empty? {})"]),
-       ("We can view all library functions on collection at \"http://www.egison.org/libraries/core/collection.html\".", [])
+       ("We can view all library functions on collections at \"http://www.egison.org/libraries/core/collection.html\".", [])
        ]),
     ("Lv4 - Basic of pattern-matching",
      Contents [
