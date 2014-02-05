@@ -315,18 +315,25 @@ tutorial =
        ("We can enumurate all common elements between 'primes' and 'pyths' as follow.\nCan we find a pattern in these numbers.", ["(match-all [(take 100 pyths) (take 100 primes)] [(list integer) (list integer)] [[<join _ <cons $c _>> <join _ <cons ,c _>>] c])"]),
        ("Play freely with the sequences of natural numbers.\nWe can view a lot of demonstration of pattern-matching at \"http://www.egison.org/demonstrations/\".", [])
        ]),
-    ("Lv6 (preparing) - Pattern-matching against graphs",
+    ("Lv6 - Writing scripts in Egison",
      Contents [
-       ("Sorry, we are preparing this section now.", [])
-       ]),
-    ("Lv7 (preparing) - Modularize patterns",
-     Contents [
-       ("Sorry, we are preparing this section now.", [])
-       ]),
-    ("Lv8 (preparing) - Define your own matchers",
-     Contents [
-       ("Sorry, we are preparing this section now.", [])
+       ("Let's write a famous Hello world program in Egison.\nPlease try the following expression.\nIt is evaluated to the 'io-function'.\nTo execute an io-function, we use 'io' primitive as follow.", ["(print \"Hello, world!\")", "(io (print \"Hello, world!\"))"]),
+       ("We can execute multiple io-functions in sequence as follow.\nThe io-functions is executed from the head.", ["(io (do {[(print \"a\")] [(print \"b\")] [(print \"c\")]} []))", "(io (do {[(write-string \"Type your name: \")] [(flush)] [$name (read-line)] [(print {@\"Hello, \" @name @\"!\"})]} []))"]),
+       ("The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\",\nand execute it in the terminal as\n% egison hello.egi\n", ["(define $main (lambda [$args] (print \"Hello, world!\")))"]),
+       ("", [])
        ])
+--    ("Lv? (preparing) - Pattern-matching against graphs",
+--     Contents [
+--       ("Sorry, we are preparing this section now.", [])
+--       ]),
+--    ("Lv? (preparing) - Modularize patterns",
+--     Contents [
+--       ("Sorry, we are preparing this section now.", [])
+--       ]),
+--    ("Lv? (preparing) - Define your own matchers",
+--     Contents [
+--       ("Sorry, we are preparing this section now.", [])
+--       ])
   ]
 
 
