@@ -20,4 +20,4 @@ source-repository head
 
 Executable egison-tutorial
   Main-is:             Main.hs
-  Build-depends:       egison >= 3.2.8, base >= 4.0 && < 5, array, containers, unordered-containers, haskeline, transformers, mtl, parsec >= 3.0, directory, ghc, ghc-paths, filepath, regex-posix, strict-io, bytestring, unix
+  Build-depends:       egison >= 3.2.18, base >= 4.0 && < 5, array, containers, unordered-containers, haskeline, transformers, mtl, parsec >= 3.0, directory, ghc, ghc-paths, filepath, regex-posix, strict-io, bytestring, unix
