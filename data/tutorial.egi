@@ -1,5 +1,6 @@
+(define $tutorial
 {["Calculate numbers"
-  {["We can do arithmetic operations with `+', '-', '*', and '/'."
+  {["We can do arithmetic operations with '+', '-', '*', and '/'."
     {"(+ 1 2)" "(* 10 20)"}
     {}]
    ["We can write nested expressions."
@@ -173,13 +174,21 @@
      {"(define $main (lambda [$args] (print \"Hello, world!\")))"}
      {}]
     }]
-  }
+  })
 
+(define $proc
+  (lambda [$sections]
+    (show sections)))
 
-;        ("The collection after '@' in a collection is called a subcollection.", ["{1 @{2 3}}", "{1 @{2 3} @{4 @{5}} 6}"]),
-;        ("We can destruct collections with 'car' and 'cdr'.", ["(car {1 2 3})", "(cdr {1 2 3})"]),
+(define $main
+  (lambda [$args]
+       (do {[(print (proc tutorial))]}
+      [])))
+
+; ["The collection after '@' in a collection is called a subcollection." {"{1 @{2 3}}" "{1 @{2 3} @{4 @{5}} 6}"} {}]
+; ["We can destruct collections with 'car' and 'cdr'." {"(car {1 2 3})" "(cdr {1 2 3})"} {}]
         
-;        ("We can define an array as follow. We can access the element of the array using '_'.", ["(define $a [| 11 22 33 |])", "a_2"]),
-;        ("We can define an hash as follow. We can access the element of the hash using '_' as arrays.", ["(define $h {| [1 11] [2 22] [3 33] |})", "h_2"]),
+; ["We can define an array as follow. We can access the element of the array using '_'." {"(define $a [| 11 22 33 |])" "a_2"} {}]
+; ["We can define an hash as follow. We can access the element of the hash using '_' as arrays." {"(define $h {| [1 11] [2 22] [3 33] |})" "h_2"} {}]
 
-;       ("We can do boolean operations with 'and', 'or', 'not'.", ["(and #t #f)", "(or #t #f)", "(not #t)"]),
+; ["We can do boolean operations with 'and', 'or', 'not'." {"(and #t #f)" "(or #t #f)" "(not #t)"} {}]

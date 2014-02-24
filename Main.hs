@@ -101,8 +101,8 @@ showByebyeMessage :: IO ()
 showByebyeMessage = do
   putStrLn $ "Leaving Egison Tutorial.\nByebye."
 
-askUser :: String -> IO Bool
-askUser question = do
+yesOrNo :: String -> IO Bool
+yesOrNo question = do
   putStr $ question
   putStr $ " (Y/n): "
   hFlush stdout
@@ -112,34 +112,26 @@ askUser question = do
    ('y':_) -> return True
    ('Y':_) -> return True
    ('n':_) -> return False
-   _ -> askUser question
+   ('N':_) -> return False
+   _ -> yesOrNo question
 
-selectSection :: Tutorial -> IO [Content]
-selectSection tutorial  = selectSectionHelper [] tutorial
+nth n = head . drop (n - 1)
 
-selectSectionHelper :: [(Int, String)] -> Tutorial -> IO [Content]
-selectSectionHelper hs (Sections secs)  = do
-  putStrLn "===================="
-  putStrLn "List of tutorials."
-  foldM (\x sec -> do
-          putStr $ "" ++ show x ++ ": "
-          putStrLn (fst sec)
-          return (x + 1))
-        1 secs
-  putStrLn "===================="
-  let m = length secs
-  n <- readNumber m
-  let (title, t) = head $ drop (n - 1) secs
-  case t of
-    Contents contents -> return contents
-    Sections _ -> selectSectionHelper (hs ++ [(n, title)]) t
-
-readNumber :: Int -> IO Int
-readNumber m = do
-  putStr $ "Please select a section to learn.\n(1-" ++ show m ++ "): "
+selectSection :: Tutorial -> IO Section
+selectSection tutorial@(Tutorial sections) = do
+  putStrLn $ take 30 $ repeat '='
+  putStrLn $ "List of sections in the tutorial"
+  putStrLn $ show tutorial
+  putStrLn $ take 30 $ repeat '='
+  putStrLn $ "Choose a section to learn."
+  putStr   $ "(1-" ++ show (length sections) ++ "): "
   hFlush stdout
+  n <- getNumber
+  return $ nth n sections
+
+getNumber :: IO Int
+getNumber = do
   input <- getLine
---  let n = (read input :: Int)
   case input of
     ('1':_) -> return 1
     ('2':_) -> return 2
@@ -151,22 +143,7 @@ readNumber m = do
     ('8':_) -> return 8
     _ -> do
       putStrLn "Invalid input!"
-      readNumber m
-
-
-printTutorial :: Content -> IO ()
-printTutorial (msg, examples) = do
-  putStrLn "===================="
-  putStrLn msg
-  case examples of
-    [] -> return ()
-    _ -> do
-      putStrLn "e.g."
-      mapM_ (\example -> do
-                putStr "  "
-                putStrLn example)
-        examples
-  putStrLn "===================="
+      getNumber
 
 onAbort :: EgisonError -> IO (Either EgisonError a)
 onAbort e = do
@@ -176,173 +153,125 @@ onAbort e = do
 repl :: Env -> String -> IO ()
 repl env prompt = do
   home <- getHomeDirectory
-  contents <- selectSection tutorial
-  liftIO (runInputT (settings home) $ loop env prompt "" contents True)
-  where
-    settings :: MonadIO m => FilePath -> Settings m
-    settings home = do
-      setComplete completeEgison $ defaultSettings { historyFile = Just (home </> ".egison_tutorial_history") }
-    
-    loop :: Env -> String -> String -> [Content] -> Bool -> InputT IO ()
-    loop env prompt' _ [] _ = do
-      liftIO $ showFinishMessage
-      contents <- liftIO $ selectSection tutorial
-      loop env prompt' "" contents True
-    loop env prompt' rest ts@(t:rs) True = do
-      liftIO $ printTutorial t
-      loop env prompt' rest ts False
-    loop env prompt' rest ts@(t:rs) False = do
-      _ <- liftIO $ installHandler keyboardSignal (Catch (do {putStr "^C"; hFlush stdout})) Nothing
-      input <- getInputLine prompt'
-      tid <- liftIO $ myThreadId
-      _ <- liftIO $ installHandler keyboardSignal (Catch (throwTo tid UserInterruption)) Nothing
-      case input of
-        Nothing -> do
-          response1 <- liftIO $ askUser "Do you want to proceed next?"
-          case response1 of
-            True -> loop env prompt' rest rs True
-            False -> do
-              response2 <- liftIO $ askUser "Do you want to quit egison-tutorial?"
-              case response2 of
-                True -> do
-                  liftIO $ showByebyeMessage
-                  return ()
-                False -> loop env prompt' rest ts False
-        Just "quit" -> do
-          liftIO $ showByebyeMessage
-          return () 
-        Just "" ->
-          case rest of
-            "" -> do
-              response1 <- liftIO $ askUser "Do you want to proceed next?"
-              case response1 of
-                True -> loop env prompt' rest rs True
-                False -> loop env prompt' rest ts False
-            _ -> loop env (take (length prompt) (repeat ' ')) rest ts False
-        Just input' -> do
-          let newInput = rest ++ input'
-          result <- liftIO $ handle onAbort $ runEgisonTopExpr env newInput
-          case result of
-            Left err | show err =~ "unexpected end of input" -> do
-              loop env (take (length prompt) (repeat ' ')) (newInput ++ "\n") ts False
-            Left err | show err =~ "expecting (top-level|\"define\")" -> do
-              result <- liftIO $ handle onAbort $ fromEgisonM (readExpr newInput) >>= either (return . Left) (evalEgisonExpr env)
-              case result of
-                Left err | show err =~ "unexpected end of input" -> do
-                  loop env (take (length prompt) (repeat ' ')) (newInput ++ "\n") ts False
-                Left err -> do
-                  liftIO $ putStrLn $ show err
-                  loop env prompt "" ts False
-                Right val -> do
-                  liftIO $ putStrLn $ show val
-                  loop env prompt "" ts False
-            Left err -> do
-              liftIO $ putStrLn $ show err
-              loop env prompt "" ts False
-            Right env' ->
-              loop env' prompt "" ts False
+  sections <- selectSection tutorial
+  case sections of
+    Section _ contents -> liftIO $ runInputT (settings home) $ loop contents env
+ where
+  settings :: MonadIO m => FilePath -> Settings m
+  settings home = do
+    setComplete completeEgison $ defaultSettings { historyFile = Just (home </> ".egison_tutorial_history") }
+  
+  loop :: [Content] -> Env -> InputT IO ()
+  loop [] env = do
+    liftIO $ showFinishMessage
+    liftIO $ repl env prompt
+  loop contents@(content:rest) env = do
+    liftIO $ putStrLn $ show content
+    _ <- liftIO $ installHandler keyboardSignal (Catch (do {putStr "^C"; hFlush stdout})) Nothing
+    input <- getEgisonExpr prompt
+    tid <- liftIO $ myThreadId
+    _ <- liftIO $ installHandler keyboardSignal (Catch (throwTo tid UserInterruption)) Nothing
+    case input of
+      Nothing -> return ()
+      Just (Left topExpr) -> do
+        result <- liftIO $ handle onAbort $ evalEgisonTopExpr env topExpr
+        case result of
+          Left err -> do
+            liftIO $ putStrLn $ show err
+            loop contents env
+          Right env' -> loop contents env'
+      Just (Right expr) -> do
+        result <- liftIO $ handle onAbort $ evalEgisonExpr env expr
+        case result of
+          Left err -> do
+            liftIO $ putStrLn $ show err
+            loop contents env
+          Right val -> do
+            liftIO $ putStrLn $ show val
+            loop contents env
 
-data Tutorial =
-    Sections [(String, Tutorial)]
-  | Contents [Content]
+data Tutorial = Tutorial [Section]
 
-type Content = (String, [String]) 
+-- |title and contents
+data Section = Section String [Content]
+
+-- |explanation, examples, and exercises
+data Content = Content String [String] [String]
+
+instance Show Tutorial where
+  show = showTutorial
+
+instance Show Section where
+  show = showSection
+
+instance Show Content where
+  show = showContent
+
+showTutorial :: Tutorial -> String
+showTutorial (Tutorial sections) =
+  let n = length sections in
+  intercalate "\n" $ map (\(n, section) -> show n ++ ": " ++ show section) $ zip [1..n] sections
+
+showSection :: Section -> String
+showSection (Section title _) = title
+
+showContent :: Content -> String
+showContent (Content msg examples exercises) =
+  "====================\n" ++
+  msg ++ "\n" ++
+  (case examples of
+     [] -> ""
+     _ -> "examples:\n" ++ (intercalate "\n" (map (\example -> "  " ++ example) examples)) ++ "\n") ++
+  (case exercises of
+     [] -> ""
+     _ -> "exercises:\n" ++ (intercalate "\n" (map (\exercise -> "  " ++ exercise) exercises)) ++ "\n") ++
+  "===================="
 
 tutorial :: Tutorial
-tutorial =
-  Sections [
-    ("Lv1 - Calculate numbers",
-     Contents [
-       ("We can do arithmetic operations with `+', '-', '*'.", ["(+ 1 2)", "(* 10 20)"]),
-       ("We can write nested expression as follow.", ["(+ (* 10 20) 2)", "(/ (* 10 20) (+ 10 20))"]),
-       ("We are supporting rational numbers.", ["(+ 2/3 1/5)", "(/ 42 84)"]),
-       ("We are supporting floats, too.", ["(+ 10.2 1.3)", "(* 10.2 1.3)"]),
-       ("you can convert a rational number to a float number with 'rtof'.", ["(rtof 1/5)"]),
-       ("We can handle collections of numbers.\n We construct then with '{}'.", ["{}", "{10}","{1 2 3 4 5}"]),
-       ("With a 'take' function, we can extract a head part of the collection.\nWe can construct a collection with '{}'.", ["(take 0 {1 2 3 4 5})", "(take 3 {1 2 3 4 5})"]),
-       ("We can handle infinite lists.\nFor example, 'nats' is an infinite list that contains all natural numbers.\nGet a collection of natural numbers of any length you like.", ["(take 100 nats)"]),
-       ("With a 'map' function, we can operate each element of the collection at onece.", ["(map (* $ 2) (take 100 nats))", "(take 100 (map (* $ 2) nats))", "(take 100 (map (modulo $ 3) nats))"]),
-       ("We can create a \"partial\" function using '$' as an argument.", ["((+ $ 10) 1)"]),
-       ("With a 'foldl' function, we can gather together all elements of the collection using an operator you like.\nWould you try to get a sum of from 1 to 100?", ["(foldl + 0 {1 2 3 4 5})", "(foldl * 1 {1 2 3 4 5})"]),
-       ("Try to create a sequce of numbers '{1 1/2 1/3 1/4 ... 1/100}'.", []),
-       ("Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.\nPlease remember that you can convert a rational number to a float number with 'rtof'.", ["(rtof 2/3)"]),
-       ("Try to calculate '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2'.", [])
-       ]),
-    ("Lv2 - Basics of functional programming",
-     Contents [
-       ("We can compare numbers using functions that return '#t' or '#f'.\n'#t' means the true.\n#f means the false.\nFunctions that return '#t' or '#f' are called \"predicates\".", ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]),
-       ("With a 'while' function, we can extract all head elements that satisfy the predicate.\n'primes' is a infinites list that contains all prime numbers.", ["(while (lt? $ 100) primes)", "(while (lt? $ 1000) primes)"]),
-       ("With a 'filter' function, we can extract all elements that satisfy the predicate.\n'We extract all prime numbers that are congruent to 1 modulo 4.", ["(take 100 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))", "(take 200 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))"]),
-       ("We use 'lambda' expressions to create functions.\n Here are simple 'lambda' examples.", ["((lambda [$x] (+ x 1)) 10)", "((lambda [$x] (* x x)) 10)", "((lambda [$x $y] (* x y)) 10 20)"]),
-       ("With a 'map2' function, we can combine two lists as follow.", ["(take 100 (map2 * nats nats))", "(take 100 (map2 (lambda [$n $p] [n p]) nats primes))"]),
-       ("We combine numbers using '[]'.\nThese things are called 'tuples'.", ["[1 2]", "[1 2 3]"]),
-       ("Please not that a tuple that consists of only one elment is equal with that element itself.", ["[1]", "[[[1]]]"]),
-       ("Try to create a sequce of tuples '{[1 1] [1 2] [1 3] [1 4] [1 5] [1 6] [1 7] [1 8] [1 9]}'.", []),
-       ("Try to create a collections of sequce of tuples as follow.\n{{[1 1] [1 2] ... [1 9]}\n {[2 1] [2 2] ... [2 9]}\n ...\n {[9 1] [9 2] ... [9 9]}}", []),
-       ("Try to create the multiplication table.\n{{[[1 1 1] [1 2 2] ... [1 9 9]}\n {[2 1 2] [2 2 4] ... [2 9 18]}\n ...\n {[9 1 9] [9 2 18] ... [9 9 81]}}", [])
-       ]),
-    ("Lv3 - Define your own functions",
-     Contents [
-       ("We can bind a value to a variable with a 'define' expression.\nWe can easily get the value we binded to the variable.", ["(define $x 10)", "x"]),
-       ("We can define a function. Let's define a function and test it.", ["(define $f (lambda [$x] (+ x 1)))", "(f 10)", "(define $g (lambda [$x $y] (* x y)))", "(g 10 20)"]),
-       ("We can write a recursive definition. Let's try that.", ["(define $odds {1 @(map (+ $ 2) odds)})", "(take 10 odds)"]),
-       ("Try to define 'evens' referring to 'odds' example above.", []),
-       ("We can define local variables with a 'let' expression.", ["(let {[$x 10] [$y 20]} (+ x y))"]),
-       ("Let's try 'if' expressions.", ["(if #t 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]),
-       ("Using 'define' and 'if', we can write recursive functions as follow.", ["(define $your-take (lambda [$n $xs] (if (eq? n 0) {} {(car xs) @(your-take (- n 1) (cdr xs))})))", "(your-take 10 nats)"]),
-       ("Try to write a 'your-map' function.\nWe may need 'empty?' function inside 'your-map' function.", ["(empty? {})"]),
-       ("We can view all library functions on collections at \"http://www.egison.org/libraries/core/collection.html\".", [])
-       ]),
-    ("Lv4 - Basic of pattern-matching",
-     Contents [
-       ("We can do pattern-matching against multisets.", ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]),
-       ("We can do non-linear pattern-matching.\nTry the following expression with various targets.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x <cons ,x _>> x])"]),
-       ("We can change the way of pattern-matching by changing \"matcher\".\nTry the following expressions.", ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])"]),
-       ("We can do pattern-matching against a collection of collections as follow.", ["(match-all {{1 2 3 4 5} {4 5 1} {6 1 7 4}} (list (multiset integer)) [<cons <cons $n _> <cons <cons ,n _> <cons <cons ,n _> _>>> n])"]),
-       ("A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x ^<cons ,x _>> x])"]),
-       ("An and-pattern matches when the all patterns matches the target.\nIt can be used like an as-pattern.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x (& ^<cons ,x _> $xs)> [x xs]])"]),
-       ("An or-pattern matches when one of the patterns matches the target.", ["(match-all {1 2 1 3} (multiset integer) [<cons $x (| <cons ,x _> ^<cons ,x _>)> x])"]),
-       ("'list' has a special pattern-constructor 'join'.\n'join' divides a collection into two collections.\nTry the following expressions.", ["(match-all {1 2 3 4 5} (list integer) [<join $xs $ys> [xs ys]])"]),
-       ("We can enumerate two combination of numbers as follow.\nTry to enumerate three combination of numbers.", ["(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])"]),
-       ("Did we think how about \"n\" comination of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations.", ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,4] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,5] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 $n] <join _ <cons $a_i ...>> _) [n a]])"]),
-       ("We can view a lot of demonstration of pattern-matching at \"http://www.egison.org/demonstrations/\".", [])
-       ]),
-    ("Lv5 - Pattern-matching against infinite collections",
-     Contents [
-       ("We can write a pattern-matching against infinite lists even if that has infinite results.\nPlease note that Egison really enumurate all pairs of two natural numbers in the following example.", ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>> [m n]]))"]),
-       ("We can enumerate all two combinations of natural numbers as follow.", ["(define $two-combs (match-all nats (list integer) [<join _ (& <cons $x _> <join _ <cons $y _>>)> [x y]]))", "(take 100 two-combs)"]),
-       ("We can enumerate all pythagoras numbers as follow.", ["(define $pyths (map (lambda [$x $y] (+ (* x x) (* y y))) two-combs))", "(take 100 pyths)"]),
-       ("We have an infinite list of prime numers in 'primes'.\nPlease check it with a 'take' function.", ["(take 10 primes)"]),
-       ("We can get twin primes or triplet primes using pattern-matching as follow.", ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) _>>> [n (+ n 2)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 4) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))"]),
-       ("We can enumurate all common elements between 'primes' and 'pyths' as follow.\nCan we find a pattern in these numbers.", ["(match-all [(take 100 pyths) (take 100 primes)] [(list integer) (list integer)] [[<join _ <cons $c _>> <join _ <cons ,c _>>] c])"]),
-       ("Play freely with the sequences of natural numbers.\nWe can view a lot of demonstration of pattern-matching at \"http://www.egison.org/demonstrations/\".", [])
-       ]),
-    ("Lv6 - Writing scripts in Egison",
-     Contents [
-       ("Let's write a famous Hello world program in Egison.\nPlease try the following expression.\nIt is evaluated to the 'io-function'.\nTo execute an io-function, we use 'io' primitive as follow.", ["(print \"Hello, world!\")", "(io (print \"Hello, world!\"))"]),
-       ("We can execute multiple io-functions in sequence as follow.\nThe io-functions is executed from the head.", ["(io (do {[(print \"a\")] [(print \"b\")] [(print \"c\")]} []))", "(io (do {[(write-string \"Type your name: \")] [(flush)] [$name (read-line)] [(print {@\"Hello, \" @name @\"!\"})]} []))"]),
-       ("The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\",\nand execute it in the terminal as\n% egison hello.egi\n", ["(define $main (lambda [$args] (print \"Hello, world!\")))"]),
-       ("", [])
-       ])
---    ("Lv? (preparing) - Pattern-matching against graphs",
---     Contents [
---       ("Sorry, we are preparing this section now.", [])
---       ]),
---    ("Lv? (preparing) - Modularize patterns",
---     Contents [
---       ("Sorry, we are preparing this section now.", [])
---       ]),
---    ("Lv? (preparing) - Define your own matchers",
---     Contents [
---       ("Sorry, we are preparing this section now.", [])
---       ])
-  ]
-
-
---        ("The collection after '@' in a collection is called a subcollection.", ["{1 @{2 3}}", "{1 @{2 3} @{4 @{5}} 6}"]),
---        ("We can destruct collections with 'car' and 'cdr'.", ["(car {1 2 3})", "(cdr {1 2 3})"]),
-        
---        ("We can define an array as follow. We can access the element of the array using '_'.", ["(define $a [| 11 22 33 |])", "a_2"]),
---        ("We can define an hash as follow. We can access the element of the hash using '_' as arrays.", ["(define $h {| [1 11] [2 22] [3 33] |})", "h_2"]),
-
---       ("We can do boolean operations with 'and', 'or', 'not'.", ["(and #t #f)", "(or #t #f)", "(not #t)"]),
+tutorial = Tutorial 
+ [Section "Calculate numbers"
+   [ 
+    Content "We can do arithmetic operations with '+', '-', '*', and '/'."
+     ["(+ 1 2)", "(* 10 20)"]
+     [],
+    Content "We can write nested expressions."
+     ["(+ (* 10 20) 2)", "(/ (* 10 20) (+ 10 20))"]
+     ["Try to calculate '(100 - 1) * (100 + 1)'."],
+    Content "We are supporting rational numbers."
+     ["(+ 2/3 1/5)", "(/ 42 84)"]
+     [],
+    Content "We are supporting floats, too."
+     ["(+ 10.2 1.3)", "(* 10.2 1.3)"]
+     [],
+    Content "you can convert a rational number to a float number with 'rtof'."
+     ["(rtof 1/5)", "(rtof 1/100)"]
+     [],
+    Content "We can handle collections of numbers.\n We construct collections with '{}'."
+     ["{}", "{10}", "{1 2 3 4 5}"]
+     [],
+    Content "With a 'take' function, we can extract a head part of the collection.\nWe can construct a collection with '{}'."
+     ["(take 0 {1 2 3 4 5})", "(take 3 {1 2 3 4 5})"]
+     [],
+    Content "We can handle infinite lists.\nFor example, 'nats' is an infinite list that contains all natural numbers.\nGet a collection of natural numbers of any length you like."
+     ["(take 100 nats)"]
+     ["Get first 1000 numbers from nats."],
+    Content "With a 'map' function, we can operate each element of the collection at onece."
+     ["(take 100 (map (* $ 2) nats))", "(take 100 (map (modulo $ 3) nats))"]
+     [],
+    Content "We can create a \"partial\" function using '$' as an argument."
+     ["((+ $ 10) 1)"]
+     [],
+    Content "With a 'foldl' function, we can gather together all elements of the collection using an operator you like."
+     ["(foldl + 0 {1 2 3 4 5})", "(foldl * 1 {1 2 3 4 5})"]
+     ["Try to get a sum of from 1 to 100?"],
+    Content "Try to create a sequce of numbers '{1 1/2 1/3 1/4 ... 1/100}'."
+     []
+     [],
+    Content "Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.\nPlease remember that you can convert a rational number to a float number with 'rtof'."
+     ["(rtof 2/3)"]
+     [],
+    Content "Try to calculate '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2'."
+     []
+     []
+    ]
+ ]
