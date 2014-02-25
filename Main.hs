@@ -124,13 +124,13 @@ selectSection tutorial@(Tutorial sections) = do
   putStrLn $ show tutorial
   putStrLn $ take 30 $ repeat '='
   putStrLn $ "Choose a section to learn."
-  putStr   $ "(1-" ++ show (length sections) ++ "): "
-  hFlush stdout
-  n <- getNumber
+  n <- getNumber (length sections)
   return $ nth n sections
 
-getNumber :: IO Int
-getNumber = do
+getNumber :: Int -> IO Int
+getNumber n = do
+  putStr   $ "(1-" ++ show n  ++ "): "
+  hFlush stdout
   input <- getLine
   case input of
     ('1':_) -> return 1
@@ -140,55 +140,62 @@ getNumber = do
     ('5':_) -> return 5
     ('6':_) -> return 6
     ('7':_) -> return 7
-    ('8':_) -> return 8
+    ('9':_) -> return 9
     _ -> do
       putStrLn "Invalid input!"
-      getNumber
-
-onAbort :: EgisonError -> IO (Either EgisonError a)
-onAbort e = do
-  let x = show e
-  return $ Left e
+      getNumber n
 
 repl :: Env -> String -> IO ()
 repl env prompt = do
-  home <- getHomeDirectory
-  sections <- selectSection tutorial
-  case sections of
-    Section _ contents -> liftIO $ runInputT (settings home) $ loop contents env
+  section <- selectSection tutorial
+  case section of
+    Section _ cs -> loop env cs
  where
   settings :: MonadIO m => FilePath -> Settings m
-  settings home = do
-    setComplete completeEgison $ defaultSettings { historyFile = Just (home </> ".egison_tutorial_history") }
-  
-  loop :: [Content] -> Env -> InputT IO ()
-  loop [] env = do
+  settings home = setComplete completeEgison $ defaultSettings { historyFile = Just (home </> ".egison_history") }
+    
+  loop :: Env -> [Content] -> IO ()
+  loop env [] = do
     liftIO $ showFinishMessage
     liftIO $ repl env prompt
-  loop contents@(content:rest) env = do
+  loop env (content:contents) = (do 
     liftIO $ putStrLn $ show content
-    _ <- liftIO $ installHandler keyboardSignal (Catch (do {putStr "^C"; hFlush stdout})) Nothing
-    input <- getEgisonExpr prompt
-    tid <- liftIO $ myThreadId
-    _ <- liftIO $ installHandler keyboardSignal (Catch (throwTo tid UserInterruption)) Nothing
+    home <- getHomeDirectory
+    input <- liftIO $ runInputT (settings home) $ getEgisonExprOrNewLine prompt
     case input of
-      Nothing -> return ()
-      Just (Left topExpr) -> do
-        result <- liftIO $ handle onAbort $ evalEgisonTopExpr env topExpr
+      Left Nothing -> do
+        b <- yesOrNo "Do you want to quit?"
+        if b
+          then return ()
+          else loop env (content:contents)
+      Left (Just "") -> do
+        b <- yesOrNo "Do you want to procced next?"
+        if b
+          then loop env contents
+          else loop env (content:contents)
+      Right (Left (topExpr, _)) -> do
+        result <- liftIO $ runEgisonTopExpr env topExpr
         case result of
           Left err -> do
             liftIO $ putStrLn $ show err
-            loop contents env
-          Right env' -> loop contents env'
-      Just (Right expr) -> do
-        result <- liftIO $ handle onAbort $ evalEgisonExpr env expr
+            loop env (content:contents)
+          Right env' -> loop env' (content:contents)
+      Right (Right (expr, _)) -> do
+        result <- liftIO $ runEgisonExpr env expr
         case result of
           Left err -> do
             liftIO $ putStrLn $ show err
-            loop contents env
+            loop env (content:contents)
           Right val -> do
             liftIO $ putStrLn $ show val
-            loop contents env
+            loop env (content:contents))
+    `catch`
+    (\e -> case e of
+             UserInterrupt -> putStrLn "" >> loop env (content:contents)
+             StackOverflow -> putStrLn "Stack over flow!" >> loop env (content:contents)
+             HeapOverflow -> putStrLn "Heap over flow!" >> loop env (content:contents)
+             _ -> putStrLn "error!" >> loop env (content:contents)
+     )
 
 data Tutorial = Tutorial [Section]
 
@@ -273,5 +280,69 @@ tutorial = Tutorial
     Content "Try to calculate '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2'."
      []
      []
+    ],
+  Section "Basics of functional programming"
+   [
+    Content "We can compare numbers using functions that return '#t' or '#f'.\n'#t' means the true.\n#f means the false.\nFunctions that return '#t' or '#f' are called \"predicates\"."
+     ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]
+     [],
+    Content "With a 'while' function, we can extract all head elements that satisfy the predicate.\n'primes' is a infinites list that contains all prime numbers."
+     ["(while (lt? $ 100) primes)", "(while (lt? $ 1000) primes)"]
+     [],
+    Content "With a 'filter' function, we can extract all elements that satisfy the predicate.\n'We extract all prime numbers that are congruent to 1 modulo 4."
+     ["(take 100 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))", "(take 200 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))"]
+     [],
+    Content "We use 'lambda' expressions to create functions.\n Here are simple 'lambda' examples."
+     ["((lambda [$x] (+ x 1)) 10)", "((lambda [$x] (* x x)) 10)", "((lambda [$x $y] (* x y)) 10 20)"]
+     [],
+    Content "With a 'map2' function, we can combine two lists as follow."
+     ["(take 100 (map2 * nats nats))", "(take 100 (map2 (lambda [$n $p] [n p]) nats primes))"]
+     [],
+    Content "We combine numbers using '[]'.\nThese things are called 'tuples'."
+     ["[1 2]", "[1 2 3]"]
+     [],
+    Content "Please not that a tuple that consists of only one elment is equal with that element itself."
+     ["[1]", "[[[1]]]"]
+     [],
+    Content "Try to create a sequce of tuples '{[1 1] [1 2] [1 3] [1 4] [1 5] [1 6] [1 7] [1 8] [1 9]}'."
+     []
+     [],
+    Content "Try to create a collections of sequce of tuples as follow.\n{{[1 1] [1 2] ... [1 9]}\n {[2 1] [2 2] ... [2 9]}\n ...\n {[9 1] [9 2] ... [9 9]}}"
+     []
+     [],
+    Content "Try to create the multiplication table.\n{{[[1 1 1] [1 2 2] ... [1 9 9]}\n {[2 1 2] [2 2 4] ... [2 9 18]}\n ...\n {[9 1 9] [9 2 18] ... [9 9 81]}}}"
+     []
+     []
+    ],
+  Section "Define your own functions"
+   [
+    Content "We can bind a value to a variable with a 'define' expression.\nWe can easily get the value we binded to the variable."
+     ["(define $x 10)", "x"]
+     [],
+    Content "We can define a function. Let's define a function and test it."
+     ["(define $f (lambda [$x] (+ x 1)))", "(f 10)", "(define $g (lambda [$x $y] (* x y)))", "(g 10 20)"]
+     [],
+    Content "We can write a recursive definition. Let's try that."
+     ["(define $odds {1 @(map (+ $ 2) odds)})", "(take 10 odds)"]
+     [],
+    Content "Try to define 'evens' referring to 'odds' example above."
+     []
+     [],
+    Content "We can define local variables with a 'let' expression."
+     ["(let {[$x 10] [$y 20]} (+ x y))"]
+     [],
+    Content "Let's try 'if' expressions."
+     ["(if #t 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]
+     [],
+    Content "Using 'define' and 'if', we can write recursive functions as follow."
+     ["(define $your-take (lambda [$n $xs] (if (eq? n 0) {} {(car xs) @(your-take (- n 1) (cdr xs))})))", "(your-take 10 nats)"]
+     [],
+    Content "Try to write a 'your-map' function.\nWe may need 'empty?' function inside 'your-map' function."
+     ["(empty? {})"]
+     [],
+    Content "We can view all library functions on collections at \"http://www.egison.org/libraries/core/collection.html\"."
+     []
+     []
     ]
+
  ]
