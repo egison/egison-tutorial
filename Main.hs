@@ -149,17 +149,19 @@ repl :: Env -> String -> IO ()
 repl env prompt = do
   section <- selectSection tutorial
   case section of
-    Section _ cs -> loop env cs
+    Section _ cs -> loop env cs True
  where
   settings :: MonadIO m => FilePath -> Settings m
   settings home = setComplete completeEgison $ defaultSettings { historyFile = Just (home </> ".egison_history") }
     
-  loop :: Env -> [Content] -> IO ()
-  loop env [] = do
+  loop :: Env -> [Content] -> Bool -> IO ()
+  loop env [] _ = do
     liftIO $ showFinishMessage
     liftIO $ repl env prompt
-  loop env (content:contents) = (do 
-    liftIO $ putStrLn $ show content
+  loop env (content:contents) b = (do
+    if b
+      then liftIO $ putStrLn $ show content
+      else return ()
     home <- getHomeDirectory
     input <- liftIO $ runInputT (settings home) $ getEgisonExprOrNewLine prompt
     case input of
@@ -167,34 +169,38 @@ repl env prompt = do
         b <- yesOrNo "Do you want to quit?"
         if b
           then return ()
-          else loop env (content:contents)
+          else do
+            b <- yesOrNo "Do you want to procced next?"
+            if b
+              then loop env contents True
+              else loop env (content:contents) False
       Left (Just "") -> do
         b <- yesOrNo "Do you want to procced next?"
         if b
-          then loop env contents
-          else loop env (content:contents)
+          then loop env contents True
+          else loop env (content:contents) False
       Right (Left (topExpr, _)) -> do
         result <- liftIO $ runEgisonTopExpr env topExpr
         case result of
           Left err -> do
             liftIO $ putStrLn $ show err
-            loop env (content:contents)
-          Right env' -> loop env' (content:contents)
+            loop env (content:contents) False
+          Right env' -> loop env' (content:contents) False
       Right (Right (expr, _)) -> do
         result <- liftIO $ runEgisonExpr env expr
         case result of
           Left err -> do
             liftIO $ putStrLn $ show err
-            loop env (content:contents)
+            loop env (content:contents) False
           Right val -> do
             liftIO $ putStrLn $ show val
-            loop env (content:contents))
+            loop env (content:contents) False)
     `catch`
     (\e -> case e of
-             UserInterrupt -> putStrLn "" >> loop env (content:contents)
-             StackOverflow -> putStrLn "Stack over flow!" >> loop env (content:contents)
-             HeapOverflow -> putStrLn "Heap over flow!" >> loop env (content:contents)
-             _ -> putStrLn "error!" >> loop env (content:contents)
+             UserInterrupt -> putStrLn "" >> loop env (content:contents) False
+             StackOverflow -> putStrLn "Stack over flow!" >> loop env (content:contents) False
+             HeapOverflow -> putStrLn "Heap over flow!" >> loop env (content:contents) False
+             _ -> putStrLn "error!" >> loop env (content:contents) False
      )
 
 data Tutorial = Tutorial [Section]
