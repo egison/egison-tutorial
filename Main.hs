@@ -1,23 +1,11 @@
 module Main where
 
 import Prelude hiding (catch)
-import Control.Exception ( SomeException(..),
-                           AsyncException(..),
-                           catch, handle, throw)
-import System.Posix.Signals
-import Control.Concurrent
-
-import Control.Applicative ((<$>), (<*>))
+import Control.Exception ( AsyncException(..), catch )
 import Control.Monad.Error
 
 import Data.Version
 import Data.List
-import Data.ByteString.Lazy (ByteString)
-import Data.ByteString.Lazy.Char8 ()
-import qualified Data.ByteString.Lazy.Char8 as B
-import Text.Parsec
-import Text.Parsec.ByteString.Lazy
-import Text.Regex.Posix
 
 import System.IO
 import System.Environment
@@ -26,6 +14,7 @@ import System.FilePath ((</>))
 import System.Console.Haskeline hiding (handle, catch, throwTo)
 import System.Console.GetOpt
 import System.Exit (ExitCode (..), exitWith, exitFailure)
+
 import Language.Egison
 import Language.Egison.Util
 import qualified Paths_egison_tutorial as P
