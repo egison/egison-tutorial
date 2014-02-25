@@ -234,10 +234,10 @@ showContent (Content msg examples exercises) =
   msg ++ "\n" ++
   (case examples of
      [] -> ""
-     _ -> "examples:\n" ++ (intercalate "\n" (map (\example -> "  " ++ example) examples)) ++ "\n") ++
+     _ -> "\nExamples:\n" ++ (intercalate "\n" (map (\example -> "  " ++ example) examples)) ++ "\n") ++
   (case exercises of
      [] -> ""
-     _ -> "exercises:\n" ++ (intercalate "\n" (map (\exercise -> "  " ++ exercise) exercises)) ++ "\n") ++
+     _ -> "\nExercises:\n" ++ (intercalate "\n" (map (\exercise -> "  " ++ exercise) exercises)) ++ "\n") ++
   "===================="
 
 tutorial :: Tutorial
@@ -259,7 +259,7 @@ tutorial = Tutorial
     Content "you can convert a rational number to a float number with 'rtof'."
      ["(rtof 1/5)", "(rtof 1/100)"]
      [],
-    Content "We can handle collections of numbers.\n We construct collections with '{}'."
+    Content "We can handle collections of numbers.\nWe construct collections with '{}'."
      ["{}", "{10}", "{1 2 3 4 5}"]
      [],
     Content "With a 'take' function, we can extract a head part of the collection.\nWe can construct a collection with '{}'."
@@ -280,7 +280,7 @@ tutorial = Tutorial
     Content "Try to create a sequce of numbers '{1 1/2 1/3 1/4 ... 1/100}'."
      []
      [],
-    Content "Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.\nPlease remember that you can convert a rational number to a float number with 'rtof'."
+    Content "Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.\nRemember that you can convert a rational number to a float number with 'rtof'."
      ["(rtof 2/3)"]
      [],
     Content "Try to calculate '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2'."
@@ -298,7 +298,7 @@ tutorial = Tutorial
     Content "With a 'filter' function, we can extract all elements that satisfy the predicate.\n'We extract all prime numbers that are congruent to 1 modulo 4."
      ["(take 100 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))", "(take 200 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))"]
      [],
-    Content "We use 'lambda' expressions to create functions.\n Here are simple 'lambda' examples."
+    Content "We use 'lambda' expressions to create functions.\nHere are simple 'lambda' examples."
      ["((lambda [$x] (+ x 1)) 10)", "((lambda [$x] (* x x)) 10)", "((lambda [$x $y] (* x y)) 10 20)"]
      [],
     Content "With a 'map2' function, we can combine two lists as follow."
@@ -307,7 +307,7 @@ tutorial = Tutorial
     Content "We combine numbers using '[]'.\nThese things are called 'tuples'."
      ["[1 2]", "[1 2 3]"]
      [],
-    Content "Please not that a tuple that consists of only one elment is equal with that element itself."
+    Content "Note that a tuple that consists of only one elment is equal with that element itself."
      ["[1]", "[[[1]]]"]
      [],
     Content "Try to create a sequce of tuples '{[1 1] [1 2] [1 3] [1 4] [1 5] [1 6] [1 7] [1 8] [1 9]}'."
@@ -350,76 +350,76 @@ tutorial = Tutorial
      []
      []
     ],
- Section "Basic of pattern-matching"
-  [
-   Content "We can do pattern-matching against multisets."
-    ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]
-    [],
-   Content "We can do non-linear pattern-matching.\nTry the following expression with various targets."
-    ["(match-all {1 2 1 3} (multiset integer) [<cons $x <cons ,x _>> x])"]
-    [],
-   Content "We can change the way of pattern-matching by changing \"matcher\".\nTry the following expressions."
-    ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])"]
-    [],
-   Content "We can do pattern-matching against a collection of collections as follow."
-    ["(match-all {{1 2 3 4 5} {4 5 1} {6 1 7 4}} (list (multiset integer)) [<cons <cons $n _> <cons <cons ,n _> <cons <cons ,n _> _>>> n])"]
-    [],
-   Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
-    ["(match-all {1 2 1 3} (multiset integer) [<cons $x ^<cons ,x _>> x])"]
-    [],
-   Content "An and-pattern matches when the all patterns matches the target.\nIt can be used like an as-pattern."
-    ["(match-all {1 2 1 3} (multiset integer) [<cons $x (& ^<cons ,x _> $xs)> [x xs]])"]
-    [],
-   Content "An or-pattern matches when one of the patterns matches the target."
-    ["(match-all {1 2 1 3} (multiset integer) [<cons $x (| <cons ,x _> ^<cons ,x _>)> x])"]
-    [],
-   Content "'list' has a special pattern-constructor 'join'.\n'join' divides a collection into two collections.\nTry the following expressions."
-    ["(match-all {1 2 3 4 5} (list integer) [<join $xs $ys> [xs ys]])"]
-    [],
-   Content "We can enumerate two combination of numbers as follow.\nTry to enumerate three combination of numbers."
-    ["(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])"]
-    [],
-   Content "Did we think how about \"n\" comination of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
-    ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,4] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,5] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 $n] <join _ <cons $a_i ...>> _) [n a]])"]
-    [],
-   Content "We can view a lot of demonstration of pattern-matching at \"http://www.egison.org/demonstrations/\"."
-    []
-    [],
-   ],
- Section "Pattern-matching against infinite collections"
-  [
-   Content "We can write a pattern-matching against infinite lists even if that has infinite results.\nPlease note that Egison really enumurate all pairs of two natural numbers in the following example."
-    ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>> [m n]]))"]
-    [],
-   Content "We can enumerate all two combinations of natural numbers as follow."
-    ["(define $two-combs (match-all nats (list integer) [<join _ (& <cons $x _> <join _ <cons $y _>>)> [x y]]))", "(take 100 two-combs)"]
-    [],
-   Content "We can enumerate all pythagoras numbers as follow."
-    ["(define $pyths (map (lambda [$x $y] (+ (* x x) (* y y))) two-combs))", "(take 100 pyths)"]
-    [],
-   Content "We have an infinite list of prime numers in 'primes'.\nPlease check it with a 'take' function."
-    ["(take 10 primes)"]
-    [],
-   Content "We can get twin primes or triplet primes using pattern-matching as follow."
-    ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) _>>> [n (+ n 2)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 4) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))"]
-    [],
-   Content "We can enumurate all common elements between 'primes' and 'pyths' as follow.\nCan we find a pattern in these numbers."
-    ["(match-all [(take 100 pyths) (take 100 primes)] [(list integer) (list integer)] [[<join _ <cons $c _>> <join _ <cons ,c _>>] c])"]
-    [],
-   Content "Play freely with the sequences of natural numbers.\nWe can view a lot of demonstration of pattern-matching at \"http://www.egison.org/demonstrations/\"."
-    []
-    [],
-   ],
- Section "Writing scripts in Egison"
-  [
-   Content "Let's write a famous Hello world program in Egison.\nPlease try the following expression.\nIt is evaluated to the 'io-function'.\nTo execute an io-function, we use 'io' primitive as follow."
-    ["(print \"Hello, world!\")", "(io (print \"Hello, world!\"))"]
-    [],
-   Content "We can execute multiple io-functions in sequence as follow.\nThe io-functions is executed from the head."
-    ["(io (do {[(print \"a\")] [(print \"b\")] [(print \"c\")]} []))", "(io (do {[(write-string \"Type your name: \")] [(flush)] [$name (read-line)] [(print {@\"Hello, \" @name @\"!\"})]} []))"]
-    [],
-   Content "The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\",\nand execute it in the terminal as\n% egison hello.egi\n"
-    ["(define $main (lambda [$args] (print \"Hello, world!\")))"]
-    [],
-   ]
- ]
+  Section "Basic of pattern-matching"
+   [
+    Content "We can do pattern-matching against multisets."
+     ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]
+     [],
+    Content "We can do non-linear pattern-matching.\nTry the following expression with various targets."
+     ["(match-all {1 2 1 3} (multiset integer) [<cons $x <cons ,x _>> x])"]
+     [],
+    Content "We can change the way of pattern-matching by changing \"matcher\".\nTry the following expressions."
+     ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])"]
+     [],
+    Content "We can do pattern-matching against a collection of collections as follow."
+     ["(match-all {{1 2 3 4 5} {4 5 1} {6 1 7 4}} (list (multiset integer)) [<cons <cons $n _> <cons <cons ,n _> <cons <cons ,n _> _>>> n])"]
+     [],
+    Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
+     ["(match-all {1 2 1 3} (multiset integer) [<cons $x ^<cons ,x _>> x])"]
+     [],
+    Content "An and-pattern matches when the all patterns matches the target.\nIt can be used like an as-pattern."
+     ["(match-all {1 2 1 3} (multiset integer) [<cons $x (& ^<cons ,x _> $xs)> [x xs]])"]
+     [],
+    Content "An or-pattern matches when one of the patterns matches the target."
+     ["(match-all {1 2 1 3} (multiset integer) [<cons $x (| <cons ,x _> ^<cons ,x _>)> x])"]
+     [],
+    Content "'list' has a special pattern-constructor 'join'.\n'join' divides a collection into two collections.\nTry the following expressions."
+     ["(match-all {1 2 3 4 5} (list integer) [<join $xs $ys> [xs ys]])"]
+     [],
+    Content "We can enumerate two combination of numbers as follow."
+     ["(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])"]
+     ["Try to enumerate three combination of numbers."],
+    Content "Did we think how about \"n\" comination of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
+     ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,4] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 ,5] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 $n] <join _ <cons $a_i ...>> _) [n a]])"]
+     [],
+    Content "We can view a lot of demonstration of pattern-matching at \"http://www.egison.org/demonstrations/\"."
+     []
+     []
+    ],
+  Section "Pattern-matching against infinite collections"
+   [
+    Content "We can write a pattern-matching against infinite lists even if that has infinite results.\nNote that Egison really enumurate all pairs of two natural numbers in the following example."
+     ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>> [m n]]))"]
+     [],
+    Content "We can enumerate all two combinations of natural numbers as follow."
+     ["(define $two-combs (match-all nats (list integer) [<join _ (& <cons $x _> <join _ <cons $y _>>)> [x y]]))", "(take 100 two-combs)"]
+     [],
+    Content "We can enumerate all pythagoras numbers as follow."
+     ["(define $pyths (map (lambda [$x $y] (+ (* x x) (* y y))) two-combs))", "(take 100 pyths)"]
+     [],
+    Content "We have an infinite list of prime numers in 'primes'.\nCheck it with a 'take' function."
+     ["(take 10 primes)"]
+     [],
+    Content "We can get twin primes or triplet primes using pattern-matching as follow."
+     ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) _>>> [n (+ n 2)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 4) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))"]
+     [],
+    Content "We can enumurate all common elements between 'primes' and 'pyths' as follow.\nCan we find a pattern in these numbers."
+     ["(match-all [(take 100 pyths) (take 100 primes)] [(list integer) (list integer)] [[<join _ <cons $c _>> <join _ <cons ,c _>>] c])"]
+     [],
+    Content "Play freely with the sequences of natural numbers.\nWe can view a lot of demonstration of pattern-matching at \"http://www.egison.org/demonstrations/\"."
+     []
+     []
+    ],
+  Section "Writing scripts in Egison"
+   [
+    Content "Let's write a famous Hello world program in Egison.\nTry the following expression.\nIt is evaluated to the 'io-function'.\nTo execute an io-function, we use 'io' primitive as follow."
+     ["(print \"Hello, world!\")", "(io (print \"Hello, world!\"))"]
+     [],
+    Content "We can execute multiple io-functions in sequence as follow.\nThe io-functions is executed from the head."
+     ["(io (do {[(print \"a\")] [(print \"b\")] [(print \"c\")]} []))", "(io (do {[(write-string \"Type your name: \")] [(flush)] [$name (read-line)] [(print {@\"Hello, \" @name @\"!\"})]} []))"]
+     [],
+    Content "The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\",\nand execute it in the terminal as\n% egison hello.egi\n"
+     ["(define $main (lambda [$args] (print \"Hello, world!\")))"]
+     []
+    ]
+  ]
