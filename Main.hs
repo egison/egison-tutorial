@@ -388,16 +388,13 @@ tutorial = Tutorial
      [],
     Content "We have an infinite list of prime numers in 'primes'.\nCheck it with a 'take' function."
      ["(take 10 primes)"]
-     [],
+     ["What is the 100th prime number?"],
     Content "We can get twin primes or triplet primes using pattern-matching as follow."
      ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) _>>> [n (+ n 2)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 4) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))"]
-     [],
-    Content "We can enumurate all common elements between 'primes' and 'pyths' as follow.\nCan we find a pattern in these numbers."
-     ["(match-all [(take 100 pyths) (take 100 primes)] [(list integer) (list integer)] [[<join _ <cons $c _>> <join _ <cons ,c _>>] c])"]
-     [],
-    Content "Play freely with the sequences of natural numbers.\nWe can view a lot of demonstration of pattern-matching at \"http://www.egison.org/demonstrations/\"."
-     []
-     []
+     ["What are the 100th twin primes?"],
+    Content "We prepared the 'p-f' function that prime-factorize a number.\nWe can play freely with numbers a lot of time."
+     ["(take 100 (map p-f nats))"]
+     ["Are there three successive natural numbers all of whose prime-factorization contain three primes? For example, '27=3*3*3' and '28=2*2*7' but '29=29', so the sequence '27', '28' and '29' is not that."]
     ],
   Section "Writing scripts in Egison"
    [
