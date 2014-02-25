@@ -413,12 +413,12 @@ tutorial = Tutorial
   Section "Writing scripts in Egison"
    [
     Content "Let's write a famous Hello world program in Egison.\nTry the following expression.\nIt is evaluated to the 'io-function'.\nTo execute an io-function, we use 'io' primitive as follow."
-     ["(print \"Hello, world!\")", "(io (print \"Hello, world!\"))"]
+     ["(io (print \"Hello, world!\"))"]
      [],
     Content "We can execute multiple io-functions in sequence as follow.\nThe io-functions is executed from the head."
      ["(io (do {[(print \"a\")] [(print \"b\")] [(print \"c\")]} []))", "(io (do {[(write-string \"Type your name: \")] [(flush)] [$name (read-line)] [(print {@\"Hello, \" @name @\"!\"})]} []))"]
      [],
-    Content "The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\",\nand execute it in the terminal as\n% egison hello.egi\n"
+    Content "The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\", and execute it in the terminal as '% egison hello.egi'\n"
      ["(define $main (lambda [$args] (print \"Hello, world!\")))"]
      []
     ]
