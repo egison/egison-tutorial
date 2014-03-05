@@ -1,5 +1,5 @@
 Name:                egison-tutorial
-Version:             3.2.6
+Version:             3.2.7
 Synopsis:            A tutorial program for the programming language Egison
 Description:         A tutorial program for the programming language Egison.
                      Egison is the programming langugage that realized non-linear pattern-matching with unfree data types.
@@ -16,7 +16,7 @@ Cabal-version:       >=1.8
 
 source-repository head
   type: git
-  location: https://github.com/egisatoshi/egison-tutorial.git
+  location: https://github.com/egison/egison-tutorial.git
 
 Executable egison-tutorial
   Main-is:             Main.hs
