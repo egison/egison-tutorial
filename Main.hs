@@ -80,6 +80,9 @@ showBanner = do
   putStrLn $ "Egison Tutorial for Version " ++ showVersion P.version ++ " (C) 2013-2014 Satoshi Egi"
   putStrLn $ "http://www.egison.org"
   putStrLn $ "Welcome to Egison Tutorial!"
+  putStrLn $ "** Info **"
+  putStrLn $ "We can use a \'Tab\' key to complete keywords on the interpreter."
+  putStrLn $ "If we type a \'Tab\' key after a closed parenthesis, the next closed parenthesis will be completed."
 
 showFinishMessage :: IO ()
 showFinishMessage = do
@@ -311,7 +314,7 @@ tutorial = Tutorial
     ],
   Section "Define your own functions"
    [
-    Content "We can bind a value to a variable with a 'define' expression.\nWe can easily get the value we binded to the variable."
+    Content "We can bind a value to a variable with a 'define' expression.\nWe can easily get the value we bound to the variable."
      ["(define $x 10)", "x"]
      [],
     Content "We can define a function. Let's define a function and test it."
