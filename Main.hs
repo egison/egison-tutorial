@@ -236,8 +236,8 @@ tutorial :: Tutorial
 tutorial = Tutorial 
  [Section "Calculate numbers"
    [ 
-    Content "We can do arithmetic operations with '+', '-', '*', and '/'."
-     ["(+ 1 2)", "(* 10 20)"]
+    Content "We can do arithmetic operations with '+', '-', '*', '/', and 'power'."
+     ["(+ 1 2)", "(- 30 15)", "(* 10 20)", "(/ 20 5)", "(power 2 10)"]
      [],
     Content "We can write nested expressions."
      ["(+ (* 10 20) 2)", "(/ (* 10 20) (+ 10 20))"]
@@ -248,7 +248,7 @@ tutorial = Tutorial
     Content "We are supporting floats, too."
      ["(+ 10.2 1.3)", "(* 10.2 1.3)"]
      [],
-    Content "you can convert a rational number to a float number with 'rtof'."
+    Content "We can convert a rational number to a float number with 'rtof'."
      ["(rtof 1/5)", "(rtof 1/100)"]
      [],
     Content "We can handle collections of numbers.\nWe construct collections with '{}'."
@@ -258,13 +258,13 @@ tutorial = Tutorial
      ["(take 0 {1 2 3 4 5})", "(take 3 {1 2 3 4 5})"]
      [],
     Content "We can handle infinite lists.\nFor example, 'nats' is an infinite list that contains all natural numbers.\nGet a collection of natural numbers of any length you like."
-     ["(take 100 nats)"]
+     ["(take 10 nats)", "(take 100 nats)"]
      ["Get first 1000 numbers from nats."],
     Content "With a 'map' function, we can operate each element of the collection at onece."
      ["(take 100 (map (* $ 2) nats))", "(take 100 (map (modulo $ 3) nats))"]
      [],
     Content "We can create a \"partial\" function using '$' as an argument."
-     ["((+ $ 10) 1)"]
+     ["((+ $ 10) 1)", "((/ 10 $) 2)"]
      [],
     Content "With a 'foldl' function, we can gather together all elements of the collection using an operator you like."
      ["(foldl + 0 {1 2 3 4 5})", "(foldl * 1 {1 2 3 4 5})"]
