@@ -80,9 +80,10 @@ showBanner = do
   putStrLn $ "Egison Tutorial for Version " ++ showVersion P.version ++ " (C) 2013-2014 Satoshi Egi"
   putStrLn $ "http://www.egison.org"
   putStrLn $ "Welcome to Egison Tutorial!"
-  putStrLn $ "** Info **"
+  putStrLn $ "** Information **"
   putStrLn $ "We can use a \'Tab\' key to complete keywords on the interpreter."
   putStrLn $ "If we type a \'Tab\' key after a closed parenthesis, the next closed parenthesis will be completed."
+  putStrLn $ "*****************"
 
 showFinishMessage :: IO ()
 showFinishMessage = do
@@ -171,22 +172,13 @@ repl env prompt = do
         if b
           then loop env contents True
           else loop env (content:contents) False
-      Right (Left (topExpr, _)) -> do
+      Right (topExpr, _) -> do
         result <- liftIO $ runEgisonTopExpr env topExpr
         case result of
           Left err -> do
             liftIO $ putStrLn $ show err
             loop env (content:contents) False
-          Right env' -> loop env' (content:contents) False
-      Right (Right (expr, _)) -> do
-        result <- liftIO $ runEgisonExpr env expr
-        case result of
-          Left err -> do
-            liftIO $ putStrLn $ show err
-            loop env (content:contents) False
-          Right val -> do
-            liftIO $ putStrLn $ show val
-            loop env (content:contents) False)
+          Right env' -> loop env' (content:contents) False)
     `catch`
     (\e -> case e of
              UserInterrupt -> putStrLn "" >> loop env (content:contents) False
@@ -236,8 +228,8 @@ tutorial :: Tutorial
 tutorial = Tutorial 
  [Section "Calculate numbers"
    [ 
-    Content "We can do arithmetic operations with '+', '-', '*', '/', and 'power'."
-     ["(+ 1 2)", "(- 30 15)", "(* 10 20)", "(/ 20 5)", "(power 2 10)"]
+    Content "We can do arithmetic operations with '+', '-', '*', '/', 'modulo' and 'power'."
+     ["(+ 1 2)", "(- 30 15)", "(* 10 20)", "(/ 20 5)", "(modulo 17 4)", "(power 2 10)"]
      [],
     Content "We can write nested expressions."
      ["(+ (* 10 20) 2)", "(/ (* 10 20) (+ 10 20))"]
@@ -254,25 +246,25 @@ tutorial = Tutorial
     Content "We can handle collections of numbers.\nWe construct collections with '{}'."
      ["{}", "{10}", "{1 2 3 4 5}"]
      [],
-    Content "With a 'take' function, we can extract a head part of the collection.\nWe can construct a collection with '{}'."
+    Content "With the 'take' function, we can extract a head part of the collection.\nWe can construct a collection with '{}'."
      ["(take 0 {1 2 3 4 5})", "(take 3 {1 2 3 4 5})"]
      [],
     Content "We can handle infinite lists.\nFor example, 'nats' is an infinite list that contains all natural numbers.\nGet a collection of natural numbers of any length you like."
      ["(take 10 nats)", "(take 100 nats)"]
      ["Get first 1000 numbers from nats."],
-    Content "With a 'map' function, we can operate each element of the collection at onece."
+    Content "We can create a \"partial\" function using '$' as an argument."
+     ["((* $ 2) 10)", "((modulo $ 3) 10)"]
+     [],
+    Content "With the 'map' function, we can operate each element of the collection at onece."
      ["(take 100 (map (* $ 2) nats))", "(take 100 (map (modulo $ 3) nats))"]
      [],
-    Content "We can create a \"partial\" function using '$' as an argument."
-     ["((+ $ 10) 1)", "((/ 10 $) 2)"]
-     [],
-    Content "With a 'foldl' function, we can gather together all elements of the collection using an operator you like."
+    Content "With the 'foldl' function, we can gather together all elements of the collection using an operator you like."
      ["(foldl + 0 {1 2 3 4 5})", "(foldl * 1 {1 2 3 4 5})"]
-     ["Try to get a sum of from 1 to 100?"],
+     ["Try to get the sum of from 1 to 100?"],
     Content "Try to create a sequce of numbers '{1 1/2 1/3 1/4 ... 1/100}'."
      []
      [],
-    Content "Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.\nRemember that you can convert a rational number to a float number with 'rtof'."
+    Content "Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.\nRemember that we can convert a rational number to a float number with 'rtof'."
      ["(rtof 2/3)"]
      [],
     Content "Try to calculate '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2'."
@@ -284,17 +276,14 @@ tutorial = Tutorial
     Content "We can compare numbers using functions that return '#t' or '#f'.\n'#t' means the true.\n#f means the false.\nFunctions that return '#t' or '#f' are called \"predicates\"."
      ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]
      [],
-    Content "With a 'while' function, we can extract all head elements that satisfy the predicate.\n'primes' is a infinites list that contains all prime numbers."
+    Content "With the 'while' function, we can extract all head elements that satisfy the predicate.\n'primes' is a infinites list that contains all prime numbers."
      ["(while (lt? $ 100) primes)", "(while (lt? $ 1000) primes)"]
      [],
-    Content "With a 'filter' function, we can extract all elements that satisfy the predicate.\n'We extract all prime numbers that are congruent to 1 modulo 4."
+    Content "We use 'lambda' expressions to create functions and predicates.\nHere are simple 'lambda' examples."
+     ["((lambda [$x] (+ x 1)) 10)", "((lambda [$x $y] (* x y)) 10 20)", "((lambda [$p] (eq? (modulo p 4) 1)) 29)"]
+     [],
+    Content "With the 'filter' function, we can extract all elements that satisfy the predicate.\n'We extract all prime numbers that are congruent to 1 modulo 4."
      ["(take 100 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))", "(take 200 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))"]
-     [],
-    Content "We use 'lambda' expressions to create functions.\nHere are simple 'lambda' examples."
-     ["((lambda [$x] (+ x 1)) 10)", "((lambda [$x] (* x x)) 10)", "((lambda [$x $y] (* x y)) 10 20)"]
-     [],
-    Content "With a 'map2' function, we can combine two lists as follow."
-     ["(take 100 (map2 * nats nats))", "(take 100 (map2 (lambda [$n $p] [n p]) nats primes))"]
      [],
     Content "We combine numbers using '[]'.\nThese things are called 'tuples'."
      ["[1 2]", "[1 2 3]"]
@@ -302,41 +291,32 @@ tutorial = Tutorial
     Content "Note that a tuple that consists of only one elment is equal with that element itself."
      ["[1]", "[[[1]]]"]
      [],
-    Content "Try to create a sequce of tuples '{[1 1] [1 2] [1 3] [1 4] [1 5] [1 6] [1 7] [1 8] [1 9]}'."
-     []
+    Content "With the 'zip' function, we can combine two lists as follow."
+     ["(take 100 (zip * nats nats))", "(take 100 (zip * primes primes))"]
+     ["Try to create the prime table that is like '{[1 2] [2 3] [3 5] [4 7] [5 11] ...}'"],
+    Content "We can bind a value to a variable with a 'define' expression.\nWe can easily get the value we bound to the variable."
+     ["(define $x 10)", "x", "(define $ps (zip nats primes))", "(take 100 ps)"]
      [],
-    Content "Try to create a collections of sequce of tuples as follow.\n{{[1 1] [1 2] ... [1 9]}\n {[2 1] [2 2] ... [2 9]}\n ...\n {[9 1] [9 2] ... [9 9]}}"
-     []
-     [],
-    Content "Try to create the multiplication table.\n{{[[1 1 1] [1 2 2] ... [1 9 9]}\n {[2 1 2] [2 2 4] ... [2 9 18]}\n ...\n {[9 1 9] [9 2 18] ... [9 9 81]}}}"
+    Content "We can write a recursive definition. Let's try that."
+     ["(define $odds {1 @(map (+ $ 2) odds)})", "(take 10 odds)"]
+     ["Try to define 'evens' that is like {2 4 6 8 10 ...}."],
+    Content "Try to create a fibonacci sequence that is like '{1 1 2 3 5 8 13 21 34 55 ...}'.\n\nHint:\n  At first try to create the following sequence.\n  {[1 1] [1 2] [2 3] [3 5] [5 8] [8 13] [13 21] [21 34] ...}"
      []
      []
     ],
   Section "Define your own functions"
    [
-    Content "We can bind a value to a variable with a 'define' expression.\nWe can easily get the value we bound to the variable."
-     ["(define $x 10)", "x"]
-     [],
     Content "We can define a function. Let's define a function and test it."
      ["(define $f (lambda [$x] (+ x 1)))", "(f 10)", "(define $g (lambda [$x $y] (* x y)))", "(g 10 20)"]
      [],
-    Content "We can write a recursive definition. Let's try that."
-     ["(define $odds {1 @(map (+ $ 2) odds)})", "(take 10 odds)"]
-     [],
-    Content "Try to define 'evens' referring to 'odds' example above."
-     []
-     [],
-    Content "We can define local variables with a 'let' expression."
-     ["(let {[$x 10] [$y 20]} (+ x y))"]
-     [],
     Content "Let's try 'if' expressions."
-     ["(if #t 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]
+     ["(if #t 1 2)", "(if #f 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]
      [],
     Content "Using 'define' and 'if', we can write recursive functions as follow."
      ["(define $your-take (lambda [$n $xs] (if (eq? n 0) {} {(car xs) @(your-take (- n 1) (cdr xs))})))", "(your-take 10 nats)"]
-     [],
+     ["Try to write a 'your-while' function."],
     Content "Try to write a 'your-map' function.\nWe may need 'empty?' function inside 'your-map' function."
-     ["(empty? {})"]
+     ["(empty? {})", "(empty? {1 2 3})"]
      [],
     Content "We can view all library functions on collections at \"http://www.egison.org/libraries/core/collection.html\"."
      []
@@ -347,11 +327,11 @@ tutorial = Tutorial
     Content "We can do pattern-matching against multisets."
      ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]
      [],
-    Content "We can do non-linear pattern-matching.\nTry the following expression with various targets."
-     ["(match-all {1 2 1 3} (multiset integer) [<cons $x <cons ,x _>> x])"]
-     [],
     Content "We can change the way of pattern-matching by changing \"matcher\".\nTry the following expressions."
      ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])"]
+     [],
+    Content "We can do non-linear pattern-matching.\nTry the following expression."
+     ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x _>> x])"]
      [],
     Content "We can do pattern-matching against a collection of collections as follow."
      ["(match-all {{1 2 3 4 5} {4 5 1} {6 1 7 4}} (list (multiset integer)) [<cons <cons $n _> <cons <cons ,n _> <cons <cons ,n _> _>>> n])"]
@@ -365,8 +345,8 @@ tutorial = Tutorial
     Content "An or-pattern matches when one of the patterns matches the target."
      ["(match-all {1 2 1 3} (multiset integer) [<cons $x (| <cons ,x _> ^<cons ,x _>)> x])"]
      [],
-    Content "'list' has a special pattern-constructor 'join'.\n'join' divides a collection into two collections.\nTry the following expressions."
-     ["(match-all {1 2 3 4 5} (list integer) [<join $xs $ys> [xs ys]])"]
+    Content "Try another pattern-constructor 'join'.\n'join' divides a collection into two collections."
+     ["(match-all {1 2 3 4 5} (list integer) [<join $xs $ys> [xs ys]])", "(match-all {1 2 3 4 5} (multiset integer) [<join $xs $ys> [xs ys]])", "(match-all {1 2 3 4 5} (set integer) [<join $xs $ys> [xs ys]])"]
      [],
     Content "We can enumerate two combination of numbers as follow."
      ["(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])"]
@@ -386,18 +366,15 @@ tutorial = Tutorial
     Content "We can enumerate all two combinations of natural numbers as follow."
      ["(define $two-combs (match-all nats (list integer) [<join _ (& <cons $x _> <join _ <cons $y _>>)> [x y]]))", "(take 100 two-combs)"]
      [],
-    Content "We can enumerate all pythagoras numbers as follow."
-     ["(define $pyths (map (lambda [$x $y] (+ (* x x) (* y y))) two-combs))", "(take 100 pyths)"]
-     [],
-    Content "We have an infinite list of prime numers in 'primes'.\nCheck it with a 'take' function."
-     ["(take 10 primes)"]
-     ["What is the 100th prime number?"],
     Content "We can get twin primes or triplet primes using pattern-matching as follow."
      ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) _>>> [n (+ n 2)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 4) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))"]
      ["What are the 100th twin primes?"],
     Content "We prepared the 'p-f' function that prime-factorize a number.\nWe can play freely with numbers a lot of time."
      ["(take 100 (map p-f nats))"]
-     ["Are there three successive natural numbers all of whose prime-factorization contain three primes? For example, '27=3*3*3' and '28=2*2*7' but '29=29', so the sequence '27', '28' and '29' is not that."]
+     ["Are there three successive natural numbers all of whose prime-factorization contain three primes? For example, '27=3*3*3' and '28=2*2*7' but '29=29', so the sequence '27', '28' and '29' is not that."],
+    Content "We've prepared the Egison cheat sheet here. It covers everything in this tutorial. Please check it!.\n\"http://www.egison.org/cheatsheet.html\"."
+     []
+     []
     ],
   Section "Writing scripts in Egison"
    [
@@ -409,6 +386,9 @@ tutorial = Tutorial
      [],
     Content "The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\", and execute it in the terminal as '% egison hello.egi'\n"
      ["(define $main (lambda [$args] (print \"Hello, world!\")))"]
+     [],
+    Content "That's all. Thank you for finishing our tutorail! Did you enjoy it?\nIf you got into Egison programming. I'd like you to try Rosseta Code.\nThere are a lot of interesting problems.\n\n  http://rosettacode.org/wiki/Category:Egison"
+     []
      []
     ]
   ]
