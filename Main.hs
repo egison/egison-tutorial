@@ -161,10 +161,10 @@ getNumber n = do
     ('2':_) -> return 2
     ('3':_) -> return 3
     ('4':_) -> return 4
-    ('5':_) -> return 5
-    ('6':_) -> return 6
-    ('7':_) -> return 7
-    ('9':_) -> return 9
+--    ('5':_) -> return 5
+--    ('6':_) -> return 6
+--    ('7':_) -> return 7
+--    ('9':_) -> return 9
     _ -> do
       putStrLn "Invalid input!"
       getNumber n
@@ -304,6 +304,9 @@ tutorial = Tutorial
     ],
   Section "Basics of functional programming"
    [
+    Content "We can define a function. Let's define a function and test it."
+     ["(define $f (lambda [$x] (+ x 1)))", "(f 10)", "(define $g (lambda [$x $y] (* x y)))", "(g 10 20)", "(define $sum (lambda [$n] (foldl + 0 (take n nats))))", "(sum 10)"]
+     ["Try to define a 'fact' function."],
     Content "We can compare numbers using functions that return '#t' or '#f'.\n'#t' means the true.\n#f means the false.\nFunctions that return '#t' or '#f' are called \"predicates\"."
      ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]
      [],
@@ -315,7 +318,7 @@ tutorial = Tutorial
      [],
     Content "With the 'filter' function, we can extract all elements that satisfy the predicate.\n'We extract all prime numbers that are congruent to 1 modulo 4."
      ["(take 100 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))", "(take 200 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))"]
-     [],
+     ["Try to enumerate the first 100 primes that are congruent to 3 modulo 4."],
     Content "We combine numbers using '[]'.\nThese things are called 'tuples'."
      ["[1 2]", "[1 2 3]"]
      [],
@@ -335,25 +338,7 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Define your own functions"
-   [
-    Content "We can define a function. Let's define a function and test it."
-     ["(define $f (lambda [$x] (+ x 1)))", "(f 10)", "(define $g (lambda [$x $y] (* x y)))", "(g 10 20)"]
-     [],
-    Content "Let's try 'if' expressions."
-     ["(if #t 1 2)", "(if #f 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]
-     [],
-    Content "Using 'define' and 'if', we can write recursive functions as follow."
-     ["(define $your-take (lambda [$n $xs] (if (eq? n 0) {} {(car xs) @(your-take (- n 1) (cdr xs))})))", "(your-take 10 nats)"]
-     ["Try to write a 'your-while' function."],
-    Content "Try to write a 'your-map' function.\nWe may need 'empty?' function inside 'your-map' function."
-     ["(empty? {})", "(empty? {1 2 3})"]
-     [],
-    Content "We can view all library functions on collections at \"http://www.egison.org/libraries/core/collection.html\"."
-     []
-     []
-    ],
-  Section "Basic of pattern-matching"
+  Section "Basics of pattern-matching"
    [
     Content "We can do pattern-matching against multisets."
      ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]
@@ -407,6 +392,18 @@ tutorial = Tutorial
      []
      []
     ]
+  ]
+--  Section "Define your own functions"
+--   [
+--    Content "Let's try 'if' expressions."
+--     ["(if #t 1 2)", "(if #f 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]
+--     [],
+--    Content "Using 'define' and 'if', we can write recursive functions as follow."
+--     ["(define $your-take (lambda [$n $xs] (if (eq? n 0) {} {(car xs) @(your-take (- n 1) (cdr xs))})))", "(your-take 10 nats)"]
+--     ["Try to write a 'your-while' function."],
+--    Content "Try to write a 'your-map' function.\nWe may need 'empty?' function inside 'your-map' function."
+--     ["(empty? {})", "(empty? {1 2 3})"]
+--     []
 --  Section "Writing scripts in Egison"
 --   [
 --    Content "Let's write a famous Hello world program in Egison.\nTry the following expression.\nIt is evaluated to the 'io-function'.\nTo execute an io-function, we use 'io' primitive as follow."
@@ -422,4 +419,4 @@ tutorial = Tutorial
 --     []
 --     []
 --    ]
-  ]
+--  ]
