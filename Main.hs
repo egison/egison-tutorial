@@ -24,6 +24,7 @@ main = do args <- getArgs
           let (actions, nonOpts, _) = getOpt Permute options args
           let opts = foldl (flip id) defaultOptions actions
           case opts of
+            Options {optShowSections = True} -> putStrLn $ show tutorial
             Options {optSection = Just sn, optSubSection = Just ssn} -> do
               let sn' = (read sn) :: Int
               let ssn' = (read ssn) :: Int
@@ -49,6 +50,7 @@ data Options = Options {
     optShowVersion :: Bool,
     optShowHelp :: Bool,
     optPrompt :: String,
+    optShowSections :: Bool,
     optSection :: Maybe String,
     optSubSection :: Maybe String
     }
@@ -58,6 +60,7 @@ defaultOptions = Options {
     optShowVersion = False,
     optShowHelp = False,
     optPrompt = "> ",
+    optShowSections = False,
     optSection = Nothing,
     optSubSection = Nothing
     }
@@ -74,6 +77,9 @@ options = [
     (ReqArg (\prompt opts -> opts {optPrompt = prompt})
             "String")
     "set prompt string",
+  Option ['l'] ["list"]
+    (NoArg (\opts -> opts {optShowSections = True}))
+    "show section list",
   Option ['s'] ["section"]
     (ReqArg (\sn opts -> opts {optSection = Just sn})
             "String")
@@ -400,20 +406,20 @@ tutorial = Tutorial
     Content "We've prepared the Egison cheat sheet here. It covers everything in this tutorial. Please check it!.\n\"http://www.egison.org/cheatsheet.html\"."
      []
      []
-    ],
-  Section "Writing scripts in Egison"
-   [
-    Content "Let's write a famous Hello world program in Egison.\nTry the following expression.\nIt is evaluated to the 'io-function'.\nTo execute an io-function, we use 'io' primitive as follow."
-     ["(io (print \"Hello, world!\"))"]
-     [],
-    Content "We can execute multiple io-functions in sequence as follow.\nThe io-functions is executed from the head."
-     ["(io (do {[(print \"a\")] [(print \"b\")] [(print \"c\")]} []))", "(io (do {[(write-string \"Type your name: \")] [(flush)] [$name (read-line)] [(print {@\"Hello, \" @name @\"!\"})]} []))"]
-     [],
-    Content "The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\", and execute it in the terminal as '% egison hello.egi'\n"
-     ["(define $main (lambda [$args] (print \"Hello, world!\")))"]
-     [],
-    Content "That's all. Thank you for finishing our tutorail! Did you enjoy it?\nIf you got into Egison programming. I'd like you to try Rosseta Code.\nThere are a lot of interesting problems.\n\n  http://rosettacode.org/wiki/Category:Egison"
-     []
-     []
     ]
+--  Section "Writing scripts in Egison"
+--   [
+--    Content "Let's write a famous Hello world program in Egison.\nTry the following expression.\nIt is evaluated to the 'io-function'.\nTo execute an io-function, we use 'io' primitive as follow."
+--     ["(io (print \"Hello, world!\"))"]
+--     [],
+--    Content "We can execute multiple io-functions in sequence as follow.\nThe io-functions is executed from the head."
+--     ["(io (do {[(print \"a\")] [(print \"b\")] [(print \"c\")]} []))", "(io (do {[(write-string \"Type your name: \")] [(flush)] [$name (read-line)] [(print {@\"Hello, \" @name @\"!\"})]} []))"]
+--     [],
+--    Content "The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\", and execute it in the terminal as '% egison hello.egi'\n"
+--     ["(define $main (lambda [$args] (print \"Hello, world!\")))"]
+--     [],
+--    Content "That's all. Thank you for finishing our tutorail! Did you enjoy it?\nIf you got into Egison programming. I'd like you to try Rosseta Code.\nThere are a lot of interesting problems.\n\n  http://rosettacode.org/wiki/Category:Egison"
+--     []
+--     []
+--    ]
   ]
