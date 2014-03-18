@@ -24,6 +24,19 @@ main = do args <- getArgs
           let (actions, nonOpts, _) = getOpt Permute options args
           let opts = foldl (flip id) defaultOptions actions
           case opts of
+            Options {optSection = Just sn, optSubSection = Just ssn} -> do
+              let sn' = (read sn) :: Int
+              let ssn' = (read ssn) :: Int
+              let ret = case tutorial of
+                          Tutorial ss ->
+                            if 0 < sn' && sn' <= length ss 
+                              then case nth sn' ss of
+                                     Section _ cs ->
+                                       if 0 < ssn' && ssn' <= length cs 
+                                         then showContent $ nth ssn' cs
+                                         else "error: content out of range"
+                              else "error: section out of range"
+              putStrLn ret
             Options {optShowHelp = True} -> printHelp
             Options {optShowVersion = True} -> printVersionNumber
             Options {optPrompt = prompt} -> do
@@ -35,14 +48,18 @@ main = do args <- getArgs
 data Options = Options {
     optShowVersion :: Bool,
     optShowHelp :: Bool,
-    optPrompt :: String
+    optPrompt :: String,
+    optSection :: Maybe String,
+    optSubSection :: Maybe String
     }
 
 defaultOptions :: Options
 defaultOptions = Options {
     optShowVersion = False,
     optShowHelp = False,
-    optPrompt = "> "
+    optPrompt = "> ",
+    optSection = Nothing,
+    optSubSection = Nothing
     }
 
 options :: [OptDescr (Options -> Options)]
@@ -56,7 +73,15 @@ options = [
   Option ['p'] ["prompt"]
     (ReqArg (\prompt opts -> opts {optPrompt = prompt})
             "String")
-    "set prompt string"
+    "set prompt string",
+  Option ['s'] ["section"]
+    (ReqArg (\sn opts -> opts {optSection = Just sn})
+            "String")
+    "set section number",
+  Option ['c'] ["subsection"]
+    (ReqArg (\ssn opts -> opts {optSubSection = Just ssn})
+            "String")
+    "set subsection number"
   ]
 
 printHelp :: IO ()
