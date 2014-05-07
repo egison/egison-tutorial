@@ -326,7 +326,7 @@ tutorial = Tutorial
      ["[1]", "[[[1]]]"]
      [],
     Content "With the 'zip' function, we can combine two lists as follow."
-     ["(take 100 (zip * nats nats))", "(take 100 (zip * primes primes))"]
+     ["(take 100 (zip nats nats))", "(take 100 (zip primes primes))"]
      ["Try to create the prime table that is like '{[1 2] [2 3] [3 5] [4 7] [5 11] ...}'"],
     Content "We can bind a value to a variable with a 'define' expression.\nWe can easily get the value we bound to the variable."
      ["(define $x 10)", "x", "(define $ps (zip nats primes))", "(take 100 ps)"]
