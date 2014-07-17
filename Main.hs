@@ -285,13 +285,13 @@ tutorial = Tutorial
     Content "We can create a \"partial\" function using '$' as an argument."
      ["((* $ 2) 10)", "((modulo $ 3) 10)"]
      [],
-    Content "With the 'map' function, we can operate each element of the collection at onece."
+    Content "With the 'map' function, we can operate each element of the collection at once."
      ["(take 100 (map (* $ 2) nats))", "(take 100 (map (modulo $ 3) nats))"]
      [],
     Content "With the 'foldl' function, we can gather together all elements of the collection using an operator you like."
      ["(foldl + 0 {1 2 3 4 5})", "(foldl * 1 {1 2 3 4 5})"]
      ["Try to get the sum of from 1 to 100?"],
-    Content "Try to create a sequce of numbers '{1 1/2 1/3 1/4 ... 1/100}'."
+    Content "Try to create a sequence of numbers '{1 1/2 1/3 1/4 ... 1/100}'."
      []
      [],
     Content "Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.\nRemember that we can convert a rational number to a float number with 'rtof'."
@@ -318,7 +318,7 @@ tutorial = Tutorial
     Content "We can compare numbers using functions that return '#t' or '#f'.\n'#t' means the true.\n'#f' means the false.\nFunctions that return '#t' or '#f' are called \"predicates\"."
      ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]
      [],
-    Content "With the 'while' function, we can extract all head elements that satisfy the predicate.\n'primes' is a infinites list that contains all prime numbers."
+    Content "With the 'while' function, we can extract all head elements that satisfy the predicate.\n'primes' is a infinite list that contains all prime numbers."
      ["(while (lt? $ 100) primes)", "(while (lt? $ 1000) primes)"]
      [],
     Content "With the 'filter' function, we can extract all elements that satisfy the predicate.\n'We extract all prime numbers that are congruent to 1 modulo 4."
@@ -327,7 +327,7 @@ tutorial = Tutorial
     Content "We combine numbers using '[]'.\nThese things are called 'tuples'."
      ["[1 2]", "[1 2 3]"]
      [],
-    Content "Note that a tuple that consists of only one elment is equal with that element itself."
+    Content "Note that a tuple that consists of only one element is equal with that element itself."
      ["[1]", "[[[1]]]"]
      [],
     Content "With the 'zip' function, we can combine two lists as follow."
@@ -360,7 +360,7 @@ tutorial = Tutorial
     Content "We can express various things using 'cons' and 'join'.\nThe most of functions in the collection library of Egison is written using pattern-matching!\nFor example, the following code enumerates two combination of numbers."
      ["(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])"]
      ["Try to enumerate three combination of numbers."],
-    Content "Did we think how about \"n\" comination of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
+    Content "Did we think how about \"n\" combination of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
      ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 3] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])"]
      [],
     Content "This is the end of this section.\nThank you for enjoying our tutorial!\nPlease check the online demonstrations on our website, too.\nhttp://www.egison.org/demonstrations/"
@@ -369,7 +369,7 @@ tutorial = Tutorial
     ],
   Section "Pattern-matching against infinite collections"
    [
-    Content "We can write a pattern-matching against infinite lists even if that has infinite results.\nNote that Egison really enumurate all pairs of two natural numbers in the following example."
+    Content "We can write a pattern-matching against infinite lists even if that has infinite results.\nNote that Egison really enumerates all pairs of two natural numbers in the following example."
      ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>> [m n]]))"]
      [],
     Content "We can enumerate all two combinations of natural numbers as follow."
