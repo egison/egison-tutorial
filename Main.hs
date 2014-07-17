@@ -306,8 +306,14 @@ tutorial = Tutorial
     ],
   Section "Basics of functional programming"
    [
-    Content "We can define a function. Let's define a function and test it."
-     ["(define $f (lambda [$x] (+ x 1)))", "(f 10)", "(define $g (lambda [$x $y] (* x y)))", "(g 10 20)", "(define $sum (lambda [$n] (foldl + 0 (take n nats))))", "(sum 10)"]
+    Content "We can bind a value to a variable with the 'define' expression.\nWe can easily get the value we bound to the variable."
+     ["(define $x 10)", "x", "(define $y (+ 1 x))", "y"]
+     [],
+    Content "We support recursive definitions. It enables us to define infinite lists easily."
+     ["(define $ones {1 @ones})", "(take 100 ones)", "(define $nats {1 @(map (+ $ 1) nats)})", "(take 100 nats)", "(define $odds {1 @(map (+ $ 2) odds)})", "(take 100 odds)"]
+     ["Try to define the infinite list of even numbers that is like {2 4 6 8 10 ...}."],
+    Content "We can create a function with the 'lambda' expression. Let's define functions and test them."
+     ["(define $increment (lambda [$x] (+ x 1)))", "(increment 10)", "(define $multiply (lambda [$x $y] (* x y)))", "(multiply 10 20)", "(define $sum (lambda [$n] (foldl + 0 (take n nats))))", "(sum 10)"]
      ["Try to define a 'fact' function."],
     Content "We can compare numbers using functions that return '#t' or '#f'.\n'#t' means the true.\n'#f' means the false.\nFunctions that return '#t' or '#f' are called \"predicates\"."
      ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]
@@ -315,11 +321,8 @@ tutorial = Tutorial
     Content "With the 'while' function, we can extract all head elements that satisfy the predicate.\n'primes' is a infinites list that contains all prime numbers."
      ["(while (lt? $ 100) primes)", "(while (lt? $ 1000) primes)"]
      [],
-    Content "We use 'lambda' expressions to create functions and predicates.\nHere are simple 'lambda' examples."
-     ["((lambda [$x] (+ x 1)) 10)", "((lambda [$x $y] (* x y)) 10 20)", "((lambda [$p] (eq? (modulo p 4) 1)) 29)"]
-     [],
     Content "With the 'filter' function, we can extract all elements that satisfy the predicate.\n'We extract all prime numbers that are congruent to 1 modulo 4."
-     ["(take 100 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))", "(take 200 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))"]
+     ["(take 100 (filter even? nats))", "(take 100 (filter prime? nats))", "(take 100 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))"]
      ["Try to enumerate the first 100 primes that are congruent to 3 modulo 4."],
     Content "We combine numbers using '[]'.\nThese things are called 'tuples'."
      ["[1 2]", "[1 2 3]"]
@@ -329,13 +332,7 @@ tutorial = Tutorial
      [],
     Content "With the 'zip' function, we can combine two lists as follow."
      ["(take 100 (zip nats nats))", "(take 100 (zip primes primes))"]
-     ["Try to create the prime table that is like '{[1 2] [2 3] [3 5] [4 7] [5 11] ...}'"],
-    Content "We can bind a value to a variable with a 'define' expression.\nWe can easily get the value we bound to the variable."
-     ["(define $x 10)", "x", "(define $ps (zip nats primes))", "(take 100 ps)"]
-     [],
-    Content "We can write a recursive definition. Let's try that."
-     ["(define $odds {1 @(map (+ $ 2) odds)})", "(take 10 odds)"]
-     ["Try to define 'evens' that is like {2 4 6 8 10 ...}."],
+     ["Try to generate the prime table that is like '{[1 2] [2 3] [3 5] [4 7] [5 11] ...}'"],
     Content "Try to create a fibonacci sequence that is like '{1 1 2 3 5 8 13 21 34 55 ...}'.\n\nHint:\n  At first try to create the following sequence.\n  {[1 1] [1 2] [2 3] [3 5] [5 8] [8 13] [13 21] [21 34] ...}"
      []
      [],
@@ -348,34 +345,25 @@ tutorial = Tutorial
     Content "We can do pattern-matching against multisets."
      ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]
      [],
-    Content "We can change the way of pattern-matching by changing \"matcher\".\nTry the following expressions."
+    Content "We can change the way of pattern-matching by changing the \"matcher\".\nTry the following expressions."
      ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])"]
      [],
     Content "We can do non-linear pattern-matching.\nTry the following expression."
      ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])"]
      [],
-    Content "We can do pattern-matching against a collection of collections as follow."
-     ["(match-all {{1 2 3 4 5} {4 5 1} {6 1 7 4}} (list (multiset integer)) [<cons <cons $n _> <cons <cons ,n _> <cons <cons ,n _> _>>> n])"]
-     [],
     Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
      ["(match-all {1 2 1 3} (multiset integer) [<cons $x ^<cons ,x _>> x])"]
-     [],
-    Content "An and-pattern matches when the all patterns matches the target.\nIt can be used like an as-pattern."
-     ["(match-all {1 2 1 3} (multiset integer) [<cons $x (& ^<cons ,x _> $xs)> [x xs]])"]
-     [],
-    Content "An or-pattern matches when one of the patterns matches the target."
-     ["(match-all {1 2 1 3} (multiset integer) [<cons $x (| <cons ,x _> ^<cons ,x _>)> x])"]
      [],
     Content "Try another pattern-constructor 'join'.\n'join' divides a collection into two collections."
      ["(match-all {1 2 3 4 5} (list integer) [<join $xs $ys> [xs ys]])", "(match-all {1 2 3 4 5} (multiset integer) [<join $xs $ys> [xs ys]])", "(match-all {1 2 3 4 5} (set integer) [<join $xs $ys> [xs ys]])"]
      [],
-    Content "We can enumerate two combination of numbers as follow."
+    Content "We can express various things using 'cons' and 'join'.\nThe most of functions in the collection library of Egison is written using pattern-matching!\nFor example, the following code enumerates two combination of numbers."
      ["(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])"]
      ["Try to enumerate three combination of numbers."],
     Content "Did we think how about \"n\" comination of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
-     ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 5] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 $n] <join _ <cons $a_i ...>> _) [n a]])"]
+     ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 3] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])"]
      [],
-    Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
+    Content "This is the end of this section.\nThank you for enjoying our tutorial!\nPlease check the online demonstrations on our website, too.\nhttp://www.egison.org/demonstrations/"
      []
      []
     ],
@@ -387,12 +375,12 @@ tutorial = Tutorial
     Content "We can enumerate all two combinations of natural numbers as follow."
      ["(define $two-combs (match-all nats (list integer) [<join _ (& <cons $x _> <join _ <cons $y _>>)> [x y]]))", "(take 100 two-combs)"]
      [],
-    Content "We can get twin primes or triplet primes using pattern-matching as follow."
-     ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) _>>> [n (+ n 2)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 4) <cons ,(+ n 6) _>>>> [n (+ n 2) (+ n 6)]]))"]
+    Content "We can get twin primes and prime triplets using pattern-matching as follow."
+     ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) _>>> [n (+ n 2)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons (& $m (| ,(+ n 2) ,(+ n 4))) <cons ,(+ n 6) _>>>> [n m (+ n 6)]]))"]
      ["What are the 100th twin primes?"],
-    Content "We prepared the 'p-f' function that prime-factorize a number.\nWe can play freely with numbers a lot of time."
+    Content "We've prepared the 'p-f' function that prime-factorize a number.\nWe can play freely with numbers."
      ["(take 100 (map p-f nats))"]
-     ["Are there three successive natural numbers all of whose prime-factorization contain three primes? For example, '27=3*3*3' and '28=2*2*7' but '29=29', so the sequence '27', '28' and '29' is not that."],
+     ["Try to find three successive natural numbers all of whose prime-factorization contain three primes? For example, '27=3*3*3' and '28=2*2*7' but '29=29', so the sequence '27', '28' and '29' is not that."],
     Content "This is the end of our tutorial.\nThank you for enjoying our tutorial!"
      []
      []
