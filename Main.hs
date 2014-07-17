@@ -108,8 +108,7 @@ printVersionNumber = do
 
 showBanner :: IO ()
 showBanner = do
-  putStrLn $ "Egison Tutorial for Version " ++ showVersion P.version ++ " (C) 2013-2014 Satoshi Egi"
-  putStrLn $ "http://www.egison.org"
+  putStrLn $ "Egison Tutorial Version " ++ showVersion P.version ++ " (C) 2013-2014 Satoshi Egi"
   putStrLn $ "Welcome to Egison Tutorial!"
   putStrLn $ "** Information **"
   putStrLn $ "We can use a \'Tab\' key to complete keywords on the interpreter."
@@ -180,7 +179,7 @@ repl env prompt = do
     
   loop :: Env -> [Content] -> Bool -> IO ()
   loop env [] _ = do
-    liftIO $ showFinishMessage
+--    liftIO $ showFinishMessage
     liftIO $ repl env prompt
   loop env (content:contents) b = (do
     if b
@@ -298,7 +297,10 @@ tutorial = Tutorial
     Content "Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.\nRemember that we can convert a rational number to a float number with 'rtof'."
      ["(rtof 2/3)"]
      [],
-    Content "Try to calculate '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2'."
+    Content "Try to calculate '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2'.\nIn fact, '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...' converges to '(/ (power pi 2) 6)'.\nPlease observe that."
+     []
+     [],
+    Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
      []
      []
     ],
@@ -336,6 +338,9 @@ tutorial = Tutorial
      ["Try to define 'evens' that is like {2 4 6 8 10 ...}."],
     Content "Try to create a fibonacci sequence that is like '{1 1 2 3 5 8 13 21 34 55 ...}'.\n\nHint:\n  At first try to create the following sequence.\n  {[1 1] [1 2] [2 3] [3 5] [5 8] [8 13] [13 21] [21 34] ...}"
      []
+     [],
+    Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
+     []
      []
     ],
   Section "Basics of pattern-matching"
@@ -347,7 +352,7 @@ tutorial = Tutorial
      ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])"]
      [],
     Content "We can do non-linear pattern-matching.\nTry the following expression."
-     ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x _>> x])"]
+     ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])"]
      [],
     Content "We can do pattern-matching against a collection of collections as follow."
      ["(match-all {{1 2 3 4 5} {4 5 1} {6 1 7 4}} (list (multiset integer)) [<cons <cons $n _> <cons <cons ,n _> <cons <cons ,n _> _>>> n])"]
@@ -370,7 +375,7 @@ tutorial = Tutorial
     Content "Did we think how about \"n\" comination of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
      ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 5] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 $n] <join _ <cons $a_i ...>> _) [n a]])"]
      [],
-    Content "We can view a lot of demonstration of pattern-matching at \"http://www.egison.org/demonstrations/\"."
+    Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
      []
      []
     ],
@@ -388,7 +393,7 @@ tutorial = Tutorial
     Content "We prepared the 'p-f' function that prime-factorize a number.\nWe can play freely with numbers a lot of time."
      ["(take 100 (map p-f nats))"]
      ["Are there three successive natural numbers all of whose prime-factorization contain three primes? For example, '27=3*3*3' and '28=2*2*7' but '29=29', so the sequence '27', '28' and '29' is not that."],
-    Content "We've prepared the Egison cheat sheet here. It covers everything in this tutorial. Please check it!.\n\"http://www.egison.org/cheatsheet.html\"."
+    Content "This is the end of our tutorial.\nThank you for enjoying our tutorial!"
      []
      []
     ]

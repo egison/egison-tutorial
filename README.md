@@ -1,32 +1,34 @@
 ## The Egison Totorial
 
 This is a repository for a tutorial program of [Egison](https://github.com/egisatoshi/egison).
-Egison is the pattern-matching oriented pure functional programming langauge.
-Egison is the world's first programming language that can pattern-match against sets.
+Egison is the pattern-matching oriented, purely functional programming langauge.
+With Egison, we can represent pattern-matching with unfree data types intuitively, especially for collection data, such as lists, multisets, sets.
+Please try Egison with this tutorial program!
 
-For more information, visit [Egison public site](http://www.egison.org).
+For more information, please visit [Egison website](http://www.egison.org).
 
-If you get interested in Egison, please mail to [Satoshi Egi](http://www.egison.org/~egi/) or tweet to [@__Egi](https://twitter.com/__Egi) or [@Egison_Lang](https://twitter.com/Egison_Lang).
+If you get interested in Egison, please contact [Satoshi Egi](http://www.egison.org/~egi/) or tweet to [@__Egi](https://twitter.com/__Egi) or [@Egison_Lang](https://twitter.com/Egison_Lang).
 
 ### How to compile and run
 
 ```
 % cabal install
 % egison-tutorial
-Egison Tutorial for Version X.X.X (C) 2013-2014 Satoshi Egi
-http://www.egison.org
+Egison Tutorial Version X.X.X (C) 2013-2014 Satoshi Egi
 Welcome to Egison Tutorial!
+** Information **
+We can use a 'Tab' key to complete keywords on the interpreter.
+If we type a 'Tab' key after a closed parenthesis, the next closed parenthesis will be completed.
+*****************
 ==============================
 List of sections in the tutorial
 1: Calculate numbers
 2: Basics of functional programming
-3: Define your own functions
-4: Basic of pattern-matching
-5: Pattern-matching against infinite collections
-6: Writing scripts in Egison
+3: Basics of pattern-matching
+4: Pattern-matching against infinite collections
 ==============================
 Choose a section to learn.
-(1-6): 5
+(1-4): 4
 ====================
 We can write a pattern-matching against infinite lists even if that has infinite results.
 Note that Egison really enumurate all pairs of two natural numbers in the following example.
