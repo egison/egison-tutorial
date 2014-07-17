@@ -375,9 +375,12 @@ tutorial = Tutorial
     Content "We can enumerate all two combinations of natural numbers as follow."
      ["(define $two-combs (match-all nats (list integer) [<join _ (& <cons $x _> <join _ <cons $y _>>)> [x y]]))", "(take 100 two-combs)"]
      [],
-    Content "We can get twin primes and prime triplets using pattern-matching as follow."
-     ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) _>>> [n (+ n 2)]]))", "(take 10 (match-all primes (list integer) [<join _ <cons $n <cons (& $m (| ,(+ n 2) ,(+ n 4))) <cons ,(+ n 6) _>>>> [n m (+ n 6)]]))"]
+    Content "We can enumerate twin primes using pattern-matching as follow."
+     ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) _>>> [n (+ n 2)]]))"]
      ["What are the 100th twin primes?"],
+    Content "We support \"and-patterns\" and \"or-patterns\".\nWe can enumerate prime triplets using them as follow."
+     ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons (& $m (| ,(+ n 2) ,(+ n 4))) <cons ,(+ n 6) _>>>> [n m (+ n 6)]]))"]
+     ["What are the 10th prime triplets?"],
     Content "We've prepared the 'p-f' function that prime-factorize a number.\nWe can play freely with numbers."
      ["(take 100 (map p-f nats))"]
      ["Try to find three successive natural numbers all of whose prime-factorization contain three primes? For example, '27=3*3*3' and '28=2*2*7' but '29=29', so the sequence '27', '28' and '29' is not that."],
