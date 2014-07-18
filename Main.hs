@@ -279,7 +279,7 @@ tutorial = Tutorial
     Content "With the 'take' function, we can extract a head part of the collection.\nWe can construct a collection with '{}'."
      ["(take 0 {1 2 3 4 5})", "(take 3 {1 2 3 4 5})"]
      [],
-    Content "We can handle infinite lists.\nFor example, 'nats' and 'primes' are an infinite list that contains all natural numbers and prime numbers respectively.\nExtract a head part of any length from them."
+    Content "We can handle infinite lists.\nFor example, 'nats' and 'primes' are an infinite list that contains all natural numbers and prime numbers respectively.\nTry to extract a head part from them."
      ["(take 10 nats)", "(take 30 nats)", "(take 10 primes)", "(take 30 primes)"]
      ["What is the 100th prime number."],
     Content "We can create a \"partial\" function using '$' as an argument."
