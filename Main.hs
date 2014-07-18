@@ -30,10 +30,10 @@ main = do args <- getArgs
               let ssn' = (read ssn) :: Int
               let ret = case tutorial of
                           Tutorial ss ->
-                            if 0 < sn' && sn' <= length ss 
+                            if 0 < sn' && sn' <= length ss
                               then case nth sn' ss of
                                      Section _ cs ->
-                                       if 0 < ssn' && ssn' <= length cs 
+                                       if 0 < ssn' && ssn' <= length cs
                                          then showContent $ nth ssn' cs
                                          else "error: content out of range"
                               else "error: section out of range"
@@ -103,7 +103,7 @@ printHelp = do
 
 printVersionNumber :: IO ()
 printVersionNumber = do
-  putStrLn $ showVersion P.version 
+  putStrLn $ showVersion P.version
   exitWith ExitSuccess
 
 showBanner :: IO ()
@@ -143,7 +143,7 @@ nth n = head . drop (n - 1)
 selectSection :: Tutorial -> IO Section
 selectSection tutorial@(Tutorial sections) = do
   putStrLn $ take 30 $ repeat '='
-  putStrLn $ "List of sections in the tutorial"
+  putStrLn $ "List of sections in the tutorial."
   putStrLn $ show tutorial
   putStrLn $ take 30 $ repeat '='
   putStrLn $ "Choose a section to learn."
@@ -176,7 +176,7 @@ repl env prompt = do
  where
   settings :: MonadIO m => FilePath -> Settings m
   settings home = setComplete completeEgison $ defaultSettings { historyFile = Just (home </> ".egison_history") }
-    
+
   loop :: Env -> [Content] -> Bool -> IO ()
   loop env [] _ = do
 --    liftIO $ showFinishMessage
@@ -255,9 +255,9 @@ showContent (Content msg examples exercises) =
   "===================="
 
 tutorial :: Tutorial
-tutorial = Tutorial 
- [Section "Calculate numbers"
-   [ 
+tutorial = Tutorial
+ [Section "Calculate numbers                             (10 minutes)"
+   [
     Content "We can do arithmetic operations with '+', '-', '*', '/', 'modulo' and 'power'."
      ["(+ 1 2)", "(- 30 15)", "(* 10 20)", "(/ 20 5)", "(modulo 17 4)", "(power 2 10)"]
      [],
@@ -279,9 +279,9 @@ tutorial = Tutorial
     Content "With the 'take' function, we can extract a head part of the collection.\nWe can construct a collection with '{}'."
      ["(take 0 {1 2 3 4 5})", "(take 3 {1 2 3 4 5})"]
      [],
-    Content "We can handle infinite lists.\nFor example, 'nats' is an infinite list that contains all natural numbers.\nGet a collection of natural numbers of any length you like."
-     ["(take 10 nats)", "(take 100 nats)"]
-     ["Get first 1000 numbers from nats."],
+    Content "We can handle infinite lists.\nFor example, 'nats' and 'primes' are an infinite list that contains all natural numbers and prime numbers respectively.\nExtract a head part of any length from them."
+     ["(take 10 nats)", "(take 30 nats)", "(take 10 primes)", "(take 30 primes)"]
+     ["What is the 100th prime number."],
     Content "We can create a \"partial\" function using '$' as an argument."
      ["((* $ 2) 10)", "((modulo $ 3) 10)"]
      [],
@@ -304,7 +304,7 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Basics of functional programming"
+  Section "Basics of functional programming              (10 minutes)"
    [
     Content "We can bind a value to a variable with the 'define' expression.\nWe can easily get the value we bound to the variable."
      ["(define $x 10)", "x", "(define $y (+ 1 x))", "y"]
@@ -321,7 +321,7 @@ tutorial = Tutorial
     Content "With the 'while' function, we can extract all head elements that satisfy the predicate.\n'primes' is a infinite list that contains all prime numbers."
      ["(while (lt? $ 100) primes)", "(while (lt? $ 1000) primes)"]
      [],
-    Content "With the 'filter' function, we can extract all elements that satisfy the predicate.\n'We extract all prime numbers that are congruent to 1 modulo 4."
+    Content "With the 'filter' function, we can extract all elements that satisfy the predicate."
      ["(take 100 (filter even? nats))", "(take 100 (filter prime? nats))", "(take 100 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))"]
      ["Try to enumerate the first 100 primes that are congruent to 3 modulo 4."],
     Content "We combine numbers using '[]'.\nThese things are called 'tuples'."
@@ -340,7 +340,7 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Basics of pattern-matching"
+  Section "Basics of pattern-matching                    (10 minutes)"
    [
     Content "We can do pattern-matching against multisets."
      ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]
@@ -367,24 +367,21 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Pattern-matching against infinite collections"
+  Section "Pattern-matching against infinite collections (5 minutes)"
    [
     Content "We can write a pattern-matching against infinite lists even if that has infinite results.\nNote that Egison really enumerates all pairs of two natural numbers in the following example."
      ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>> [m n]]))"]
      [],
-    Content "We can enumerate all two combinations of natural numbers as follow."
-     ["(define $two-combs (match-all nats (list integer) [<join _ (& <cons $x _> <join _ <cons $y _>>)> [x y]]))", "(take 100 two-combs)"]
-     [],
     Content "We can enumerate twin primes using pattern-matching as follow."
-     ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons ,(+ n 2) _>>> [n (+ n 2)]]))"]
+     ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons ,(+ p 2) _>>> [p (+ p 2)]]))"]
      ["What are the 100th twin primes?"],
     Content "We support \"and-patterns\" and \"or-patterns\".\nWe can enumerate prime triplets using them as follow."
-     ["(take 10 (match-all primes (list integer) [<join _ <cons $n <cons (& $m (| ,(+ n 2) ,(+ n 4))) <cons ,(+ n 6) _>>>> [n m (+ n 6)]]))"]
-     ["What are the 10th prime triplets?"],
-    Content "We've prepared the 'p-f' function that prime-factorize a number.\nWe can play freely with numbers."
-     ["(take 100 (map p-f nats))"]
-     ["Try to find three successive natural numbers all of whose prime-factorization contain three primes? For example, '27=3*3*3' and '28=2*2*7' but '29=29', so the sequence '27', '28' and '29' is not that."],
-    Content "This is the end of our tutorial.\nThank you for enjoying our tutorial!"
+     ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
+     ["What are the 20th prime triplets?"],
+    Content "Try to enumerate the first 10 prime pairs the difference between them is 10 like '{[3 13] [7 17] [13 23] [19 29] [31 41] ...}'."
+     []
+     [],
+    Content "This is the end of our tutorial.\nThank you for enjoying our tutorial!\nPlease check our paper, manual and code for further reference!"
      []
      []
     ]
