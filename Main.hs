@@ -306,13 +306,13 @@ tutorial = Tutorial
     ],
   Section "Basics of functional programming              (10 minutes)"
    [
-    Content "We can bind a value to a variable with the 'define' expression.\nWe can easily get the value we bound to the variable."
+    Content "We can bind a value to a variable with a 'define' expression.\nWe can easily get the value we bound to a variable."
      ["(define $x 10)", "x", "(define $y (+ 1 x))", "y"]
      [],
-    Content "We support recursive definitions. It enables us to define infinite lists easily."
+    Content "We support recursive definitions. It enables us to define an collection with infinite elements."
      ["(define $ones {1 @ones})", "(take 100 ones)", "(define $nats {1 @(map (+ $ 1) nats)})", "(take 100 nats)", "(define $odds {1 @(map (+ $ 2) odds)})", "(take 100 odds)"]
      ["Try to define the infinite list of even numbers that is like {2 4 6 8 10 ...}."],
-    Content "We can create a function with the 'lambda' expression. Let's define functions and test them."
+    Content "We can create a function with a 'lambda' expression. Let's define functions and test them."
      ["(define $increment (lambda [$x] (+ x 1)))", "(increment 10)", "(define $multiply (lambda [$x $y] (* x y)))", "(multiply 10 20)", "(define $sum (lambda [$n] (foldl + 0 (take n nats))))", "(sum 10)"]
      ["Try to define a 'fact' function."],
     Content "We can compare numbers using functions that return '#t' or '#f'.\n'#t' means the true.\n'#f' means the false.\nFunctions that return '#t' or '#f' are called \"predicates\"."
@@ -342,13 +342,13 @@ tutorial = Tutorial
     ],
   Section "Basics of pattern-matching                    (10 minutes)"
    [
-    Content "We can do pattern-matching against multisets."
+    Content "We can pattern-match against multisets."
      ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]
      [],
     Content "We can change the way of pattern-matching by changing the \"matcher\".\nTry the following expressions."
      ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])"]
      [],
-    Content "We can do non-linear pattern-matching.\nTry the following expression."
+    Content "We can write non-linear patterns.\nTry the following expression."
      ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])"]
      [],
     Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
@@ -369,7 +369,7 @@ tutorial = Tutorial
     ],
   Section "Pattern-matching against infinite collections (5 minutes)"
    [
-    Content "We can write a pattern-matching against infinite lists even if that has infinite results.\nNote that Egison really enumerates all pairs of two natural numbers in the following example."
+    Content "We can pattern-match against infinite lists with infinite results.\nNote that Egison really enumerates all pairs of two natural numbers in the following example."
      ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>> [m n]]))"]
      [],
     Content "We can enumerate twin primes using pattern-matching as follow."
@@ -378,7 +378,7 @@ tutorial = Tutorial
     Content "We support \"and-patterns\" and \"or-patterns\".\nWe can enumerate prime triplets using them as follow."
      ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
      ["What are the 20th prime triplets?"],
-    Content "Try to enumerate the first 10 prime pairs the difference between them is 10 like '{[3 13] [7 17] [13 23] [19 29] [31 41] ...}'."
+    Content "Try to enumerate the first 10 prime pairs the difference between them is 6 like '{{[5 11] [7 13] [11 17] [13 19] [17 23] ...}'."
      []
      [],
     Content "This is the end of our tutorial.\nThank you for enjoying our tutorial!\nPlease check our paper, manual and code for further reference!"
