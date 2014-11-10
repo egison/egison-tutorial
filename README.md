@@ -1,4 +1,4 @@
-# The Egison Totorial
+# The Egison Tutorial
 
 This is a repository for a tutorial program of [Egison](https://github.com/egisatoshi/egison).
 Egison is the pattern-matching oriented, purely functional programming langauge.
@@ -29,7 +29,7 @@ Choose a section to learn.
 (1-4): 4
 ====================
 We can write a pattern-matching against infinite lists even if that has infinite results.
-Note that Egison really enumurate all pairs of two natural numbers in the following example.
+Note that Egison really enumerates all pairs of two natural numbers in the following example.
 
 Examples:
   (take 10 (match-all nats (set integer) [<cons $m <cons $n _>> [m n]]))
