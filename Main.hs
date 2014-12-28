@@ -342,8 +342,47 @@ tutorial = Tutorial
     ],
   Section "Basics of pattern-matching                    (10 minutes)"
    [
+    Content "We can pattern-match against a collection and divides it into two collections.\nThe 'join' pattern divides a collection into two collections.\nPlease note that the 'match-all' expression enumerates all results of pattern-matching."
+     ["(match-all {1 2 3} (list integer) [<join $hs $ts> [hs ts]])", "(match-all {1 2 3 4 5} (list integer) [<join $hs $ts> [hs ts]])"]
+     [],
+    Content "Try another pattern-constructor 'cons'.\nThe 'cons' pattern divides a collection into the head element and the rest collection.\n"
+     ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3 4 5} (list integer) [<cons $x $xs> [x xs]])"]
+     [],
+    Content "'_' is a wildcard and matches with any objects."
+     ["(match-all {1 2 3} (list integer) [<cons $x _> x])", "(match-all {1 2 3 4 5} (list integer) [<join $hs _> hs])"]
+     [],
+    Content "We can write non-linear patterns.\nTry the following expression."
+     ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (list integer) [<join _ <cons $x <join _ <cons ,x _>>>> x])"]
+     [],
+    Content "We can express various things using 'cons' and 'join'.\nThe most of functions in the collection library of Egison is written using pattern-matching!\nFor example, the following code enumerates two combination of numbers."
+     ["(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])"]
+     ["Try to enumerate three combination of numbers."],
+    Content "We can pattern-match against infinite collections.\nWe can enumerate twin primes using pattern-matching as follow.\nNote that we can write any expression after ','."
+     ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons ,(+ p 2) _>>> [p (+ p 2)]]))"]
+     ["What is the 100th twin prime?"],
+    Content "Try to enumerate the first 10 prime pairs whose form is (p, p+6) like '{{[5 11] [7 13] [11 17] [13 19] [17 23] ...}'."
+     []
+     [],
+    Content "We support \"and-patterns\" and \"or-patterns\".\nWe can enumerate prime triplets using them as follow."
+     ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
+     ["What is the 20th prime triplet?"],
+    Content "Try to enumerate the first 8 prime quadruplets whose form is (p, p+2, p+6, p+8) like '{{[5 7 11 13] [11 13 17 19] ...}'."
+     []
+     [],
+    Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
+     []
+     []
+    ],
+  Section "Pattern-matching against unfree data types    (10 minutes)"
+   [
     Content "We can pattern-match against multisets."
      ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]
+     [],
+    Content "Did we think how about \"n\" combination of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
+     ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 3] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])"]
+     [],
+    Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
+     ["(match-all {1 2 1 3} (list integer) [<cons $x ^<cons ,x _>> x])", "(match-all {1 1 2 3} (list integer) [<cons $x ^<cons ,x _>> x])"]
      [],
     Content "We can change the way of pattern-matching by changing the \"matcher\".\nTry the following expressions."
      ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])"]
@@ -351,35 +390,11 @@ tutorial = Tutorial
     Content "We can write non-linear patterns.\nTry the following expression."
      ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])"]
      [],
-    Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
-     ["(match-all {1 2 1 3} (multiset integer) [<cons $x ^<cons ,x _>> x])"]
-     [],
-    Content "Try another pattern-constructor 'join'.\n'join' divides a collection into two collections."
+    Content "Try another pattern-constructor 'join'.\nThe 'join' pattern divides a collection into two collections."
      ["(match-all {1 2 3 4 5} (list integer) [<join $xs $ys> [xs ys]])", "(match-all {1 2 3 4 5} (multiset integer) [<join $xs $ys> [xs ys]])", "(match-all {1 2 3 4 5} (set integer) [<join $xs $ys> [xs ys]])"]
      [],
-    Content "We can express various things using 'cons' and 'join'.\nThe most of functions in the collection library of Egison is written using pattern-matching!\nFor example, the following code enumerates two combination of numbers."
-     ["(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])"]
-     ["Try to enumerate three combination of numbers."],
-    Content "Did we think how about \"n\" combination of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
-     ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 3] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])"]
-     [],
-    Content "This is the end of this section.\nThank you for enjoying our tutorial!\nPlease check the online demonstrations on our website, too.\nhttp://www.egison.org/demonstrations/"
-     []
-     []
-    ],
-  Section "Pattern-matching against infinite collections (5 minutes)"
-   [
     Content "We can pattern-match against infinite lists with infinite results.\nNote that Egison really enumerates all pairs of two natural numbers in the following example."
      ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>> [m n]]))"]
-     [],
-    Content "We can enumerate twin primes using pattern-matching as follow."
-     ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons ,(+ p 2) _>>> [p (+ p 2)]]))"]
-     ["What are the 100th twin primes?"],
-    Content "We support \"and-patterns\" and \"or-patterns\".\nWe can enumerate prime triplets using them as follow."
-     ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
-     ["What are the 20th prime triplets?"],
-    Content "Try to enumerate the first 10 prime pairs the difference between them is 6 like '{{[5 11] [7 13] [11 17] [13 19] [17 23] ...}'."
-     []
      [],
     Content "This is the end of our tutorial.\nThank you for enjoying our tutorial!\nPlease check our paper, manual and code for further reference!"
      []
