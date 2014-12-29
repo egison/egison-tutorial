@@ -342,7 +342,7 @@ tutorial = Tutorial
     ],
   Section "Basics of pattern-matching                    (10 minutes)"
    [
-    Content "We can pattern-match against a collection and divides it into two collections.\nThe 'join' pattern divides a collection into two collections.\nPlease note that the 'match-all' expression enumerates all results of pattern-matching."
+    Content "We can pattern-match against a collection.\nThe 'join' pattern divides a collection into two collections.\nPlease note that the 'match-all' expression enumerates all results of pattern-matching."
      ["(match-all {1 2 3} (list integer) [<join $hs $ts> [hs ts]])", "(match-all {1 2 3 4 5} (list integer) [<join $hs $ts> [hs ts]])"]
      [],
     Content "Try another pattern-constructor 'cons'.\nThe 'cons' pattern divides a collection into the head element and the rest collection.\n"
@@ -351,19 +351,19 @@ tutorial = Tutorial
     Content "'_' is a wildcard and matches with any objects."
      ["(match-all {1 2 3} (list integer) [<cons $x _> x])", "(match-all {1 2 3 4 5} (list integer) [<join $hs _> hs])"]
      [],
-    Content "We can write non-linear patterns.\nTry the following expression."
+    Content "We can write non-linear patterns.\nIn the case of 'cons' and 'join' patterns, patterns that begins with ',' matches the object only if the object is equal with the expression after ','.\nPlease try the following expression."
      ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (list integer) [<join _ <cons $x <join _ <cons ,x _>>>> x])"]
      [],
-    Content "We can express various things using 'cons' and 'join'.\nThe most of functions in the collection library of Egison is written using pattern-matching!\nFor example, the following code enumerates two combination of numbers."
+    Content "We can express various things using 'cons' and 'join'.\nThe most of functions in the collection library of Egison are written using pattern-matching!\nFor example, the following code enumerates two combinations of numbers."
      ["(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])"]
-     ["Try to enumerate three combination of numbers."],
+     ["Try to enumerate three combinations of numbers."],
     Content "We can pattern-match against infinite collections.\nWe can enumerate twin primes using pattern-matching as follow.\nNote that we can write any expression after ','."
      ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons ,(+ p 2) _>>> [p (+ p 2)]]))"]
      ["What is the 100th twin prime?"],
     Content "Try to enumerate the first 10 prime pairs whose form is (p, p+6) like '{{[5 11] [7 13] [11 17] [13 19] [17 23] ...}'."
      []
      [],
-    Content "We support \"and-patterns\" and \"or-patterns\".\nWe can enumerate prime triplets using them as follow."
+    Content "We support \"and-patterns\" and \"or-patterns\".\nWe can enumerate prime triplets using them as follow.\n\"And-patterns\" and \"or-patterns\" are represented using '&' and '|' respectively."
      ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
      ["What is the 20th prime triplet?"],
     Content "Try to enumerate the first 8 prime quadruplets whose form is (p, p+2, p+6, p+8) like '{{[5 7 11 13] [11 13 17 19] ...}'."
@@ -378,7 +378,7 @@ tutorial = Tutorial
     Content "We can pattern-match against multisets."
      ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]
      [],
-    Content "Did we think how about \"n\" combination of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
+    Content "Did we think how about \"n\" combinations of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
      ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 3] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])"]
      [],
     Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
