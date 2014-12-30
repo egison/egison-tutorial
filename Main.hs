@@ -343,19 +343,23 @@ tutorial = Tutorial
   Section "Basics of pattern-matching                    (10 minutes)"
    [
     Content "We can pattern-match against a collection.\nThe 'join' pattern divides a collection into two collections.\nPlease note that the 'match-all' expression enumerates all results of pattern-matching."
-     ["(match-all {1 2 3} (list integer) [<join $hs $ts> [hs ts]])", "(match-all {1 2 3 4 5} (list integer) [<join $hs $ts> [hs ts]])"]
+     ["(match-all {1 2 3}     (list integer) [<join $hs $ts> [hs ts]])",
+      "(match-all {1 2 3 4 5} (list integer) [<join $hs $ts> [hs ts]])"]
      [],
     Content "Try another pattern-constructor 'cons'.\nThe 'cons' pattern divides a collection into the head element and the rest collection.\n"
-     ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3 4 5} (list integer) [<cons $x $xs> [x xs]])"]
+     ["(match-all {1 2 3}     (list integer) [<cons $x $xs> [x xs]])",
+      "(match-all {1 2 3 4 5} (list integer) [<cons $x $xs> [x xs]])"]
      [],
     Content "'_' is a wildcard and matches with any objects."
-     ["(match-all {1 2 3} (list integer) [<cons $x _> x])", "(match-all {1 2 3 4 5} (list integer) [<join $hs _> hs])"]
+     ["(match-all {1 2 3}     (list integer) [<cons $x  _>  x])",
+      "(match-all {1 2 3 4 5} (list integer) [<join $hs _> hs])"]
      [],
     Content "We can write non-linear patterns.\nIn the case of 'cons' and 'join' patterns, patterns that begins with ',' matches the object only if the object is equal with the expression after ','.\nPlease try the following expression."
-     ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (list integer) [<join _ <cons $x <join _ <cons ,x _>>>> x])"]
+     ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])"]
      [],
-    Content "We can express various things using 'cons' and 'join'.\nThe most of functions in the collection library of Egison are written using pattern-matching!\nFor example, the following code enumerates two combinations of numbers."
-     ["(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])"]
+    Content "We can express various things using 'cons' and 'join'.\nThe most of functions in the collection library of Egison are written using pattern-matching!"
+     ["(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])",
+      "(match-all {1 1 2 3 2} (list integer) [<join _ <cons $x <join _ <cons ,x _>>>> [x x]])"]
      ["Try to enumerate three combinations of numbers."],
     Content "We can pattern-match against infinite collections.\nWe can enumerate twin primes using pattern-matching as follow.\nNote that we can write any expression after ','."
      ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons ,(+ p 2) _>>> [p (+ p 2)]]))"]
@@ -375,17 +379,11 @@ tutorial = Tutorial
     ],
   Section "Pattern-matching against unfree data types    (10 minutes)"
    [
-    Content "We can pattern-match against multisets."
-     ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])"]
-     [],
-    Content "Did we think how about \"n\" combinations of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
-     ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 3] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])"]
+    Content "We can pattern-match even against multisets and sets.\nWe can change the way of pattern-matching by changing the \"matcher\".\nPlease try the following expressions."
+     ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])"]
      [],
     Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
      ["(match-all {1 2 1 3} (list integer) [<cons $x ^<cons ,x _>> x])", "(match-all {1 1 2 3} (list integer) [<cons $x ^<cons ,x _>> x])"]
-     [],
-    Content "We can change the way of pattern-matching by changing the \"matcher\".\nTry the following expressions."
-     ["(match-all {1 2 3} (list integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])"]
      [],
     Content "We can write non-linear patterns.\nTry the following expression."
      ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])"]
@@ -403,6 +401,9 @@ tutorial = Tutorial
   ]
 --  Section "Define your own functions"
 --   [
+--    Content "Did we think how about \"n\" combinations of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
+--     ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 3] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])"]
+--     [],
 --    Content "Let's try 'if' expressions."
 --     ["(if #t 1 2)", "(if #f 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]
 --     [],
