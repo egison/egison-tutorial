@@ -358,7 +358,7 @@ tutorial = Tutorial
      ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])"]
      [],
     Content "We can express various things using 'cons' and 'join'.\nThe most of functions in the collection library of Egison are written using pattern-matching!"
-     ["(match-all {1 2 3 4 5} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])",
+     ["(match-all {1 1 2 3 2} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])",
       "(match-all {1 1 2 3 2} (list integer) [<join _ <cons $x <join _ <cons ,x _>>>> [x x]])"]
      ["Try to enumerate three combinations of numbers."],
     Content "We can pattern-match against infinite collections.\nWe can enumerate twin primes using pattern-matching as follow.\nNote that we can write any expression after ','."
@@ -380,18 +380,24 @@ tutorial = Tutorial
   Section "Pattern-matching against unfree data types    (10 minutes)"
    [
     Content "We can pattern-match even against multisets and sets.\nWe can change the way of pattern-matching by changing the \"matcher\".\nPlease try the following expressions."
-     ["(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])", "(match-all {1 2 3} (set integer) [<cons $x $xs> [x xs]])"]
-     [],
-    Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
-     ["(match-all {1 2 1 3} (list integer) [<cons $x ^<cons ,x _>> x])", "(match-all {1 1 2 3} (list integer) [<cons $x ^<cons ,x _>> x])"]
-     [],
-    Content "We can write non-linear patterns.\nTry the following expression."
-     ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x _>> x])", "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])"]
+     ["(match-all {1 2 3} (list integer)     [<cons $x $xs> [x xs]])",
+      "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])",
+      "(match-all {1 2 3} (set integer)      [<cons $x $xs> [x xs]])"]
      [],
     Content "Try another pattern-constructor 'join'.\nThe 'join' pattern divides a collection into two collections."
-     ["(match-all {1 2 3 4 5} (list integer) [<join $xs $ys> [xs ys]])", "(match-all {1 2 3 4 5} (multiset integer) [<join $xs $ys> [xs ys]])", "(match-all {1 2 3 4 5} (set integer) [<join $xs $ys> [xs ys]])"]
+     ["(match-all {1 2 3 4 5} (list integer)     [<join $xs $ys> [xs ys]])",
+      "(match-all {1 2 3 4 5} (multiset integer) [<join $xs $ys> [xs ys]])",
+      "(match-all {1 2 3 4 5} (set integer)      [<join $xs $ys> [xs ys]])"]
      [],
-    Content "We can pattern-match against infinite lists with infinite results.\nNote that Egison really enumerates all pairs of two natural numbers in the following example."
+    Content "We can write non-linear patterns.\nTry the following expression."
+     ["(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x       _>> x])",
+      "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])"]
+     [],
+    Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
+     ["(match-all {1 2 1 3 2} (multiset integer) [<cons $x  <cons ,x _>> x])",
+      "(match-all {1 2 1 3 2} (multiset integer) [<cons $x ^<cons ,x _>> x])"]
+     [],
+    Content "We can pattern-match against infinite collections with infinite results.\nNote that Egison really enumerates all pairs of two natural numbers in the following example."
      ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>> [m n]]))"]
      [],
     Content "This is the end of our tutorial.\nThank you for enjoying our tutorial!\nPlease check our paper, manual and code for further reference!"
