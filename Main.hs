@@ -314,7 +314,7 @@ tutorial = Tutorial
      ["Try to define the infinite list of even numbers that is like {2 4 6 8 10 ...}."],
     Content "We can create a function with a 'lambda' expression. Let's define functions and test them."
      ["(define $increment (lambda [$x] (+ x 1)))", "(increment 10)", "(define $multiply (lambda [$x $y] (* x y)))", "(multiply 10 20)", "(define $sum (lambda [$n] (foldl + 0 (take n nats))))", "(sum 10)"]
-     ["Try to define a 'fact' function."],
+     ["Try to define a 'fact' function, which obtains an natural number 'n' and returns 'n * (n - 1) * ... * 2 * 1'."],
     Content "We can compare numbers using functions that return '#t' or '#f'.\n'#t' means the true.\n'#f' means the false.\nFunctions that return '#t' or '#f' are called \"predicates\"."
      ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]
      [],
@@ -367,17 +367,11 @@ tutorial = Tutorial
     Content "Try to enumerate the first 10 prime pairs whose form is (p, p+6) like '{{[5 11] [7 13] [11 17] [13 19] [17 23] ...}'."
      []
      [],
-    Content "We support \"and-patterns\" and \"or-patterns\".\nWe can enumerate prime triplets using them as follow.\n\"And-patterns\" and \"or-patterns\" are represented using '&' and '|' respectively."
-     ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
-     ["What is the 20th prime triplet?"],
-    Content "Try to enumerate the first 8 prime quadruplets whose form is (p, p+2, p+6, p+8) like '{{[5 7 11 13] [11 13 17 19] ...}'."
-     []
-     [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
      []
      []
     ],
-  Section "Pattern-matching against unfree data types    (10 minutes)"
+  Section "Pattern-matching against various data types    (5 minutes)"
    [
     Content "We can pattern-match even against multisets and sets.\nWe can change the way of pattern-matching by changing the \"matcher\".\nPlease try the following expressions."
      ["(match-all {1 2 3} (list integer)     [<cons $x $xs> [x xs]])",
@@ -405,6 +399,12 @@ tutorial = Tutorial
      []
     ]
   ]
+--    Content "We support \"and-patterns\" and \"or-patterns\".\nWe can enumerate prime triplets using them as follow.\n\"And-patterns\" and \"or-patterns\" are represented using '&' and '|' respectively."
+--     ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
+--     ["What is the 20th prime triplet?"],
+--    Content "Try to enumerate the first 8 prime quadruplets whose form is (p, p+2, p+6, p+8) like '{{[5 7 11 13] [11 13 17 19] ...}'."
+--     []
+--     [],
 --  Section "Define your own functions"
 --   [
 --    Content "Did we think how about \"n\" combinations of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
