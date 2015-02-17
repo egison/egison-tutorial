@@ -276,7 +276,10 @@ tutorial = Tutorial
     Content "We can handle collections of numbers.\nWe construct collections with '{}'."
      ["{}", "{10}", "{1 2 3 4 5}"]
      [],
-    Content "With the 'take' function, we can extract a head part of the collection.\nWe can construct a collection with '{}'."
+    Content "We can decompose a collection using the 'car' and 'cdr' function."
+     ["(car {1 2 3 4 5})", "(cdr {1 2 3 4 5})", "(car (cdr {1 2 3 4 5}))"]
+     ["Try to extract the third element of the collection '{1 2 3 4 5}' with 'car' and 'cdr'."],
+    Content "With the 'take' function, we can extract a head part of a collection.'."
      ["(take 0 {1 2 3 4 5})", "(take 3 {1 2 3 4 5})"]
      [],
     Content "We can handle infinite lists.\nFor example, 'nats' and 'primes' are an infinite list that contains all natural numbers and prime numbers respectively.\nTry to extract a head part from them."
@@ -333,8 +336,8 @@ tutorial = Tutorial
     Content "With the 'zip' function, we can combine two lists as follow."
      ["(take 100 (zip nats nats))", "(take 100 (zip primes primes))"]
      ["Try to generate the prime table that is like '{[1 2] [2 3] [3 5] [4 7] [5 11] ...}'"],
-    Content "Try to create a fibonacci sequence that is like '{1 1 2 3 5 8 13 21 34 55 ...}'.\n\nHint:\n  At first try to create the following sequence.\n  {[1 1] [1 2] [2 3] [3 5] [5 8] [8 13] [13 21] [21 34] ...}"
-     []
+    Content "Try to create a fibonacci sequence that is like '{1 1 2 3 5 8 13 21 34 55 ...}'.\n\nHint:\n  Replace '???' in the following expression to a proper function.\n  (define $fibs {1 1 @(map ??? (zip fibs (cdr fibs)))})"
+     [""]
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
      []
@@ -354,8 +357,9 @@ tutorial = Tutorial
      ["(match-all {1 2 3}     (list integer) [<cons $x  _>  x])",
       "(match-all {1 2 3 4 5} (list integer) [<join $hs _> hs])"]
      [],
-    Content "We can write non-linear patterns.\nIn the case of 'cons' and 'join' patterns, patterns that begins with ',' matches the object only if the object is equal with the expression after ','.\nPlease try the following expression."
-     ["(match-all {1 1 2 3 2} (list integer) [<cons $x <cons ,x _>> x])"]
+    Content "We can write non-linear patterns.\nIn the following case, patterns that begins with ',' matches the object only if the object is equal with the expression after ','.\nPlease try the following expression."
+     ["(match-all {1 1 2 2 3 2} (list integer) [<join _ <cons $x <cons ,x _>>> x])",
+      "(match-all {1 2 2 3 3 2} (list integer) [<join _ <cons $x <cons ,x _>>> x])"]
      [],
     Content "We can express various things using 'cons' and 'join'.\nThe most of functions in the collection library of Egison are written using pattern-matching!"
      ["(match-all {1 1 2 3 2} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])",
@@ -371,7 +375,7 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Pattern-matching against various data types    (5 minutes)"
+  Section "Pattern-matching against various data types   (10 minutes)"
    [
     Content "We can pattern-match even against multisets and sets.\nWe can change the way of pattern-matching by changing the \"matcher\".\nPlease try the following expressions."
      ["(match-all {1 2 3} (list integer)     [<cons $x $xs> [x xs]])",
