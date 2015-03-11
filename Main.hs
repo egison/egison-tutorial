@@ -357,18 +357,27 @@ tutorial = Tutorial
      ["(match-all {1 2 3}     (list integer) [<cons $x  _>  x])",
       "(match-all {1 2 3 4 5} (list integer) [<join $hs _> hs])"]
      [],
-    Content "We can write non-linear patterns.\nIn the following case, patterns that begins with ',' matches the object only if the object is equal with the expression after ','.\nPlease try the following expression."
-     ["(match-all {1 1 2 2 3 2} (list integer) [<join _ <cons $x <cons ,x _>>> x])",
-      "(match-all {1 2 2 3 3 2} (list integer) [<join _ <cons $x <cons ,x _>>> x])"]
+    Content "We can write non-linear patterns.\nNon-linear pattern is a pattern that allows multiple occurrence of same variables in a pattern.\nPatterns that begins with ',' matches the object when it is equal with the expression after ','."
+     ["(match-all {1 1 2 3 3 2} (list integer) [<join _ <cons $x <cons ,x _>>> x])",
+      "(match-all {1 1 2 3 3 2} (list integer) [<join _ <cons $x <cons ,(+ x 1) _>>> x])"]
      [],
-    Content "We can express various things using 'cons' and 'join'.\nThe most of functions in the collection library of Egison are written using pattern-matching!"
-     ["(match-all {1 1 2 3 2} (list integer) [<join _ <cons $x <join _ <cons $y _>>>> [x y]])",
-      "(match-all {1 1 2 3 2} (list integer) [<join _ <cons $x <join _ <cons ,x _>>>> [x x]])"]
-     ["Try to enumerate three combinations of numbers."],
-    Content "We can pattern-match against infinite collections.\nWe can enumerate twin primes using pattern-matching as follow.\nNote that we can write any expression after ','."
+    Content "We can pattern-match against infinite collections.\nWe can enumerate twin primes using pattern-matching as follow."
      ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons ,(+ p 2) _>>> [p (+ p 2)]]))"]
      ["What is the 100th twin prime?"],
     Content "Try to enumerate the first 10 prime pairs whose form is (p, p+6) like '{{[5 11] [7 13] [11 17] [13 19] [17 23] ...}'."
+     []
+     [],
+    Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
+     ["(match-all {1 1 2 2 3 4 4 5} (list integer) [<join _ <cons $x <cons  ,x _>>> x])",
+      "(match-all {1 1 2 2 3 4 4 5} (list integer) [<join _ <cons $x <cons ^,x _>>> x])"]
+     [],
+    Content "A pattern whose form is '(& p1 p2 ...)' is called an and-pattern.\nAn and-pattern is a pattern that matches the object, if and only if all of the patterns are matched.\nAnd-patterns are used like an as-pattern in the following samples."
+     ["(match-all {1 2 4 5 6 8 9} (list integer) [<join _ <cons $x <cons (& ^,(+ x 1) $y) _>>> [x y]])"]
+     [],
+    Content "A pattern whose form is '(| p1 p2 ...)' is called an or-pattern.\nAn or-pattern matches with the object, if the object matches one of given patterns.\nUsing it, We can enumerate prime triplets."
+     ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
+     ["What is the 20th prime triplet?"],
+    Content "Try to enumerate the first 8 prime quadruplets whose form is (p, p+2, p+6, p+8) like '{{[5 7 11 13] [11 13 17 19] ...}'."
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
@@ -389,10 +398,7 @@ tutorial = Tutorial
      [],
     Content "We can write non-linear patterns.\nTry the following expression."
      ["(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x       _>> x])",
-      "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])"]
-     [],
-    Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
-     ["(match-all {1 2 1 3 2} (multiset integer) [<cons $x  <cons ,x _>> x])",
+      "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])",
       "(match-all {1 2 1 3 2} (multiset integer) [<cons $x ^<cons ,x _>> x])"]
      [],
     Content "We can pattern-match against infinite collections with infinite results.\nNote that Egison really enumerates all pairs of two natural numbers in the following example."
@@ -403,12 +409,6 @@ tutorial = Tutorial
      []
     ]
   ]
---    Content "We support \"and-patterns\" and \"or-patterns\".\nWe can enumerate prime triplets using them as follow.\n\"And-patterns\" and \"or-patterns\" are represented using '&' and '|' respectively."
---     ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
---     ["What is the 20th prime triplet?"],
---    Content "Try to enumerate the first 8 prime quadruplets whose form is (p, p+2, p+6, p+8) like '{{[5 7 11 13] [11 13 17 19] ...}'."
---     []
---     [],
 --  Section "Define your own functions"
 --   [
 --    Content "Did we think how about \"n\" combinations of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
