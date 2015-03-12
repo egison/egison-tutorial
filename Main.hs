@@ -300,7 +300,7 @@ tutorial = Tutorial
     Content "Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.\nRemember that we can convert a rational number to a float number with 'rtof'."
      ["(rtof 2/3)"]
      [],
-    Content "Try to calculate '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2'.\nIn fact, '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...' converges to '(/ (power pi 2) 6)'.\nPlease observe that."
+    Content "Try to calculate '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2'.\nIn fact, '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...' converges to '(/ (power pi 2) 6)'."
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
@@ -345,7 +345,7 @@ tutorial = Tutorial
     ],
   Section "Basics of pattern-matching                    (10 minutes)"
    [
-    Content "We can pattern-match against a collection.\nThe 'join' pattern divides a collection into two collections.\nPlease note that the 'match-all' expression enumerates all results of pattern-matching."
+    Content "Let's try pattern-matching against a collection.\nThe 'join' pattern divides a collection into two collections.\nPlease note that the 'match-all' expression enumerates all results of pattern-matching."
      ["(match-all {1 2 3}     (list integer) [<join $hs $ts> [hs ts]])",
       "(match-all {1 2 3 4 5} (list integer) [<join $hs $ts> [hs ts]])"]
      [],
@@ -371,7 +371,7 @@ tutorial = Tutorial
      ["(match-all {1 1 2 2 3 4 4 5} (list integer) [<join _ <cons $x <cons  ,x _>>> x])",
       "(match-all {1 1 2 2 3 4 4 5} (list integer) [<join _ <cons $x <cons ^,x _>>> x])"]
      [],
-    Content "A pattern whose form is '(& p1 p2 ...)' is called an and-pattern.\nAn and-pattern is a pattern that matches the object, if and only if all of the patterns are matched.\nAnd-patterns are used like an as-pattern in the following samples."
+    Content "A pattern whose form is '(& p1 p2 ...)' is called an and-pattern.\nAn and-pattern is a pattern that matches the object, if and only if all of the patterns are matched.\nAnd-pattern is used like an as-pattern in the following sample."
      ["(match-all {1 2 4 5 6 8 9} (list integer) [<join _ <cons $x <cons (& ^,(+ x 1) $y) _>>> [x y]])"]
      [],
     Content "A pattern whose form is '(| p1 p2 ...)' is called an or-pattern.\nAn or-pattern matches with the object, if the object matches one of given patterns.\nUsing it, We can enumerate prime triplets."
