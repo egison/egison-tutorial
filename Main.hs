@@ -386,7 +386,7 @@ tutorial = Tutorial
     ],
   Section "Pattern-matching against various data types   (10 minutes)"
    [
-    Content "We can pattern-match even against multisets and sets.\nWe can change the way of pattern-matching by changing the \"matcher\".\nPlease try the following expressions."
+    Content "We can also pattern-match against multisets and sets.\nWe can change the way of pattern-matching by just changing a matcher."
      ["(match-all {1 2 3} (list integer)     [<cons $x $xs> [x xs]])",
       "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])",
       "(match-all {1 2 3} (set integer)      [<cons $x $xs> [x xs]])"]
@@ -396,13 +396,14 @@ tutorial = Tutorial
       "(match-all {1 2 3 4 5} (multiset integer) [<join $xs $ys> [xs ys]])",
       "(match-all {1 2 3 4 5} (set integer)      [<join $xs $ys> [xs ys]])"]
      [],
-    Content "We can write non-linear patterns.\nTry the following expression."
+    Content "Try non-linear pattern-matching against multiset."
      ["(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x       _>> x])",
       "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])",
       "(match-all {1 2 1 3 2} (multiset integer) [<cons $x ^<cons ,x _>> x])"]
      [],
-    Content "We can pattern-match against infinite collections with infinite results.\nNote that Egison really enumerates all pairs of two natural numbers in the following example."
-     ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>> [m n]]))"]
+    Content "The following samples enumerate pairs and triplets of natural numbers.\nNote that Egison really enumerates all results."
+     ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>>           [m n]]))",
+      "(take 10 (match-all nats (set integer) [<cons $l <cons $m <cons $n _>>> [l m n]]))"]
      [],
     Content "This is the end of our tutorial.\nThank you for enjoying our tutorial!\nPlease check our paper, manual and code for further reference!"
      []
