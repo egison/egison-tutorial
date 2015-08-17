@@ -321,8 +321,8 @@ tutorial = Tutorial
     Content "We can compare numbers using functions that return '#t' or '#f'.\n'#t' means the true.\n'#f' means the false.\nFunctions that return '#t' or '#f' are called \"predicates\"."
      ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]
      [],
-    Content "With the 'while' function, we can extract all head elements that satisfy the predicate.\n'primes' is a infinite list that contains all prime numbers."
-     ["(while (lt? $ 100) primes)", "(while (lt? $ 1000) primes)"]
+    Content "With the 'take-while' function, we can extract all head elements that satisfy the predicate.\n'primes' is a infinite list that contains all prime numbers."
+     ["(take-while (lt? $ 100) primes)", "(take-while (lt? $ 1000) primes)"]
      [],
     Content "With the 'filter' function, we can extract all elements that satisfy the predicate."
      ["(take 100 (filter even? nats))", "(take 100 (filter prime? nats))", "(take 100 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))"]
