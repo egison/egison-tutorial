@@ -265,13 +265,13 @@ tutorial = Tutorial
      ["(+ (* 10 20) 2)", "(/ (* 10 20) (+ 10 20))"]
      ["Try to calculate '(100 - 1) * (100 + 1)'."],
     Content "We are supporting rational numbers."
-     ["(+ 2/3 1/5)", "(/ 42 84)"]
+     ["(+ (/ 2 3) (/ 1 5))", "(/ 42 84)"]
      [],
     Content "We are supporting floats, too."
-     ["(+ 10.2 1.3)", "(* 10.2 1.3)"]
+     ["(f.+ 10.2 1.3)", "(f.* 10.2 1.3)"]
      [],
     Content "We can convert a rational number to a float number with 'rtof'."
-     ["(rtof 1/5)", "(rtof 1/100)"]
+     ["(rtof (/ 1 5))", "(rtof (/ 1 100))"]
      [],
     Content "We can handle collections of numbers.\nWe construct collections with '{}'."
      ["{}", "{10}", "{1 2 3 4 5}"]
@@ -298,7 +298,7 @@ tutorial = Tutorial
      []
      [],
     Content "Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.\nRemember that we can convert a rational number to a float number with 'rtof'."
-     ["(rtof 2/3)"]
+     ["(rtof (/ 2 3))"]
      [],
     Content "Try to calculate '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2'.\nIn fact, '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...' converges to '(/ (power pi 2) 6)'."
      []
@@ -367,12 +367,12 @@ tutorial = Tutorial
     Content "Try to enumerate the first 10 prime pairs whose form is (p, p+6) like '{{[5 11] [7 13] [11 17] [13 19] [17 23] ...}'."
      []
      [],
-    Content "A pattern that has '^' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
+    Content "A pattern that has '!' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
      ["(match-all {1 1 2 2 3 4 4 5} (list integer) [<join _ <cons $x <cons  ,x _>>> x])",
-      "(match-all {1 1 2 2 3 4 4 5} (list integer) [<join _ <cons $x <cons ^,x _>>> x])"]
+      "(match-all {1 1 2 2 3 4 4 5} (list integer) [<join _ <cons $x <cons !,x _>>> x])"]
      [],
     Content "A pattern whose form is '(& p1 p2 ...)' is called an and-pattern.\nAn and-pattern is a pattern that matches the object, if and only if all of the patterns are matched.\nAnd-pattern is used like an as-pattern in the following sample."
-     ["(match-all {1 2 4 5 6 8 9} (list integer) [<join _ <cons $x <cons (& ^,(+ x 1) $y) _>>> [x y]])"]
+     ["(match-all {1 2 4 5 6 8 9} (list integer) [<join _ <cons $x <cons (& !,(+ x 1) $y) _>>> [x y]])"]
      [],
     Content "A pattern whose form is '(| p1 p2 ...)' is called an or-pattern.\nAn or-pattern matches with the object, if the object matches one of given patterns.\nUsing it, We can enumerate prime triplets."
      ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
@@ -399,7 +399,7 @@ tutorial = Tutorial
     Content "Try non-linear pattern-matching against multiset."
      ["(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x       _>> x])",
       "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])",
-      "(match-all {1 2 1 3 2} (multiset integer) [<cons $x ^<cons ,x _>> x])"]
+      "(match-all {1 2 1 3 2} (multiset integer) [<cons $x !<cons ,x _>> x])"]
      [],
     Content "The following samples enumerate pairs and triplets of natural numbers.\nNote that Egison really enumerates all results."
      ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>>           [m n]]))",
