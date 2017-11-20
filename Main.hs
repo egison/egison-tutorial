@@ -160,9 +160,10 @@ getNumber n = do
     ('2':_) -> return 2
     ('3':_) -> return 3
     ('4':_) -> return 4
---    ('5':_) -> return 5
---    ('6':_) -> return 6
---    ('7':_) -> return 7
+    ('5':_) -> return 5
+    ('6':_) -> return 6
+    ('7':_) -> return 7
+--    ('8':_) -> return 8
 --    ('9':_) -> return 9
     _ -> do
       putStrLn "Invalid input!"
@@ -285,7 +286,7 @@ tutorial = Tutorial
     Content "We can handle infinite lists.\nFor example, 'nats' and 'primes' are an infinite list that contains all natural numbers and prime numbers respectively.\nTry to extract a head part from them."
      ["(take 10 nats)", "(take 30 nats)", "(take 10 primes)", "(take 30 primes)"]
      ["What is the 100th prime number."],
-    Content "We can create a \"partial\" function using '$' as an argument."
+    Content "We can create a partially applied function using '$' as an argument."
      ["((* $ 2) 10)", "((modulo $ 3) 10)"]
      [],
     Content "With the 'map' function, we can operate each element of the collection at once."
@@ -405,10 +406,114 @@ tutorial = Tutorial
      ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>>           [m n]]))",
       "(take 10 (match-all nats (set integer) [<cons $l <cons $m <cons $n _>>> [l m n]]))"]
      [],
+    Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
+     []
+     []
+    ],
+  Section "Symbolic computation                          (10 minutes)"
+   [
+    Content "Egison handles an unbound variable as a symbol."
+     ["(+ x 1)",
+      "(+ x x)",
+      "(+ (* 2 x) y)"]
+     [],
+    Content "Egison automatically expands an expression to the canonical form."
+     ["(* (+ x y) (+ x y))",
+      "(** (+ x y) 2)",
+      "(** (+ x y) 3)"]
+     [],
+    Content "Egison can handle complex numbers.\n\"i\" represents the imaginary unit."
+     ["(* i i)",
+      "(** (+ 1 i) 2)",
+      "(** (+ 1 i) 4)"]
+     [],
+    Content "algebraic numbers such as \"(sqrt 2)\" and \"(sqrt 3)\"."
+     ["(sqrt 12)",
+      "(* (sqrt 2) (sqrt 2))",
+      "(* (sqrt 2) (sqrt 3))"]
+     [],
+    Content "(cos θ) (sin θ)"
+     [""]
+     [],
+    Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
+     []
+     []
+    ],
+  Section "Differential geometry: tensor analysis        (15 minutes)"
+   [
+    Content "We can handle vectors.\nWe construct vectors with '[| |]'."
+     ["[| 1 2 3 |]",
+      "(+ [| 1 2 3 |] [| 1 2 3 |])"
+      ]
+     [],
+    Content "We can append an index to a vector."
+     ["(+ [| 1 2 3 |]_i [| 1 2 3 |]_i)",
+      "(+ [| 1 2 3 |]_i [| 1 2 3 |]_j)"
+      ]
+     [],
+    Content "The \".\" function is a function for multiplying tensors."
+     ["(. [| 1 2 3 |]_i [| 1 2 3 |]_i)",
+      "(. [| 1 2 3 |]_i [| 1 2 3 |]_j)"
+      ]
+     [],
+    Content "We can handle both of upperscripts(~) and subscripts(_).\nThe \".\" function supports Einstein summation notation."
+     ["(. [| 1 2 3 |]~i [| 1 2 3 |]_i)"
+      ]
+     [],
+    Content "Matrix."
+     ["[| [| 1 2 |] [| 10 20 30 |] |]"
+      ]
+     [],
+    Content "Matrix multiplication."
+     ["[| [| 1 2 |] [| 10 20 30 |] |]"
+      ]
+     [],
+    Content "The function defined using scalar parameters (prepended by \"$\") are automatically mapped to each component of tensors."
+     ["(define $min ...)",
+      "(min [| 1 2 3 |]_i [| 10 20 30 |]_i)",
+      "(min [| 1 2 3 |]_i [| 10 20 30 |]_j)"
+      ]
+     [],
+    Content "The function defined using tesnor parameters (prepended by \"%\") treats a tensor as a whole."
+     ["(define $det2 (lambda [%m] ...))",
+      "(det2 [| [| 1 2 |] [| 10 20 30 |] |])"
+      ]
+     [],
+    Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
+     []
+     []
+    ],
+  Section "Differential geometry: differential forms     (10 minutes)"
+   [
+    Content "By default, the same indices are completed to each tensor of the arguments."
+     ["(+ [| 1 2 3 |] [| 1 2 3 |]) ;=> (+ [| 1 2 3 |]_t1 [| 1 2 3 |]_t1)"
+      ]
+     [],
+    Content "When “!” is prepended to the function application, the different indices are completed to each tensor of the arguments."
+     ["!(+ [| 1 2 3 |] [| 1 2 3 |]) ;=> (+ [| 1 2 3 |]_t1 [| 1 2 3 |]_t2)"
+      ]
+     [],
+    Content "1-forms on Euclid space and Wedge product are represented as follow.\n\"!\" is effectively used in the definition of Wedge product."
+     ["(define $dx [| 1 0 0 |])",
+      "(define $dy [| 0 1 0 |])",
+      "(define $dz [| 0 0 1 |])",
+      "(define $wedge (lambda [%A %B] !(. A B)))",
+      "(wedge dx dy)"
+      ]
+     [],
+    Content "Exterior derivative is defined as follow.\n\"!\" is effectively used in the definition of exterior derivative."
+     ["(define $params [| x y z |])",
+      "(define $d (lambda [%A] !((flip ∂/∂) params A)))",
+      "(d (f x y z))",
+      "(d (d (f x y z)))",
+      "(* (/ 1 2) (- (d (d (f x y z)))_i_j (d (d (f x y z)))_j_i))"
+      ]
+     [],
     Content "This is the end of our tutorial.\nThank you for enjoying our tutorial!\nPlease check our paper, manual and code for further reference!"
      []
      []
     ]
+  
   ]
 --  Section "Define your own functions"
 --   [
