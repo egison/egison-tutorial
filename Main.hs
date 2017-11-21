@@ -410,9 +410,9 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Symbolic computation                          (10 minutes)"
+  Section "Symbolic computation                          (5 minutes)"
    [
-    Content "Egison handles an unbound variable as a symbol."
+    Content "Egison treats unbound variables as a symbol."
      ["(+ x 1)",
       "(+ x x)",
       "(+ (* 2 x) y)"]
@@ -427,13 +427,18 @@ tutorial = Tutorial
       "(** (+ 1 i) 2)",
       "(** (+ 1 i) 4)"]
      [],
-    Content "algebraic numbers such as \"(sqrt 2)\" and \"(sqrt 3)\"."
+    Content "Egison can handle algebraic numbers such as \"(sqrt 2)\" and \"(sqrt 3)\"."
      ["(sqrt 12)",
       "(* (sqrt 2) (sqrt 2))",
-      "(* (sqrt 2) (sqrt 3))"]
+      "(* (sqrt 2) (sqrt 3))",
+      "(** (rt 3 2) 3)"]
      [],
-    Content "(cos θ) (sin θ)"
-     [""]
+    Content "Egison can handle the trigonometric functions such as \"(cos θ)\" and \"(sin θ)\"."
+     ["(+ (cos θ)^2 (sin θ)^2)"]
+     [],
+    Content "Here are several samples for symbolic computation in Egison.\nPlease visit the link!\nhttps://www.egison.org/math/"
+     [
+      ]
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
      []
@@ -460,23 +465,28 @@ tutorial = Tutorial
      ["(. [| 1 2 3 |]~i [| 1 2 3 |]_i)"
       ]
      [],
-    Content "Matrix."
+    Content "Matrix is represented as a vector of vectors."
      ["[| [| 1 2 |] [| 10 20 30 |] |]"
       ]
      [],
-    Content "Matrix multiplication."
-     ["[| [| 1 2 |] [| 10 20 30 |] |]"
+    Content "Matrix multiplication is represented as follow using tensor index notation."
+     ["(. [| [| a b |] [| c d |] |]~i_j [| [| x y |] [| z w |] |]~j_k)"
       ]
      [],
     Content "The function defined using scalar parameters (prepended by \"$\") are automatically mapped to each component of tensors."
-     ["(define $min ...)",
+     ["(define $min (lambda [$x $y] (if (lt? x y) x y)))",
       "(min [| 1 2 3 |]_i [| 10 20 30 |]_i)",
       "(min [| 1 2 3 |]_i [| 10 20 30 |]_j)"
       ]
      [],
     Content "The function defined using tesnor parameters (prepended by \"%\") treats a tensor as a whole."
-     ["(define $det2 (lambda [%m] ...))",
-      "(det2 [| [| 1 2 |] [| 10 20 30 |] |])"
+     ["(define $det2 (lambda [%X] (- (* X_1_1 X_2_2) (* X_1_2 X_2_1))))",
+      "(det2 [| [| 2 1 |] [| 1 2 |] |])",
+      "(det2 [| [| a b |] [| c d |] |])"
+      ]
+     [],
+    Content "Here are several samples of tensor analysis in programming.\nPlease visit the link!\nhttps://www.egison.org/math/"
+     [
       ]
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
@@ -501,12 +511,21 @@ tutorial = Tutorial
       "(wedge dx dy)"
       ]
      [],
+    Content "The \"df-normalize\" function converts a differential form to the antisymmetric tensor."
+     ["(wedge dx dy)",
+      "(df-normalize (wedge dx dy))"
+      ]
+     [],
     Content "Exterior derivative is defined as follow.\n\"!\" is effectively used in the definition of exterior derivative."
      ["(define $params [| x y z |])",
       "(define $d (lambda [%A] !((flip ∂/∂) params A)))",
       "(d (f x y z))",
       "(d (d (f x y z)))",
-      "(* (/ 1 2) (- (d (d (f x y z)))_i_j (d (d (f x y z)))_j_i))"
+      "(df-normalize (d (d (f x y z))))"
+      ]
+     [],
+    Content "Here are several samples for representing differential forms in programming.\nPlease visit the link!\nhttps://www.egison.org/math/"
+     [
       ]
      [],
     Content "This is the end of our tutorial.\nThank you for enjoying our tutorial!\nPlease check our paper, manual and code for further reference!"
