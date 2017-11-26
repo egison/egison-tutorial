@@ -126,16 +126,14 @@ showByebyeMessage = do
 
 yesOrNo :: String -> IO Bool
 yesOrNo question = do
-  putStr $ question
-  putStr $ " (Y/n): "
-  hFlush stdout
-  input <- getLine
+  input <- liftIO $ runInputT (Settings noCompletion Nothing False) $ getInputLine $ question ++ " (Y/n): "
   case input of
-   [] -> return True
-   ('y':_) -> return True
-   ('Y':_) -> return True
-   ('n':_) -> return False
-   ('N':_) -> return False
+   Nothing -> return True
+   (Just "") -> return True
+   (Just "y") -> return True
+   (Just "Y") -> return True
+   (Just "n") -> return False
+   (Just "N") -> return False
    _ -> yesOrNo question
 
 nth n = head . drop (n - 1)
@@ -152,19 +150,15 @@ selectSection tutorial@(Tutorial sections) = do
 
 getNumber :: Int -> IO Int
 getNumber n = do
-  putStr   $ "(1-" ++ show n  ++ "): "
-  hFlush stdout
-  input <- getLine
+  input <- liftIO $ runInputT (Settings noCompletion Nothing False) $ getInputLine $ "(1-" ++ show n  ++ "): "
   case input of
-    ('1':_) -> return 1
-    ('2':_) -> return 2
-    ('3':_) -> return 3
-    ('4':_) -> return 4
-    ('5':_) -> return 5
-    ('6':_) -> return 6
-    ('7':_) -> return 7
---    ('8':_) -> return 8
---    ('9':_) -> return 9
+    (Just "1") -> return 1
+    (Just "2") -> return 2
+    (Just "3") -> return 3
+    (Just "4") -> return 4
+    (Just "5") -> return 5
+    (Just "6") -> return 6
+    (Just "7") -> return 7
     _ -> do
       putStrLn "Invalid input!"
       getNumber n
@@ -257,7 +251,7 @@ showContent (Content msg examples exercises) =
 
 tutorial :: Tutorial
 tutorial = Tutorial
- [Section "Calculate numbers                             (10 minutes)"
+ [Section "Calculate numbers"
    [
     Content "We can do arithmetic operations with '+', '-', '*', '/', 'modulo' and 'power'."
      ["(+ 1 2)", "(- 30 15)", "(* 10 20)", "(/ 20 5)", "(modulo 17 4)", "(power 2 10)"]
@@ -308,7 +302,7 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Basics of functional programming              (10 minutes)"
+  Section "Basics of functional programming"
    [
     Content "We can bind a value to a variable with a 'define' expression.\nWe can easily get the value we bound to a variable."
      ["(define $x 10)", "x", "(define $y (+ 1 x))", "y"]
@@ -344,7 +338,7 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Basics of pattern-matching                    (10 minutes)"
+  Section "Basics of pattern-matching"
    [
     Content "Let's try pattern-matching against a collection.\nThe 'join' pattern divides a collection into two collections.\nPlease note that the 'match-all' expression enumerates all results of pattern-matching."
      ["(match-all {1 2 3}     (list integer) [<join $hs $ts> [hs ts]])",
@@ -385,7 +379,7 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Pattern-matching against various data types   (10 minutes)"
+  Section "Pattern-matching against various data types"
    [
     Content "We can also pattern-match against multisets and sets.\nWe can change the way of pattern-matching by just changing a matcher."
      ["(match-all {1 2 3} (list integer)     [<cons $x $xs> [x xs]])",
@@ -410,7 +404,7 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Symbolic computation                          (5 minutes)"
+  Section "Symbolic computation"
    [
     Content "Egison treats unbound variables as a symbol."
      ["(+ x 1)",
@@ -444,7 +438,7 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Differential geometry: tensor analysis        (15 minutes)"
+  Section "Differential geometry: tensor analysis"
    [
     Content "We can handle vectors.\nWe construct vectors with '[| |]'."
      ["[| 1 2 3 |]",
@@ -493,7 +487,7 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Differential geometry: differential forms     (10 minutes)"
+  Section "Differential geometry: differential forms"
    [
     Content "By default, the same indices are completed to each tensor of the arguments."
      ["(+ [| 1 2 3 |] [| 1 2 3 |]) ;=> (+ [| 1 2 3 |]_t1 [| 1 2 3 |]_t1)"
