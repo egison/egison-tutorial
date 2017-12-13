@@ -40,6 +40,12 @@ main = do args <- getArgs
               putStrLn ret
             Options {optShowHelp = True} -> printHelp
             Options {optShowVersion = True} -> printVersionNumber
+            Options {optLanguage = "ja"} -> do
+                env <- initialEnv
+                case nonOpts of
+                    [] -> showBanner >> repl env "ja"
+                    _ -> printHelp
+
             Options {optPrompt = prompt} -> do
                 env <- initialEnv
                 case nonOpts of
@@ -52,7 +58,8 @@ data Options = Options {
     optPrompt :: String,
     optShowSections :: Bool,
     optSection :: Maybe String,
-    optSubSection :: Maybe String
+    optSubSection :: Maybe String,
+    optLanguage :: String
     }
 
 defaultOptions :: Options
@@ -62,7 +69,8 @@ defaultOptions = Options {
     optPrompt = "> ",
     optShowSections = False,
     optSection = Nothing,
-    optSubSection = Nothing
+    optSubSection = Nothing,
+    optLanguage = "en"
     }
 
 options :: [OptDescr (Options -> Options)]
@@ -87,7 +95,10 @@ options = [
   Option ['c'] ["subsection"]
     (ReqArg (\ssn opts -> opts {optSubSection = Just ssn})
             "String")
-    "set subsection number"
+    "set subsection number",
+  Option ['j'] ["japanese"]
+    (NoArg (\opts -> opts {optLanguage = "ja"}))
+    "select japanese"
   ]
 
 printHelp :: IO ()
