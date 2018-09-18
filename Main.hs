@@ -274,7 +274,7 @@ tutorial = Tutorial
     Content "We can decompose a collection using the 'car' and 'cdr' function."
      ["(car {1 2 3 4 5})", "(cdr {1 2 3 4 5})", "(car (cdr {1 2 3 4 5}))"]
      ["Try to extract the third element of the collection '{1 2 3 4 5}' with 'car' and 'cdr'."],
-    Content "With the 'take' function, we can extract a head part of a collection.'."
+    Content "With the 'take' function, we can extract a head part of a collection."
      ["(take 0 {1 2 3 4 5})", "(take 3 {1 2 3 4 5})"]
      [],
     Content "We can handle infinite lists.\nFor example, 'nats' and 'primes' are an infinite list that contains all natural numbers and prime numbers respectively.\nTry to extract a head part from them."
@@ -288,7 +288,7 @@ tutorial = Tutorial
      [],
     Content "With the 'foldl' function, we can gather together all elements of the collection using an operator you like."
      ["(foldl + 0 {1 2 3 4 5})", "(foldl * 1 {1 2 3 4 5})"]
-     ["Try to get the sum of from 1 to 100?"],
+     ["Try to get the sum of from 1 to 100."],
     Content "Try to create a sequence of numbers '{1 1/2 1/3 1/4 ... 1/100}'."
      []
      [],
@@ -328,7 +328,7 @@ tutorial = Tutorial
     Content "Note that a tuple that consists of only one element is equal with that element itself."
      ["[1]", "[[[1]]]"]
      [],
-    Content "With the 'zip' function, we can combine two lists as follow."
+    Content "With the 'zip' function, we can combine two lists as follows."
      ["(take 100 (zip nats nats))", "(take 100 (zip primes primes))"]
      ["Try to generate the prime table that is like '{[1 2] [2 3] [3 5] [4 7] [5 11] ...}'"],
     Content "Try to create a fibonacci sequence that is like '{1 1 2 3 5 8 13 21 34 55 ...}'.\n\nHint:\n  Replace '???' in the following expression to a proper function.\n  (define $fibs {1 1 @(map ??? (zip fibs (cdr fibs)))})"
@@ -338,13 +338,13 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Basics of pattern-matching"
+  Section "Basics of pattern matching"
    [
-    Content "Let's try pattern-matching against a collection.\nThe 'join' pattern divides a collection into two collections.\nPlease note that the 'match-all' expression enumerates all results of pattern-matching."
+    Content "Let's try pattern-matching against a collection.\nThe 'join' pattern divides a collection into two collections.\nPlease note that the 'match-all' expression enumerates all results of pattern matching."
      ["(match-all {1 2 3}     (list integer) [<join $hs $ts> [hs ts]])",
       "(match-all {1 2 3 4 5} (list integer) [<join $hs $ts> [hs ts]])"]
      [],
-    Content "Try another pattern-constructor 'cons'.\nThe 'cons' pattern divides a collection into the head element and the rest collection.\n"
+    Content "Try another pattern constructor 'cons'.\nThe 'cons' pattern divides a collection into the head element and the rest collection.\n"
      ["(match-all {1 2 3}     (list integer) [<cons $x $xs> [x xs]])",
       "(match-all {1 2 3 4 5} (list integer) [<cons $x $xs> [x xs]])"]
      [],
@@ -356,7 +356,7 @@ tutorial = Tutorial
      ["(match-all {1 1 2 3 3 2} (list integer) [<join _ <cons $x <cons ,x _>>> x])",
       "(match-all {1 1 2 3 3 2} (list integer) [<join _ <cons $x <cons ,(+ x 1) _>>> x])"]
      [],
-    Content "We can pattern-match against infinite collections.\nWe can enumerate twin primes using pattern-matching as follow."
+    Content "We can pattern-match against infinite collections.\nWe can enumerate twin primes using pattern matching as follows."
      ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons ,(+ p 2) _>>> [p (+ p 2)]]))"]
      ["What is the 100th twin prime?"],
     Content "Try to enumerate the first 10 prime pairs whose form is (p, p+6) like '{{[5 11] [7 13] [11 17] [13 19] [17 23] ...}'."
@@ -379,19 +379,19 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Pattern-matching against various data types"
+  Section "Pattern matching against various data types"
    [
     Content "We can also pattern-match against multisets and sets.\nWe can change the way of pattern-matching by just changing a matcher."
      ["(match-all {1 2 3} (list integer)     [<cons $x $xs> [x xs]])",
       "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])",
       "(match-all {1 2 3} (set integer)      [<cons $x $xs> [x xs]])"]
      [],
-    Content "Try another pattern-constructor 'join'.\nThe 'join' pattern divides a collection into two collections."
+    Content "Try another pattern constructor 'join'.\nThe 'join' pattern divides a collection into two collections."
      ["(match-all {1 2 3 4 5} (list integer)     [<join $xs $ys> [xs ys]])",
       "(match-all {1 2 3 4 5} (multiset integer) [<join $xs $ys> [xs ys]])",
       "(match-all {1 2 3 4 5} (set integer)      [<join $xs $ys> [xs ys]])"]
      [],
-    Content "Try non-linear pattern-matching against multiset."
+    Content "Try non-linear pattern matching against multiset."
      ["(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x       _>> x])",
       "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])",
       "(match-all {1 2 1 3 2} (multiset integer) [<cons $x !<cons ,x _>> x])"]
@@ -463,7 +463,7 @@ tutorial = Tutorial
      ["[| [| 1 2 |] [| 10 20 30 |] |]"
       ]
      [],
-    Content "Matrix multiplication is represented as follow using tensor index notation."
+    Content "Matrix multiplication is represented as follows using tensor index notation."
      ["(. [| [| a b |] [| c d |] |]~i_j [| [| x y |] [| z w |] |]~j_k)"
       ]
      [],
@@ -497,7 +497,7 @@ tutorial = Tutorial
      ["!(+ [| 1 2 3 |] [| 1 2 3 |]) ;=> (+ [| 1 2 3 |]_t1 [| 1 2 3 |]_t2)"
       ]
      [],
-    Content "1-forms on Euclid space and Wedge product are represented as follow.\n\"!\" is effectively used in the definition of Wedge product."
+    Content "1-forms on Euclid space and Wedge product are represented as follows.\n\"!\" is effectively used in the definition of Wedge product."
      ["(define $dx [| 1 0 0 |])",
       "(define $dy [| 0 1 0 |])",
       "(define $dz [| 0 0 1 |])",
@@ -510,7 +510,7 @@ tutorial = Tutorial
       "(df-normalize (wedge dx dy))"
       ]
      [],
-    Content "Exterior derivative is defined as follow.\n\"!\" is effectively used in the definition of exterior derivative."
+    Content "Exterior derivative is defined as follows.\n\"!\" is effectively used in the definition of exterior derivative."
      ["(define $params [| x y z |])",
       "(define $d (lambda [%A] !((flip ∂/∂) params A)))",
       "(d (f x y z))",
@@ -536,7 +536,7 @@ tutorial = Tutorial
 --    Content "Let's try 'if' expressions."
 --     ["(if #t 1 2)", "(if #f 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]
 --     [],
---    Content "Using 'define' and 'if', we can write recursive functions as follow."
+--    Content "Using 'define' and 'if', we can write recursive functions as follows."
 --     ["(define $your-take (lambda [$n $xs] (if (eq? n 0) {} {(car xs) @(your-take (- n 1) (cdr xs))})))", "(your-take 10 nats)"]
 --     ["Try to write a 'your-while' function."],
 --    Content "Try to write a 'your-map' function.\nWe may need 'empty?' function inside 'your-map' function."
@@ -544,10 +544,10 @@ tutorial = Tutorial
 --     []
 --  Section "Writing scripts in Egison"
 --   [
---    Content "Let's write a famous Hello world program in Egison.\nTry the following expression.\nIt is evaluated to the 'io-function'.\nTo execute an io-function, we use 'io' primitive as follow."
+--    Content "Let's write a famous Hello world program in Egison.\nTry the following expression.\nIt is evaluated to the 'io-function'.\nTo execute an io-function, we use 'io' primitive as follows."
 --     ["(io (print \"Hello, world!\"))"]
 --     [],
---    Content "We can execute multiple io-functions in sequence as follow.\nThe io-functions is executed from the head."
+--    Content "We can execute multiple io-functions in sequence as follows.\nThe io-functions is executed from the head."
 --     ["(io (do {[(print \"a\")] [(print \"b\")] [(print \"c\")]} []))", "(io (do {[(write-string \"Type your name: \")] [(flush)] [$name (read-line)] [(print {@\"Hello, \" @name @\"!\"})]} []))"]
 --     [],
 --    Content "The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\", and execute it in the terminal as '% egison hello.egi'\n"
