@@ -307,7 +307,7 @@ tutorial = Tutorial
     Content "We can bind a value to a variable with a 'define' expression.\nWe can easily get the value we bound to a variable."
      ["(define $x 10)", "x", "(define $y (+ 1 x))", "y"]
      [],
-    Content "We support recursive definitions. It enables us to define an collection with infinite elements."
+    Content "We support recursive definitions. It enables us to define an collection with infinite elements.\nNote that '@' placed before a collection constructs a subcollection from the collection."
      ["(define $ones {1 @ones})", "(take 100 ones)", "(define $nats {1 @(map (+ $ 1) nats)})", "(take 100 nats)", "(define $odds {1 @(map (+ $ 2) odds)})", "(take 100 odds)"]
      ["Try to define the infinite list of even numbers that is like {2 4 6 8 10 ...}."],
     Content "We can create a function with a 'lambda' expression. Let's define functions and test them."
