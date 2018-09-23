@@ -111,8 +111,8 @@ showBanner = do
   putStrLn $ "Egison Tutorial Version " ++ showVersion P.version ++ " (C) 2013-2017 Satoshi Egi"
   putStrLn $ "Welcome to Egison Tutorial!"
   putStrLn $ "** Information **"
-  putStrLn $ "We can use a \'Tab\' key to complete keywords on the interpreter."
-  putStrLn $ "If we type a \'Tab\' key after a closed parenthesis, the next closed parenthesis will be completed."
+  putStrLn $ "We can use a \"Tab\" key to complete keywords on the interpreter."
+  putStrLn $ "If we type a \"Tab\" key after a closed parenthesis, the next closed parenthesis will be completed."
   putStrLn $ "*****************"
 
 showFinishMessage :: IO ()
@@ -251,51 +251,51 @@ showContent (Content msg examples exercises) =
 
 tutorial :: Tutorial
 tutorial = Tutorial
- [Section "Calculate numbers"
+ [Section "Arithmetic"
    [
-    Content "We can do arithmetic operations with '+', '-', '*', '/', 'modulo' and 'power'."
+    Content "We can do arithmetic operations with \"+\", \"-\", \"*\", \"/\", \"modulo\" and \"power\"."
      ["(+ 1 2)", "(- 30 15)", "(* 10 20)", "(/ 20 5)", "(modulo 17 4)", "(power 2 10)"]
      [],
     Content "We can write nested expressions."
      ["(+ (* 10 20) 2)", "(/ (* 10 20) (+ 10 20))"]
-     ["Try to calculate '(100 - 1) * (100 + 1)'."],
+     ["Try to calculate \"(100 - 1) * (100 + 1)\"."],
     Content "We are supporting rational numbers."
      ["(+ (/ 2 3) (/ 1 5))", "(/ 42 84)"]
      [],
     Content "We are supporting floats, too."
      ["(f.+ 10.2 1.3)", "(f.* 10.2 1.3)"]
      [],
-    Content "We can convert a rational number to a float number with 'rtof'."
+    Content "We can convert a rational number to a float number with \"rtof\"."
      ["(rtof (/ 1 5))", "(rtof (/ 1 100))"]
      [],
-    Content "We can handle collections of numbers.\nWe construct collections with '{}'."
+    Content "We can handle collections of numbers.\nWe construct collections with \"{}\"."
      ["{}", "{10}", "{1 2 3 4 5}"]
      [],
-    Content "We can decompose a collection using the 'car' and 'cdr' function."
+    Content "We can decompose a collection using the \"car\" and \"cdr\" function."
      ["(car {1 2 3 4 5})", "(cdr {1 2 3 4 5})", "(car (cdr {1 2 3 4 5}))"]
-     ["Try to extract the third element of the collection '{1 2 3 4 5}' with 'car' and 'cdr'."],
-    Content "With the 'take' function, we can extract a head part of a collection."
+     ["Try to extract the third element of the collection \"{1 2 3 4 5}\" with \"car\" and \"cdr\"."],
+    Content "With the \"take\" function, we can extract a head part of a collection."
      ["(take 0 {1 2 3 4 5})", "(take 3 {1 2 3 4 5})"]
      [],
-    Content "We can handle infinite lists.\nFor example, 'nats' and 'primes' are an infinite list that contains all natural numbers and prime numbers respectively.\nTry to extract a head part from them."
+    Content "We can handle infinite lists.\nFor example, \"nats\" and \"primes\" are an infinite list that contains all natural numbers and prime numbers respectively.\nTry to extract a head part from them."
      ["(take 10 nats)", "(take 30 nats)", "(take 10 primes)", "(take 30 primes)"]
      ["What is the 100th prime number."],
-    Content "We can create a partially applied function using '$' as an argument."
+    Content "We can create a partially applied function using \"$\" as an argument."
      ["((* $ 2) 10)", "((modulo $ 3) 10)"]
      [],
-    Content "With the 'map' function, we can operate each element of the collection at once."
+    Content "With the \"map\" function, we can operate each element of the collection at once."
      ["(take 100 (map (* $ 2) nats))", "(take 100 (map (modulo $ 3) nats))"]
      [],
-    Content "With the 'foldl' function, we can gather together all elements of the collection using an operator you like."
+    Content "With the \"foldl\" function, we can gather together all elements of the collection using an operator you like."
      ["(foldl + 0 {1 2 3 4 5})", "(foldl * 1 {1 2 3 4 5})"]
      ["Try to get the sum of from 1 to 100."],
-    Content "Try to create a sequence of numbers '{1 1/2 1/3 1/4 ... 1/100}'."
+    Content "Try to create a sequence of numbers \"{1 1/2 1/3 1/4 ... 1/100}\"."
      []
      [],
-    Content "Try to calculate '1 + 1/2 + 1/3 + 1/4 + ... + 1/100'.\nRemember that we can convert a rational number to a float number with 'rtof'."
+    Content "Try to calculate \"1 + 1/2 + 1/3 + 1/4 + ... + 1/100\".\nRemember that we can convert a rational number to a float number with \"rtof\"."
      ["(rtof (/ 2 3))"]
      [],
-    Content "Try to calculate '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2'.\nIn fact, '1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...' converges to '(/ (power pi 2) 6)'."
+    Content "Try to calculate \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2\".\nIn fact, \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...\" converges to \"(f./ (f.* f.pi f.pi) 6.0)\"."
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
@@ -304,34 +304,34 @@ tutorial = Tutorial
     ],
   Section "Basics of functional programming"
    [
-    Content "We can bind a value to a variable with a 'define' expression.\nWe can easily get the value we bound to a variable."
+    Content "We can bind a value to a variable with a \"define\" expression.\nWe can easily get the value we bound to a variable."
      ["(define $x 10)", "x", "(define $y (+ 1 x))", "y"]
      [],
     Content "We support recursive definitions. It enables us to define an collection with infinite elements."
      ["(define $ones {1 @ones})", "(take 100 ones)", "(define $nats {1 @(map (+ $ 1) nats)})", "(take 100 nats)", "(define $odds {1 @(map (+ $ 2) odds)})", "(take 100 odds)"]
      ["Try to define the infinite list of even numbers that is like {2 4 6 8 10 ...}."],
-    Content "We can create a function with a 'lambda' expression. Let's define functions and test them."
+    Content "We can create a function with a \"lambda\" expression. Let's define functions and test them."
      ["(define $increment (lambda [$x] (+ x 1)))", "(increment 10)", "(define $multiply (lambda [$x $y] (* x y)))", "(multiply 10 20)", "(define $sum (lambda [$n] (foldl + 0 (take n nats))))", "(sum 10)"]
-     ["Try to define a 'fact' function, which obtains an natural number 'n' and returns 'n * (n - 1) * ... * 2 * 1'."],
-    Content "We can compare numbers using functions that return '#t' or '#f'.\n'#t' means the true.\n'#f' means the false.\nFunctions that return '#t' or '#f' are called \"predicates\"."
+     ["Try to define a \"fact\" function, which obtains an natural number \"n\" and returns \"n * (n - 1) * ... * 2 * 1\"."],
+    Content "We can compare numbers using functions that return \"#t\" or \"#f\".\n\"#t\" means the true.\n\"#f\" means the false.\nFunctions that return \"#t\" or \"#f\" are called \"predicates\"."
      ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]
      [],
-    Content "With the 'take-while' function, we can extract all head elements that satisfy the predicate.\n'primes' is a infinite list that contains all prime numbers."
+    Content "With the \"take-while\" function, we can extract all head elements that satisfy the predicate.\n\"primes\" is a infinite list that contains all prime numbers."
      ["(take-while (lt? $ 100) primes)", "(take-while (lt? $ 1000) primes)"]
      [],
-    Content "With the 'filter' function, we can extract all elements that satisfy the predicate."
+    Content "With the \"filter\" function, we can extract all elements that satisfy the predicate."
      ["(take 100 (filter even? nats))", "(take 100 (filter prime? nats))", "(take 100 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))"]
      ["Try to enumerate the first 100 primes that are congruent to 3 modulo 4."],
-    Content "We combine numbers using '[]'.\nThese things are called 'tuples'."
+    Content "We combine numbers using \"[]\".\nThese things are called \"tuples\"."
      ["[1 2]", "[1 2 3]"]
      [],
     Content "Note that a tuple that consists of only one element is equal with that element itself."
      ["[1]", "[[[1]]]"]
      [],
-    Content "With the 'zip' function, we can combine two lists as follows."
+    Content "With the \"zip\" function, we can combine two lists as follows."
      ["(take 100 (zip nats nats))", "(take 100 (zip primes primes))"]
-     ["Try to generate the prime table that is like '{[1 2] [2 3] [3 5] [4 7] [5 11] ...}'"],
-    Content "Try to create a fibonacci sequence that is like '{1 1 2 3 5 8 13 21 34 55 ...}'.\n\nHint:\n  Replace '???' in the following expression to a proper function.\n  (define $fibs {1 1 @(map ??? (zip fibs (cdr fibs)))})"
+     ["Try to generate the prime table as \"{[1 2] [2 3] [3 5] [4 7] [5 11] ...}\""],
+    Content "Try to create a Fibonacci sequence \"{1 1 2 3 5 8 13 21 34 55 ...}\".\n\nHint:\n  Replace \"???\" in the following expression to a proper function.\n  (define $fibs {1 1 @(map ??? (zip fibs (cdr fibs)))})"
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
@@ -340,39 +340,39 @@ tutorial = Tutorial
     ],
   Section "Basics of pattern matching"
    [
-    Content "Let's try pattern-matching against a collection.\nThe 'join' pattern divides a collection into two collections.\nPlease note that the 'match-all' expression enumerates all results of pattern matching."
+    Content "Let's try pattern-matching against a collection.\nThe \"join\" pattern divides a collection into two collections.\nPlease note that the \"match-all\" expression enumerates all results of pattern matching."
      ["(match-all {1 2 3}     (list integer) [<join $hs $ts> [hs ts]])",
       "(match-all {1 2 3 4 5} (list integer) [<join $hs $ts> [hs ts]])"]
      [],
-    Content "Try another pattern constructor 'cons'.\nThe 'cons' pattern divides a collection into the head element and the rest collection.\n"
+    Content "Try another pattern constructor \"cons\".\nThe \"cons\" pattern divides a collection into the head element and the rest collection.\n"
      ["(match-all {1 2 3}     (list integer) [<cons $x $xs> [x xs]])",
       "(match-all {1 2 3 4 5} (list integer) [<cons $x $xs> [x xs]])"]
      [],
-    Content "'_' is a wildcard and matches with any objects."
+    Content "\"_\" is a wildcard and matches with any objects."
      ["(match-all {1 2 3}     (list integer) [<cons $x  _>  x])",
       "(match-all {1 2 3 4 5} (list integer) [<join $hs _> hs])"]
      [],
-    Content "We can write non-linear patterns.\nNon-linear pattern is a pattern that allows multiple occurrence of same variables in a pattern.\nPatterns that begins with ',' matches the object when it is equal with the expression after ','."
+    Content "We can write non-linear patterns.\nA non-linear pattern is a pattern that allows multiple occurrences of the same variables in a pattern.\nA pattern that begins with \",\" matches the object when it is equal with the expression after \",\"."
      ["(match-all {1 1 2 3 3 2} (list integer) [<join _ <cons $x <cons ,x _>>> x])",
       "(match-all {1 1 2 3 3 2} (list integer) [<join _ <cons $x <cons ,(+ x 1) _>>> x])"]
      [],
-    Content "We can pattern-match against infinite collections.\nWe can enumerate twin primes using pattern matching as follows."
+    Content "Egison can handle pattern matching with infinite search space.\nFor example, we can enumerate twin primes using pattern matching as follows."
      ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons ,(+ p 2) _>>> [p (+ p 2)]]))"]
      ["What is the 100th twin prime?"],
-    Content "Try to enumerate the first 10 prime pairs whose form is (p, p+6) like '{{[5 11] [7 13] [11 17] [13 19] [17 23] ...}'."
+    Content "Try to enumerate the first 10 prime pairs whose form is (p, p+6) like \"{{[5 11] [7 13] [11 17] [13 19] [17 23] ...}\"."
      []
      [],
-    Content "A pattern that has '!' ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
+    Content "A pattern that has \"!\" ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
      ["(match-all {1 1 2 2 3 4 4 5} (list integer) [<join _ <cons $x <cons  ,x _>>> x])",
       "(match-all {1 1 2 2 3 4 4 5} (list integer) [<join _ <cons $x <cons !,x _>>> x])"]
      [],
-    Content "A pattern whose form is '(& p1 p2 ...)' is called an and-pattern.\nAn and-pattern is a pattern that matches the object, if and only if all of the patterns are matched.\nAnd-pattern is used like an as-pattern in the following sample."
+    Content "A pattern whose form is \"(& p1 p2 ...)\" is called an and-pattern.\nAn and-pattern is a pattern that matches the object, if and only if all the patterns are matched.\nThe and-pattern is used like an as-pattern in the following sample."
      ["(match-all {1 2 4 5 6 8 9} (list integer) [<join _ <cons $x <cons (& !,(+ x 1) $y) _>>> [x y]])"]
      [],
-    Content "A pattern whose form is '(| p1 p2 ...)' is called an or-pattern.\nAn or-pattern matches with the object, if the object matches one of given patterns.\nUsing it, We can enumerate prime triplets."
+    Content "A pattern whose form is \"(| p1 p2 ...)\" is called an or-pattern.\nAn or-pattern matches with the object, if the object matches one of the given patterns.\nIn the following sample, we enumerate prime triplets using it."
      ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
      ["What is the 20th prime triplet?"],
-    Content "Try to enumerate the first 8 prime quadruplets whose form is (p, p+2, p+6, p+8) like '{{[5 7 11 13] [11 13 17 19] ...}'."
+    Content "Try to enumerate the first 8 prime quadruples whose form is (p, p+2, p+6, p+8) like \"{{[5 7 11 13] [11 13 17 19] ...}\"."
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
@@ -381,12 +381,12 @@ tutorial = Tutorial
     ],
   Section "Pattern matching against various data types"
    [
-    Content "We can also pattern-match against multisets and sets.\nWe can change the way of pattern-matching by just changing a matcher."
+    Content "We can pattern-match also against multisets and sets.\nWe can change the interpretation of patterns by changing a matcher (the second argument of the match-all expression).The meaning of the cons pattern is generalized to divide a collection into \"an\" element and the rest."
      ["(match-all {1 2 3} (list integer)     [<cons $x $xs> [x xs]])",
       "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])",
       "(match-all {1 2 3} (set integer)      [<cons $x $xs> [x xs]])"]
      [],
-    Content "Try another pattern constructor 'join'.\nThe 'join' pattern divides a collection into two collections."
+    Content "Try another pattern constructor \"join\".\nThe \"join\" pattern divides a collection into two collections."
      ["(match-all {1 2 3 4 5} (list integer)     [<join $xs $ys> [xs ys]])",
       "(match-all {1 2 3 4 5} (multiset integer) [<join $xs $ys> [xs ys]])",
       "(match-all {1 2 3 4 5} (set integer)      [<join $xs $ys> [xs ys]])"]
@@ -396,9 +396,14 @@ tutorial = Tutorial
       "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])",
       "(match-all {1 2 1 3 2} (multiset integer) [<cons $x !<cons ,x _>> x])"]
      [],
-    Content "The following samples enumerate pairs and triplets of natural numbers.\nNote that Egison really enumerates all results."
-     ["(take 10 (match-all nats (set integer) [<cons $m <cons $n _>>           [m n]]))",
-      "(take 10 (match-all nats (set integer) [<cons $l <cons $m <cons $n _>>> [l m n]]))"]
+    Content "Pattern matching of Egison efficiently backtracks for non-linear patterns.\nFor example, all the following pattern-matching expressions are processed in O(n^2)."
+     ["(match-all (between 1 100) (multiset integer) [<cons $x <cons ,x _>> x])",
+      "(match-all (between 1 100) (multiset integer) [<cons $x <cons ,x <cons ,x _>>> x])",
+      "(match-all (between 1 100) (multiset integer) [<cons $x <cons ,x <cons ,x <cons ,x _>>>> x])"]
+     [],
+    Content "The following samples enumerate pairs and triplets of natural numbers.\nNote that Egison really enumerates all the results."
+     ["(take 10 (match-all nats (set integer) [<cons $x <cons $y _>>           [x y]]))",
+      "(take 10 (match-all nats (set integer) [<cons $x <cons $y <cons $z _>>> [x y z]]))"]
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
      []
@@ -440,7 +445,7 @@ tutorial = Tutorial
     ],
   Section "Differential geometry: tensor analysis"
    [
-    Content "We can handle vectors.\nWe construct vectors with '[| |]'."
+    Content "We can handle vectors.\nWe construct vectors with \"[| |]\"."
      ["[| 1 2 3 |]",
       "(+ [| 1 2 3 |] [| 1 2 3 |])"
       ]
@@ -455,7 +460,7 @@ tutorial = Tutorial
       "(. [| 1 2 3 |]_i [| 1 2 3 |]_j)"
       ]
      [],
-    Content "We can handle both of upperscripts(~) and subscripts(_).\nThe \".\" function supports Einstein summation notation."
+    Content "We can handle both of superscripts (~) and subscripts(_).\nThe \".\" function supports Einstein summation notation."
      ["(. [| 1 2 3 |]~i [| 1 2 3 |]_i)"
       ]
      [],
@@ -473,7 +478,7 @@ tutorial = Tutorial
       "(min [| 1 2 3 |]_i [| 10 20 30 |]_j)"
       ]
      [],
-    Content "The function defined using tesnor parameters (prepended by \"%\") treats a tensor as a whole."
+    Content "The function defined using tensor parameters (prepended by \"%\") treats a tensor as a whole."
      ["(define $det2 (lambda [%X] (- (* X_1_1 X_2_2) (* X_1_2 X_2_1))))",
       "(det2 [| [| 2 1 |] [| 1 2 |] |])",
       "(det2 [| [| a b |] [| c d |] |])"
@@ -530,27 +535,27 @@ tutorial = Tutorial
   ]
 --  Section "Define your own functions"
 --   [
---    Content "Did we think how about \"n\" combinations of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include '...' as the following demonstrations."
+--    Content "Did we think how about \"n\" combinations of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include \"...\" as the following demonstrations."
 --     ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 3] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])"]
 --     [],
---    Content "Let's try 'if' expressions."
+--    Content "Let's try \"if\" expressions."
 --     ["(if #t 1 2)", "(if #f 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]
 --     [],
---    Content "Using 'define' and 'if', we can write recursive functions as follows."
+--    Content "Using \"define\" and \"if\", we can write recursive functions as follows."
 --     ["(define $your-take (lambda [$n $xs] (if (eq? n 0) {} {(car xs) @(your-take (- n 1) (cdr xs))})))", "(your-take 10 nats)"]
---     ["Try to write a 'your-while' function."],
---    Content "Try to write a 'your-map' function.\nWe may need 'empty?' function inside 'your-map' function."
+--     ["Try to write a \"your-while\" function."],
+--    Content "Try to write a \"your-map\" function.\nWe may need \"empty?\" function inside \"your-map\" function."
 --     ["(empty? {})", "(empty? {1 2 3})"]
 --     []
 --  Section "Writing scripts in Egison"
 --   [
---    Content "Let's write a famous Hello world program in Egison.\nTry the following expression.\nIt is evaluated to the 'io-function'.\nTo execute an io-function, we use 'io' primitive as follows."
+--    Content "Let's write a famous Hello world program in Egison.\nTry the following expression.\nIt is evaluated to the \"io-function\".\nTo execute an io-function, we use \"io\" primitive as follows."
 --     ["(io (print \"Hello, world!\"))"]
 --     [],
 --    Content "We can execute multiple io-functions in sequence as follows.\nThe io-functions is executed from the head."
 --     ["(io (do {[(print \"a\")] [(print \"b\")] [(print \"c\")]} []))", "(io (do {[(write-string \"Type your name: \")] [(flush)] [$name (read-line)] [(print {@\"Hello, \" @name @\"!\"})]} []))"]
 --     [],
---    Content "The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\", and execute it in the terminal as '% egison hello.egi'\n"
+--    Content "The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\", and execute it in the terminal as \"% egison hello.egi\"\n"
 --     ["(define $main (lambda [$args] (print \"Hello, world!\")))"]
 --     [],
 --    Content "That's all. Thank you for finishing our tutorail! Did you enjoy it?\nIf you got into Egison programming. I'd like you to try Rosseta Code.\nThere are a lot of interesting problems.\n\n  http://rosettacode.org/wiki/Category:Egison"
