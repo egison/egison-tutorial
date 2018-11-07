@@ -307,12 +307,12 @@ tutorial = Tutorial
     Content "We can bind a value to a variable with a \"define\" expression.\nWe can easily get the value we bound to a variable."
      ["(define $x 10)", "x", "(define $y (+ 1 x))", "y"]
      [],
-    Content "We support recursive definitions. It enables us to define an collection with infinite elements.\nNote that \"@\" expands the collection placed after \"@\" as a subcollection of the outer collection."
+    Content "We support recursive definitions. It enables us to define a collection with infinite elements.\nNote that \"@\" expands the collection placed after \"@\" as a subcollection of the outer collection."
      ["(define $ones {1 @ones})", "(take 100 ones)", "(define $nats {1 @(map (+ $ 1) nats)})", "(take 100 nats)", "(define $odds {1 @(map (+ $ 2) odds)})", "(take 100 odds)"]
      ["Try to define the infinite list of even numbers that is like {2 4 6 8 10 ...}."],
     Content "We can create a function with a \"lambda\" expression. Let's define functions and test them."
      ["(define $increment (lambda [$x] (+ x 1)))", "(increment 10)", "(define $multiply (lambda [$x $y] (* x y)))", "(multiply 10 20)", "(define $sum (lambda [$n] (foldl + 0 (take n nats))))", "(sum 10)"]
-     ["Try to define a \"fact\" function, which obtains an natural number \"n\" and returns \"n * (n - 1) * ... * 2 * 1\"."],
+     ["Try to define a \"fact\" function, which obtains a natural number \"n\" and returns \"n * (n - 1) * ... * 2 * 1\"."],
     Content "We can compare numbers using functions that return \"#t\" or \"#f\".\n\"#t\" means the true.\n\"#f\" means the false.\nFunctions that return \"#t\" or \"#f\" are called \"predicates\"."
      ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]
      [],
@@ -325,7 +325,7 @@ tutorial = Tutorial
     Content "We combine numbers using \"[]\".\nThese things are called \"tuples\"."
      ["[1 2]", "[1 2 3]"]
      [],
-    Content "Note that a tuple that consists of only one element is equal with that element itself."
+    Content "Note that a tuple that consists of only one element is equal to that element itself."
      ["[1]", "[[[1]]]"]
      [],
     Content "With the \"zip\" function, we can combine two lists as follows."
