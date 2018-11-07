@@ -330,7 +330,7 @@ tutorial = Tutorial
      [],
     Content "With the \"zip\" function, we can combine two lists as follows."
      ["(take 100 (zip nats nats))", "(take 100 (zip primes primes))"]
-     ["Try to generate the prime table as \"{[1 2] [2 3] [3 5] [4 7] [5 11] ...}\""],
+     ["Try to generate the prime table as \"{[2 3] [3 5] [4 7] [5 11] ...}\""],
     Content "Try to create a Fibonacci sequence \"{1 1 2 3 5 8 13 21 34 55 ...}\".\n\nHint:\n  Replace \"???\" in the following expression to a proper function.\n  (define $fibs {1 1 @(map ??? (zip fibs (cdr fibs)))})"
      []
      [],
