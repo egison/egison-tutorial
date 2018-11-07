@@ -188,12 +188,12 @@ repl env prompt = do
         if b
           then return ()
           else do
-            b <- yesOrNo "Do you want to procced next?"
+            b <- yesOrNo "Do you want to proceed next?"
             if b
               then loop env contents True
               else loop env (content:contents) False
       Left (Just "") -> do
-        b <- yesOrNo "Do you want to procced next?"
+        b <- yesOrNo "Do you want to proceed next?"
         if b
           then loop env contents True
           else loop env (content:contents) False
