@@ -198,7 +198,7 @@ repl env prompt = do
           then loop env contents True
           else loop env (content:contents) False
       Right (topExpr, _) -> do
-        result <- liftIO $ runEgisonTopExpr env topExpr
+        result <- liftIO $ runEgisonTopExpr True env topExpr
         case result of
           Left err -> do
             liftIO $ putStrLn $ show err
@@ -531,7 +531,7 @@ tutorial = Tutorial
      []
      []
     ]
-  
+
   ]
 --  Section "Define your own functions"
 --   [
