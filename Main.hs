@@ -2,7 +2,7 @@ module Main where
 
 import Prelude hiding (catch)
 import Control.Exception ( AsyncException(..), catch )
-import Control.Monad.Error
+import Control.Monad.Except
 
 import Data.Version
 import Data.List
@@ -181,7 +181,7 @@ repl env prompt = do
       then liftIO $ putStrLn $ show content
       else return ()
     home <- getHomeDirectory
-    input <- liftIO $ runInputT (settings home) $ getEgisonExprOrNewLine prompt
+    input <- liftIO $ runInputT (settings home) $ getEgisonExprOrNewLine True prompt
     case input of
       Left Nothing -> do
         b <- yesOrNo "Do you want to quit?"
