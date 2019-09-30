@@ -372,7 +372,7 @@ tutorial = Tutorial
     Content "A pattern whose form is \"(| p1 p2 ...)\" is called an or-pattern.\nAn or-pattern matches with the object, if the object matches one of the given patterns.\nIn the following sample, we enumerate prime triplets using it."
      ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
      ["What is the 20th prime triplet?"],
-    Content "Try to enumerate the first 8 prime quadruples whose form is (p, p+2, p+6, p+8) like \"{{[5 7 11 13] [11 13 17 19] ...}\"."
+    Content "Try to enumerate the first 4 prime quadruples whose form is (p, p+2, p+6, p+8) like \"{{[5 7 11 13] [11 13 17 19] ...}\"."
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
