@@ -6,6 +6,7 @@ import Control.Monad.Except
 
 import Data.Version
 import Data.List
+import Text.Regex.Posix
 
 import System.IO
 import System.Environment
@@ -15,8 +16,10 @@ import System.Console.Haskeline hiding (handle, catch, throwTo)
 import System.Console.GetOpt
 import System.Exit (ExitCode (..), exitWith, exitFailure)
 
-import Language.Egison
+import Language.Egison hiding (optShowVersion, optPrompt)
+import qualified Language.Egison.Types as ET
 import Language.Egison.Util
+import qualified Language.Egison.Parser          as Parser
 import qualified Paths_egison_tutorial as P
 
 main :: IO ()
@@ -41,7 +44,7 @@ main = do args <- getArgs
             Options {optShowHelp = True} -> printHelp
             Options {optShowVersion = True} -> printVersionNumber
             Options {optPrompt = prompt} -> do
-                env <- initialEnv
+                env <- initialEnv ET.defaultOption
                 case nonOpts of
                     [] -> showBanner >> repl env prompt
                     _ -> printHelp
@@ -163,6 +166,29 @@ getNumber n = do
       putStrLn "Invalid input!"
       getNumber n
 
+-- |Get Egison expression from the prompt. We can handle multiline input.
+getEgisonExprOrNewLine :: Options -> InputT IO (Either (Maybe String) (String, EgisonTopExpr))
+getEgisonExprOrNewLine opts = getEgisonExprOrNewLine' opts ""
+
+getEgisonExprOrNewLine' :: Options -> String -> InputT IO (Either (Maybe String) (String, EgisonTopExpr))
+getEgisonExprOrNewLine' opts prev = do
+  mLine <- case prev of
+             "" -> getInputLine $ optPrompt opts
+             _  -> getInputLine $ replicate (length $ optPrompt opts) ' '
+  case mLine of
+    Nothing -> return $ Left Nothing
+    Just [] -> return $ Left $ Just ""
+    Just line -> do
+      let input = prev ++ line
+      let parsedExpr = Parser.parseTopExpr input
+      case parsedExpr of
+        Left err | show err =~ "unexpected end of input" ->
+          getEgisonExprOrNewLine' opts $ input ++ "\n"
+        Left err -> do
+          liftIO $ print err
+          getEgisonExprOrNewLine opts
+        Right topExpr -> return $ Right (input, topExpr)
+
 repl :: Env -> String -> IO ()
 repl env prompt = do
   section <- selectSection tutorial
@@ -181,7 +207,7 @@ repl env prompt = do
       then liftIO $ putStrLn $ show content
       else return ()
     home <- getHomeDirectory
-    input <- liftIO $ runInputT (settings home) $ getEgisonExprOrNewLine True prompt
+    input <- liftIO $ runInputT (settings home) $ getEgisonExprOrNewLine defaultOptions
     case input of
       Left Nothing -> do
         b <- yesOrNo "Do you want to quit?"
@@ -198,7 +224,7 @@ repl env prompt = do
           then loop env contents True
           else loop env (content:contents) False
       Right (topExpr, _) -> do
-        result <- liftIO $ runEgisonTopExpr True env topExpr
+        result <- liftIO $ runEgisonTopExpr ET.defaultOption env topExpr
         case result of
           Left err -> do
             liftIO $ putStrLn $ show err
