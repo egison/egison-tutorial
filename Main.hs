@@ -338,7 +338,7 @@ tutorial = Tutorial
      ["Try to define the infinite list of even numbers that is like {2 4 6 8 10 ...}."],
     Content "We can create a function with a \"lambda\" expression. Let's define functions and test them."
      ["(define $increment (lambda [$x] (+ x 1)))", "(increment 10)", "(define $multiply (lambda [$x $y] (* x y)))", "(multiply 10 20)", "(define $sum (lambda [$n] (foldl + 0 (take n nats))))", "(sum 10)"]
-     ["Try to define a \"fact\" function, which obtains a natural number \"n\" and returns \"n * (n - 1) * ... * 2 * 1\"."],
+     ["Try to define a \"fact\" function, which takes a natural number \"n\" and returns \"n * (n - 1) * ... * 2 * 1\"."],
     Content "We can compare numbers using functions that return \"#t\" or \"#f\".\n\"#t\" means the true.\n\"#f\" means the false.\nFunctions that return \"#t\" or \"#f\" are called \"predicates\"."
      ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]
      [],
