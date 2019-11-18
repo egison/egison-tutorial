@@ -423,9 +423,9 @@ tutorial = Tutorial
       "(match-all {1 2 1 3 2} (multiset integer) [<cons $x !<cons ,x _>> x])"]
      [],
     Content "Pattern matching of Egison efficiently backtracks for non-linear patterns.\nFor example, all the following pattern-matching expressions are processed in O(n^2)."
-     ["(match-all (between 1 100) (multiset integer) [<cons $x <cons ,x _>> x])",
-      "(match-all (between 1 100) (multiset integer) [<cons $x <cons ,x <cons ,x _>>> x])",
-      "(match-all (between 1 100) (multiset integer) [<cons $x <cons ,x <cons ,x <cons ,x _>>>> x])"]
+     ["(match-all (between 1 30) (multiset integer) [<cons $x <cons ,x _>> x])",
+      "(match-all (between 1 30) (multiset integer) [<cons $x <cons ,x <cons ,x _>>> x])",
+      "(match-all (between 1 30) (multiset integer) [<cons $x <cons ,x <cons ,x <cons ,x _>>>> x])"]
      [],
     Content "The following samples enumerate pairs and triplets of natural numbers.\nNote that Egison really enumerates all the results."
      ["(take 10 (match-all nats (set integer) [<cons $x <cons $y _>>           [x y]]))",

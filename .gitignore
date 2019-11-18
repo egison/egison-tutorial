@@ -3,3 +3,7 @@ prof/
 .egison_tutorial_history
 .cabal-sandbox
 cabal.sandbox.config
+stack.yaml
+stack.yaml.lock
+.stack-work
+dist-newstyle
