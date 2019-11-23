@@ -1,5 +1,5 @@
 Name:                egison-tutorial
-Version:             3.9.3
+Version:             3.10.0
 Synopsis:            A tutorial program for the Egison programming language
 Description:         A tutorial program for the Egison programming language.
                      Egison is the programming langugage that realized non-linear pattern-matching against unfree data types.
@@ -20,5 +20,5 @@ source-repository head
 
 Executable egison-tutorial
   Main-is:             Main.hs
-  Build-depends:       egison = 3.9.4, base >= 4.0 && < 5, array, containers, unordered-containers, haskeline, transformers, mtl, parsec >= 3.0, directory, ghc, ghc-paths, filepath, regex-posix, bytestring
+  Build-depends:       egison >= 3.10.0, base >= 4.0 && < 5, array, containers, unordered-containers, haskeline, transformers, mtl, parsec >= 3.0, directory, ghc, ghc-paths, filepath, regex-posix, bytestring
   Other-modules:   Paths_egison_tutorial

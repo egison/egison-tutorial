@@ -17,7 +17,7 @@ import System.Console.GetOpt
 import System.Exit (ExitCode (..), exitWith, exitFailure)
 
 import Language.Egison hiding (optShowVersion, optPrompt)
-import qualified Language.Egison.Types as ET
+import qualified Language.Egison.CmdOptions as ET
 import Language.Egison.Util
 import qualified Language.Egison.Parser          as Parser
 import qualified Paths_egison_tutorial as P
