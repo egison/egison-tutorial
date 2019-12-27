@@ -491,7 +491,7 @@ tutorial = Tutorial
       ]
      [],
     Content "Matrix is represented as a vector of vectors."
-     ["[| [| 1 2 |] [| 10 20 30 |] |]"
+     ["[| [| 1 2 3 |] [| 10 20 30 |] |]"
       ]
      [],
     Content "Matrix multiplication is represented as follows using tensor index notation."
