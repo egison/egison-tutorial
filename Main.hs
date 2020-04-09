@@ -111,7 +111,7 @@ printVersionNumber = do
 
 showBanner :: IO ()
 showBanner = do
-  putStrLn $ "Egison Tutorial Version " ++ showVersion P.version ++ " (C) 2013-2017 Satoshi Egi"
+  putStrLn $ "Egison Tutorial Version " ++ showVersion P.version ++ " (C) 2013-2020 Satoshi Egi"
   putStrLn $ "Welcome to Egison Tutorial!"
   putStrLn $ "** Information **"
   putStrLn $ "We can use a \"Tab\" key to complete keywords on the interpreter."

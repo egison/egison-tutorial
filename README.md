@@ -12,7 +12,7 @@ For more information, please visit [Egison website](http://www.egison.org).
 ```
 % cabal install
 % egison-tutorial
-Egison Tutorial Version X.X.X (C) 2013-2014 Satoshi Egi
+Egison Tutorial Version X.X.X (C) 2013-20XX Satoshi Egi
 Welcome to Egison Tutorial!
 ** Information **
 We can use a 'Tab' key to complete keywords on the interpreter.
