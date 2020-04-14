@@ -289,49 +289,52 @@ tutorial :: Tutorial
 tutorial = Tutorial
  [Section "Arithmetic"
    [
-    Content "We can do arithmetic operations with \"+\", \"-\", \"*\", \"/\", \"modulo\" and \"power\"."
-     ["(+ 1 2)", "(- 30 15)", "(* 10 20)", "(/ 20 5)", "(modulo 17 4)", "(power 2 10)"]
+    Content "We can do arithmetic operations with \"+\", \"-\", \"*\", \"/\", \"^\" and \"modulo\"."
+     ["1 + 2", "30 - 15", "10 * 20", "20 / 5", "2 ^ 10", "modulo 17 4"]
      [],
     Content "We can nest expressions."
-     ["(+ (* 10 20) 2)", "(/ (* 10 20) (+ 10 20))"]
-     ["Try to calculate \"(100 - 1) * (100 + 1)\"."],
+     ["10 * 20 + 2", "10 * 20 / (10 + 20)"]
+     ["Try calculating \"(100 - 1) * (100 + 1)\"."],
     Content "We support rational numbers."
-     ["(+ (/ 2 3) (/ 1 5))", "(/ 42 84)"]
+     ["2 / 3 + 1 / 5", "42 / 84"]
      [],
     Content "We support floats, too."
-     ["(f.+ 10.2 1.3)", "(f.* 10.2 1.3)"]
+     ["f.+ 10.2 1.3", "f.* 10.2 1.3"]
      [],
     Content "We can convert a rational number to a float number with \"rtof\"."
-     ["(rtof (/ 1 5))", "(rtof (/ 1 100))"]
+     ["rtof (1 / 5)", "rtof (1 / 100)"]
      [],
-    Content "We can handle collections of numbers.\nWe construct collections with \"{}\"."
-     ["{}", "{10}", "{1 2 3 4 5}"]
+    Content "We can handle collections of numbers.\nWe construct collections with \"[]\"."
+     ["[]", "[10]", "[1, 2, 3, 4, 5]"]
      [],
-    Content "We can decompose a collection using the \"car\" and \"cdr\" function."
-     ["(car {1 2 3 4 5})", "(cdr {1 2 3 4 5})", "(car (cdr {1 2 3 4 5}))"]
-     ["Try to extract the third element of the collection \"{1 2 3 4 5}\" with \"car\" and \"cdr\"."],
+    Content "We can decompose a collection using the \"head\" and \"tail\" function."
+     ["head [1, 2, 3, 4, 5]", "tail [1, 2, 3, 4, 5]", "head (tail [1, 2, 3, 4, 5])"]
+     ["Try to extract the third element of the collection \"[1, 2, 3, 4, 5]\" with \"head\" and \"tail\"."],
     Content "With the \"take\" function, we can extract a head part of a collection."
-     ["(take 0 {1 2 3 4 5})", "(take 3 {1 2 3 4 5})"]
+     ["take 0 [1, 2, 3, 4, 5]", "take 3 [1, 2, 3, 4, 5]"]
      [],
     Content "We can handle infinite lists.\nFor example, \"nats\" and \"primes\" are an infinite list that contains all natural numbers and prime numbers respectively.\nTry to extract a head part from them."
-     ["(take 10 nats)", "(take 30 nats)", "(take 10 primes)", "(take 30 primes)"]
-     ["What is the 100th prime number."],
-    Content "We can create a partially applied function using \"$\" as an argument."
-     ["((* $ 2) 10)", "((modulo $ 3) 10)"]
+     ["take 10 nats", "take 30 nats", "take 10 primes", "take 30 primes"]
+     ["What is the 100th prime number?"],
+    Content "Functions are written as \"\\x -> ... \"."
+     ["(\\x -> x + 1) 2", "(\\x y -> x + y) 2 3"]
+     [],
+    Content "We can use section notation of Haskell."
+     ["(+) 2 3", "(* 2) 3", "(4 -) 3"]
      [],
     Content "With the \"map\" function, we can operate each element of the collection at once."
-     ["(take 100 (map (* $ 2) nats))", "(take 100 (map (modulo $ 3) nats))"]
+     ["take 100 (map (* 2) nats)", "take 100 (map (\\x -> modulo x 3) nats)"]
      [],
     Content "With the \"foldl\" function, we can gather together all elements of the collection using an operator you like."
-     ["(foldl + 0 {1 2 3 4 5})", "(foldl * 1 {1 2 3 4 5})"]
+     ["foldl (+) 0 [1, 2, 3, 4, 5]", "foldl (*) 1 [1, 2, 3, 4, 5]"]
      ["Try to get the sum of from 1 to 100."],
-    Content "Try to create a sequence of numbers \"{1 1/2 1/3 1/4 ... 1/100}\"."
+    Content "Try to create a sequence of numbers \"[1, 1/2, 1/3, 1/4, ..., 1/100]\"."
      []
      [],
     Content "Try calculating \"1 + 1/2 + 1/3 + 1/4 + ... + 1/100\".\nRemember that we can convert a rational number to a float number with \"rtof\"."
-     ["(rtof (/ 2 3))"]
+     ["rtof (2 / 3)"]
      [],
-    Content "Try calculating \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2\".\nIn fact, \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...\" converges to \"(f./ (f.* f.pi f.pi) 6.0)\"."
+    Content "Try calculating \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2\".\nIn fact, \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...\" converges to \"f./ (f.* f.pi f.pi) 6.0\"."
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
@@ -340,12 +343,12 @@ tutorial = Tutorial
     ],
   Section "Basics of functional programming"
    [
-    Content "We can bind a value to a variable with a \"define\" expression.\nWe can easily get the value we bound to a variable."
-     ["(define $x 10)", "x", "(define $y (+ 1 x))", "y"]
+    Content "We can bind a value to a variable with \":=\" (not \"=\").\nWe can easily get the value we bound to a variable."
+     ["x := 10", "x", "y := 1 + x", "y"]
      [],
     Content "We support recursive definitions. It enables us to define a collection with infinite elements.\nNote that \"@\" expands the collection placed after \"@\" as a subcollection of the outer collection."
      ["(define $ones {1 @ones})", "(take 100 ones)", "(define $nats {1 @(map (+ $ 1) nats)})", "(take 100 nats)", "(define $odds {1 @(map (+ $ 2) odds)})", "(take 100 odds)"]
-     ["Try to define the infinite list of even numbers that is like {2 4 6 8 10 ...}."],
+     ["Try to define the infinite list of even numbers like [2, 4, 6, 8, 10, ...]."],
     Content "We can create a function with a \"lambda\" expression. Let's define functions and test them."
      ["(define $increment (lambda [$x] (+ x 1)))", "(increment 10)", "(define $multiply (lambda [$x $y] (* x y)))", "(multiply 10 20)", "(define $sum (lambda [$n] (foldl + 0 (take n nats))))", "(sum 10)"]
      ["Try to define a \"fact\" function, which takes a natural number \"n\" and returns \"n * (n - 1) * ... * 2 * 1\"."],
@@ -377,16 +380,16 @@ tutorial = Tutorial
   Section "Basics of pattern matching"
    [
     Content "Let's try pattern-matching against a collection.\nThe \"join\" pattern divides a collection into two collections.\nPlease note that the \"match-all\" expression enumerates all results of pattern matching."
-     ["(match-all {1 2 3}     (list integer) [<join $hs $ts> [hs ts]])",
-      "(match-all {1 2 3 4 5} (list integer) [<join $hs $ts> [hs ts]])"]
+     ["(match-all [1, 2, 3]     (list integer) [<join $hs $ts> [hs ts]])",
+      "(match-all [1, 2, 3, 4, 5] (list integer) [<join $hs $ts> [hs ts]])"]
      [],
     Content "Try another pattern constructor \"cons\".\nThe \"cons\" pattern divides a collection into the head element and the rest collection.\n"
-     ["(match-all {1 2 3}     (list integer) [<cons $x $xs> [x xs]])",
-      "(match-all {1 2 3 4 5} (list integer) [<cons $x $xs> [x xs]])"]
+     ["(match-all [1, 2, 3]     (list integer) [<cons $x $xs> [x xs]])",
+      "(match-all [1, 2, 3, 4, 5] (list integer) [<cons $x $xs> [x xs]])"]
      [],
     Content "\"_\" is a wildcard and matches with any objects."
-     ["(match-all {1 2 3}     (list integer) [<cons $x  _>  x])",
-      "(match-all {1 2 3 4 5} (list integer) [<join $hs _> hs])"]
+     ["(match-all [1, 2, 3]     (list integer) [<cons $x  _>  x])",
+      "(match-all [1, 2, 3, 4, 5] (list integer) [<join $hs _> hs])"]
      [],
     Content "We can write non-linear patterns.\nA non-linear pattern is a pattern that allows multiple occurrences of the same variables in a pattern.\nA pattern that begins with \",\" matches the object when it is equal with the expression after \",\"."
      ["(match-all {1 1 2 3 3 2} (list integer) [<join _ <cons $x <cons ,x _>>> x])",
@@ -418,19 +421,19 @@ tutorial = Tutorial
   Section "Pattern matching against various data types"
    [
     Content "We can also pattern-match against multisets and sets.\nWe can change the interpretation of patterns by changing the matcher (the second argument of the match-all expression).\nThe meaning of the cons pattern is generalized to divide a collection into \"an\" element and the rest."
-     ["(match-all {1 2 3} (list integer)     [<cons $x $xs> [x xs]])",
-      "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])",
-      "(match-all {1 2 3} (set integer)      [<cons $x $xs> [x xs]])"]
+     ["(match-all [1, 2, 3] (list integer)     [<cons $x $xs> [x xs]])",
+      "(match-all [1, 2, 3] (multiset integer) [<cons $x $xs> [x xs]])",
+      "(match-all [1, 2, 3] (set integer)      [<cons $x $xs> [x xs]])"]
      [],
     Content "Try another pattern constructor \"join\".\nThe \"join\" pattern divides a collection into two collections."
-     ["(match-all {1 2 3 4 5} (list integer)     [<join $xs $ys> [xs ys]])",
-      "(match-all {1 2 3 4 5} (multiset integer) [<join $xs $ys> [xs ys]])",
-      "(match-all {1 2 3 4 5} (set integer)      [<join $xs $ys> [xs ys]])"]
+     ["(match-all [1, 2, 3, 4, 5] (list integer)     [<join $xs $ys> [xs ys]])",
+      "(match-all [1, 2, 3, 4, 5] (multiset integer) [<join $xs $ys> [xs ys]])",
+      "(match-all [1, 2, 3, 4, 5] (set integer)      [<join $xs $ys> [xs ys]])"]
      [],
     Content "Try non-linear pattern matching against multiset."
-     ["(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,x       _>> x])",
-      "(match-all {1 1 2 3 2} (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])",
-      "(match-all {1 2 1 3 2} (multiset integer) [<cons $x !<cons ,x _>> x])"]
+     ["(match-all [1, 1, 2, 3, 2] (multiset integer) [<cons $x <cons ,x       _>> x])",
+      "(match-all [1, 1, 2, 3, 2] (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])",
+      "(match-all [1, 2, 1, 3, 2] (multiset integer) [<cons $x !<cons ,x _>> x])"]
      [],
     Content "Pattern matching of Egison efficiently backtracks for non-linear patterns.\nFor example, all the following pattern-matching expressions are processed in O(n^2)."
      ["(match-all (between 1 30) (multiset integer) [<cons $x <cons ,x _>> x])",
@@ -572,7 +575,7 @@ tutorial = Tutorial
 --  Section "Define your own functions"
 --   [
 --    Content "Did we think how about \"n\" combinations of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include \"...\" as the following demonstrations."
---     ["(match-all {1 2 3 4 5} (list integer) [(loop $i [1 3] <join _ <cons $a_i ...>> _) a])", "(match-all {1 2 3 4 5} (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])"]
+--     ["(match-all [1, 2, 3, 4, 5] (list integer) [(loop $i [1 3] <join _ <cons $a_i ...>> _) a])", "(match-all [1, 2, 3, 4, 5] (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])"]
 --     [],
 --    Content "Let's try \"if\" expressions."
 --     ["(if #t 1 2)", "(if #f 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]
@@ -581,7 +584,7 @@ tutorial = Tutorial
 --     ["(define $your-take (lambda [$n $xs] (if (eq? n 0) {} {(car xs) @(your-take (- n 1) (cdr xs))})))", "(your-take 10 nats)"]
 --     ["Try to write a \"your-while\" function."],
 --    Content "Try to write a \"your-map\" function.\nWe may need \"empty?\" function inside \"your-map\" function."
---     ["(empty? {})", "(empty? {1 2 3})"]
+--     ["(empty? {})", "(empty? [1, 2, 3])"]
 --     []
 --  Section "Writing scripts in Egison"
 --   [
