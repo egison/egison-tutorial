@@ -1,9 +1,8 @@
 # The Egison Tutorial
 
 This is a repository for a tutorial program of [Egison](https://github.com/egison/egison).
-Egison is a pattern-matching oriented, purely functional programming langauge.
-With Egison, we can represent pattern-matching with unfree data types intuitively, especially for collection data, such as lists, multisets, and sets.
-Please try Egison with this tutorial program!
+Egison is a pattern-matching-oriented, purely functional programming langauge.
+Using Egison, we can represent intuitive patterns for non-free data types such as multisets, sets, graphs, and mathematical expressions.
 
 For more information, please visit [Egison website](http://www.egison.org).
 
@@ -12,27 +11,38 @@ For more information, please visit [Egison website](http://www.egison.org).
 ```
 % cabal install
 % egison-tutorial
-Egison Tutorial Version X.X.X (C) 2013-20XX Satoshi Egi
+Egison Tutorial Version 4.0.0
 Welcome to Egison Tutorial!
 ** Information **
-We can use a 'Tab' key to complete keywords on the interpreter.
-If we type a 'Tab' key after a closed parenthesis, the next closed parenthesis will be completed.
+We can use a "Tab" key to complete keywords on the interpreter.
+If we type a "Tab" key after a closed parenthesis, the next closed parenthesis will be completed.
 *****************
 ==============================
-List of sections in the tutorial
-1: Calculate numbers
+List of sections in the tutorial.
+1: Arithmetic
 2: Basics of functional programming
-3: Basics of pattern-matching
-4: Pattern-matching against infinite collections
+3: Basics of pattern matching
+4: Pattern matching for multisets and sets
+5: Symbolic computation
+6: Differential geometry: tensor analysis
+7: Differential geometry: differential forms
 ==============================
 Choose a section to learn.
-(1-4): 4
+(1-7): 4
 ====================
-We can write a pattern-matching against infinite lists even if that has infinite results.
-Note that Egison really enumerates all pairs of two natural numbers in the following example.
+We can describe pattern matching for multisets and sets.
+We can change the interpretation of patterns by changing the matcher, the second argument of the matchAll expression).
+The meaning of the cons pattern (::) is generalized to divide a collection into "an" element and the rest.
 
 Examples:
-  (take 10 (match-all nats (set integer) [<cons $m <cons $n _>> [m n]]))
+  matchAll [1, 2, 3] as list integer with
+  | $x :: $xs -> (x, xs)
+  matchAll [1, 2, 3] as multiset integer with
+  | $x :: $xs -> (x, xs)
+  matchAll [1, 2, 3] as set integer with
+  | $x :: $xs -> (x, xs)
 ====================
->
+> matchAll [1, 2, 3] as list integer with
+  | $x :: $xs -> (x, xs)
+[(1, [2, 3])]
 ```
