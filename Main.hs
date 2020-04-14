@@ -347,30 +347,27 @@ tutorial = Tutorial
      ["x := 10", "x", "y := 1 + x", "y"]
      [],
     Content "We support recursive definitions. It enables us to define a collection with infinite elements."
-     ["ones := 1 :: ones", "take 100 ones", "nats := 1 :: map (\n -> n + 1) nats", "take 100 nats", "odds := 1 :: map (\n -> n + 2) odds", "take 100 odds"]
+     ["ones := 1 :: ones", "take 100 ones", "nats := 1 :: map (\\n -> n + 1) nats", "take 100 nats", "odds := 1 :: map (\\n -> n + 2) odds", "take 100 odds"]
      ["Try to define the infinite list of even numbers like [2, 4, 6, 8, 10, ...]."],
-    Content "We can create a function with a \"lambda\" (\\) expression. Let's define functions and test them."
-     ["(define $increment (lambda [$x] (+ x 1)))", "(increment 10)", "(define $multiply (lambda [$x $y] (* x y)))", "(multiply 10 20)", "(define $sum (lambda [$n] (foldl + 0 (take n nats))))", "(sum 10)"]
-     ["Try to define a \"fact\" function, which takes a natural number \"n\" and returns \"n * (n - 1) * ... * 2 * 1\"."],
-    Content "We can compare numbers using functions that return \"True\" or \"False\".\n\"True\" means the true.\n\"False\" means the false.\nFunctions that return \"True\" or \"False\" are called \"predicates\"."
+    Content "Let's define functions and test them."
+     ["increment x := x + 1", "increment 10", "multiply x y := x * y", "multiply 10 20", "fact n := foldl (*) 1 (take n nats)", "fact 10"]
+     [],
+    Content "We can compare numbers using functions that return boolean values, \"True\" and \"False\".\nFunctions that return boolean values are called \"predicates\"."
      ["1 = 1", "1 < 1", "1 <= 1",  "1 > 1", "1 >= 1"]
      [],
-    Content "With the \"take-while\" function, we can extract all head elements that satisfy the predicate.\n\"primes\" is a infinite list that contains all prime numbers."
-     ["(take-while (lt? $ 100) primes)", "(take-while (lt? $ 1000) primes)"]
+    Content "Using the \"takeWhile\" function, we can get the prefix of the second argument list whose elements satisfy the predicate of the first argument.\n\"primes\" is a infinite list that contains all prime numbers."
+     ["takeWhile (\\n -> n < 100) primes", "takeWhile (\\n -> n < 1000) primes"]
      [],
     Content "With the \"filter\" function, we can extract all elements that satisfy the predicate."
-     ["(take 100 (filter even? nats))", "(take 100 (filter prime? nats))", "(take 100 (filter (lambda [$p] (eq? (modulo p 4) 1)) primes))"]
+     ["take 100 (filter isEven nats)", "take 100 (filter isPrime nats)", "take 100 (filter (\\p -> (modulo p 4) == 1) primes)"]
      ["Try to enumerate the first 100 primes that are congruent to 3 modulo 4."],
-    Content "We combine numbers using \"[]\".\nThese things are called \"tuples\"."
-     ["[1 2]", "[1 2 3]"]
+    Content "We combine objects by enclosing them by \"(\", and \")\".\nThese things are called \"tuples\".\nNote that a tuple that consists of only one element is equal to that element itself."
+     ["(1, 2)", "(1, 2, 3)", "(1)", "((1))"]
      [],
-    Content "Note that a tuple that consists of only one element is equal to that element itself."
-     ["[1]", "[[[1]]]"]
-     [],
-    Content "With the \"zip\" function, we can combine two lists as follows."
-     ["(take 100 (zip nats nats))", "(take 100 (zip primes primes))"]
-     ["Try to generate the prime table as \"{[1 2] [2 3] [3 5] [4 7] [5 11] ...}\""],
-    Content "Try to create a Fibonacci sequence \"{1 1 2 3 5 8 13 21 34 55 ...}\".\n\nHint:\n  Replace \"???\" in the following expression to a proper function.\n  (define $fibs {1 1 @(map ??? (zip fibs (cdr fibs)))})"
+    Content "Using the \"zip\" function, we can combine two lists as follows."
+     ["take 100 (zip nats nats)", "take 100 (zip primes primes)"]
+     ["Try to generate the prime table as \"[(1, 2), (2, 3), (3, 5), (4, 7), (5, 11), ...]\"."],
+    Content "Try to create a Fibonacci sequence \"[1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ...]\".\n\nHint:\n  Replace \"???\" in the following expression to a proper function.\n  fibs := 1 :: 1 :: map ??? (zip fibs (tail fibs))"
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
