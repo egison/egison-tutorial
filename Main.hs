@@ -292,13 +292,13 @@ tutorial = Tutorial
     Content "We can do arithmetic operations with \"+\", \"-\", \"*\", \"/\", \"modulo\" and \"power\"."
      ["(+ 1 2)", "(- 30 15)", "(* 10 20)", "(/ 20 5)", "(modulo 17 4)", "(power 2 10)"]
      [],
-    Content "We can write nested expressions."
+    Content "We can nest expressions."
      ["(+ (* 10 20) 2)", "(/ (* 10 20) (+ 10 20))"]
      ["Try to calculate \"(100 - 1) * (100 + 1)\"."],
-    Content "We are supporting rational numbers."
+    Content "We support rational numbers."
      ["(+ (/ 2 3) (/ 1 5))", "(/ 42 84)"]
      [],
-    Content "We are supporting floats, too."
+    Content "We support floats, too."
      ["(f.+ 10.2 1.3)", "(f.* 10.2 1.3)"]
      [],
     Content "We can convert a rational number to a float number with \"rtof\"."
@@ -328,10 +328,10 @@ tutorial = Tutorial
     Content "Try to create a sequence of numbers \"{1 1/2 1/3 1/4 ... 1/100}\"."
      []
      [],
-    Content "Try to calculate \"1 + 1/2 + 1/3 + 1/4 + ... + 1/100\".\nRemember that we can convert a rational number to a float number with \"rtof\"."
+    Content "Try calculating \"1 + 1/2 + 1/3 + 1/4 + ... + 1/100\".\nRemember that we can convert a rational number to a float number with \"rtof\"."
      ["(rtof (/ 2 3))"]
      [],
-    Content "Try to calculate \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2\".\nIn fact, \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...\" converges to \"(f./ (f.* f.pi f.pi) 6.0)\"."
+    Content "Try calculating \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2\".\nIn fact, \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...\" converges to \"(f./ (f.* f.pi f.pi) 6.0)\"."
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
@@ -417,7 +417,7 @@ tutorial = Tutorial
     ],
   Section "Pattern matching against various data types"
    [
-    Content "We can pattern-match also against multisets and sets.\nWe can change the interpretation of patterns by changing a matcher (the second argument of the match-all expression).The meaning of the cons pattern is generalized to divide a collection into \"an\" element and the rest."
+    Content "We can also pattern-match against multisets and sets.\nWe can change the interpretation of patterns by changing the matcher (the second argument of the match-all expression).\nThe meaning of the cons pattern is generalized to divide a collection into \"an\" element and the rest."
      ["(match-all {1 2 3} (list integer)     [<cons $x $xs> [x xs]])",
       "(match-all {1 2 3} (multiset integer) [<cons $x $xs> [x xs]])",
       "(match-all {1 2 3} (set integer)      [<cons $x $xs> [x xs]])"]
