@@ -15,10 +15,10 @@ import           System.Console.GetOpt
 import           System.Exit                (ExitCode (..), exitWith)
 
 import           Language.Egison
-import qualified Language.Egison.CmdOptions as ET
-import           Language.Egison.Util
-import qualified Language.Egison.Parser     as Parser
-import qualified Paths_egison_tutorial      as P
+import qualified Language.Egison.CmdOptions  as ET
+import           Language.Egison.Completion  (completeEgison)
+import qualified Language.Egison.Parser.NonS as Parser
+import qualified Paths_egison_tutorial       as P
 
 main :: IO ()
 main = do args <- getArgs
@@ -127,7 +127,7 @@ showByebyeMessage = do
 
 yesOrNo :: String -> IO Bool
 yesOrNo question = do
-  input <- liftIO $ runInputT (Settings noCompletion Nothing False) $ getInputLine $ question ++ " (Y/n): "
+  input <- liftIO $ runInputT nonReplSettings $ getInputLine $ question ++ " (Y/n): "
   case input of
    Nothing -> return True
    (Just "") -> return True
@@ -152,7 +152,7 @@ selectSection tutorial@(Tutorial sections) = do
 
 getNumber :: Int -> IO Int
 getNumber n = do
-  input <- liftIO $ runInputT (Settings noCompletion Nothing False) $ getInputLine $ "(1-" ++ show n  ++ "): "
+  input <- liftIO $ runInputT nonReplSettings $ getInputLine $ "(1-" ++ show n  ++ "): "
   case input of
     (Just "1") -> return 1
     (Just "2") -> return 2
@@ -188,15 +188,26 @@ getEgisonExprOrNewLine' opts prev = do
           getEgisonExprOrNewLine opts
         Right topExpr -> return $ Right (input, topExpr)
 
+replSettings :: MonadIO m => FilePath -> Settings m
+replSettings home = Settings
+  { complete       = completeEgison
+  , historyFile    = Just (home </> ".egison_history")
+  , autoAddHistory = True
+  }
+
+nonReplSettings :: MonadIO m => Settings m
+nonReplSettings = Settings
+  { complete       = noCompletion
+  , historyFile    = Nothing
+  , autoAddHistory = False
+  }
+
 repl :: Env -> String -> IO ()
 repl env prompt = do
   section <- selectSection tutorial
   case section of
     Section _ cs -> loop env cs True
  where
-  settings :: MonadIO m => FilePath -> Settings m
-  settings home = setComplete completeEgison $ defaultSettings { historyFile = Just (home </> ".egison_history") }
-
   loop :: Env -> [Content] -> Bool -> IO ()
   loop env [] _ = do
 --    liftIO $ showFinishMessage
@@ -206,7 +217,7 @@ repl env prompt = do
       then liftIO $ putStrLn $ show content
       else return ()
     home <- getHomeDirectory
-    input <- liftIO $ runInputT (settings home) $ getEgisonExprOrNewLine defaultOptions
+    input <- liftIO $ runInputT (replSettings home) $ getEgisonExprOrNewLine defaultOptions
     case input of
       Left Nothing -> do
         b <- yesOrNo "Do you want to quit?"
