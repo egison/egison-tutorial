@@ -421,28 +421,28 @@ tutorial = Tutorial
   Section "Pattern matching for multisets and sets"
    [
     Content "We can describe pattern matching for multisets and sets.\nWe can change the interpretation of patterns by changing the matcher, the second argument of the matchAll expression).\nThe meaning of the cons pattern (::) is generalized to divide a collection into \"an\" element and the rest."
-     ["matchAll [1, 2, 3] as list integer with\n  | $x :: $xs -> (x, xs)",
-      "matchAll [1, 2, 3] as multiset integer with\n  | $x :: $xs -> (x, xs)",
-      "matchAll [1, 2, 3] as set integer with\n  | $x :: $xs -> (x, xs)"]
+     ["matchAll [1, 2, 3] as list integer     with $x :: $xs -> (x, xs)",
+      "matchAll [1, 2, 3] as multiset integer with $x :: $xs -> (x, xs)",
+      "matchAll [1, 2, 3] as set integer      with $x :: $xs -> (x, xs)"]
      [],
-    Content "Try another pattern constructor \"join\".\nThe \"join\" pattern divides a collection into two collections."
-     ["(match-all [1, 2, 3, 4, 5] (list integer)     [<join $xs $ys> [xs ys]])",
-      "(match-all [1, 2, 3, 4, 5] (multiset integer) [<join $xs $ys> [xs ys]])",
-      "(match-all [1, 2, 3, 4, 5] (set integer)      [<join $xs $ys> [xs ys]])"]
+    Content "Try another pattern constructor \"join\" (++).\nThe \"join\" pattern (++) divides a collection into two collections."
+     ["matchAll [1, 2, 3, 4, 5] as list integer     with $xs ++ $ys -> (xs, ys)",
+      "matchAll [1, 2, 3, 4, 5] as multiset integer with $xs ++ $ys -> (xs, ys)",
+      "matchAll [1, 2, 3, 4, 5] as set integer      with $xs ++ $ys -> (xs, ys)"]
      [],
     Content "Try non-linear pattern matching against multiset."
-     ["(match-all [1, 1, 2, 3, 2] (multiset integer) [<cons $x <cons ,x       _>> x])",
-      "(match-all [1, 1, 2, 3, 2] (multiset integer) [<cons $x <cons ,(+ x 2) _>> x])",
-      "(match-all [1, 2, 1, 3, 2] (multiset integer) [<cons $x !<cons ,x _>> x])"]
+     ["matchAll [1, 2, 1, 3, 2] as multiset integer with $x :: #x :: _ -> x",
+      "matchAll [1, 2, 1, 3, 2] as multiset integer with $x :: #(x + 2) :: _ -> x",
+      "matchAll [1, 2, 1, 3, 2] as multiset integer with $x :: !(#(x + 2) :: _) -> x"]
      [],
     Content "Pattern matching of Egison efficiently backtracks for non-linear patterns.\nFor example, all the following pattern-matching expressions are processed in O(n^2)."
-     ["(match-all (between 1 30) (multiset integer) [<cons $x <cons ,x _>> x])",
-      "(match-all (between 1 30) (multiset integer) [<cons $x <cons ,x <cons ,x _>>> x])",
-      "(match-all (between 1 30) (multiset integer) [<cons $x <cons ,x <cons ,x <cons ,x _>>>> x])"]
+     ["matchAll [1..30] as multiset integer with $x :: #x :: _ -> x",
+      "matchAll [1..30] as multiset integer with $x :: #x :: #x :: _ -> x",
+      "matchAll [1..30] as multiset integer with $x :: #x :: #x :: #x _ -> x"]
      [],
     Content "The following samples enumerate pairs and triplets of natural numbers.\nNote that Egison really enumerates all the results."
-     ["(take 10 (match-all nats (set integer) [<cons $x <cons $y _>>           [x y]]))",
-      "(take 10 (match-all nats (set integer) [<cons $x <cons $y <cons $z _>>> [x y z]]))"]
+     ["matchAll nats as set integer with $x :: $y :: _ -> (x, y)",
+      "matchAll nats as set integer with $x :: $y :: $z :: _ -> (x, y, z)"]
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
      []
