@@ -1,8 +1,8 @@
 # The Egison Tutorial
 
-This is a repository for a tutorial program of [Egison](https://github.com/egisatoshi/egison).
-Egison is the pattern-matching oriented, purely functional programming langauge.
-With Egison, we can represent pattern-matching with unfree data types intuitively, especially for collection data, such as lists, multisets, sets.
+This is a repository for a tutorial program of [Egison](https://github.com/egison/egison).
+Egison is a pattern-matching oriented, purely functional programming langauge.
+With Egison, we can represent pattern-matching with unfree data types intuitively, especially for collection data, such as lists, multisets, and sets.
 Please try Egison with this tutorial program!
 
 For more information, please visit [Egison website](http://www.egison.org).
