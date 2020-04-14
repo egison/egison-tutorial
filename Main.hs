@@ -1,26 +1,24 @@
 module Main where
 
-import Prelude hiding (catch)
-import Control.Exception ( AsyncException(..), catch )
-import Control.Monad.Except
+import           Control.Exception          (AsyncException(..), catch)
+import           Control.Monad.Except
 
-import Data.Version
-import Data.List
-import Text.Regex.Posix
+import           Data.Version
+import           Data.List
+import           Text.Regex.Posix
 
-import System.IO
-import System.Environment
-import System.Directory (getHomeDirectory)
-import System.FilePath ((</>))
-import System.Console.Haskeline hiding (handle, catch, throwTo)
-import System.Console.GetOpt
-import System.Exit (ExitCode (..), exitWith, exitFailure)
+import           System.Environment
+import           System.Directory           (getHomeDirectory)
+import           System.FilePath            ((</>))
+import           System.Console.Haskeline   hiding (handle, catch, throwTo)
+import           System.Console.GetOpt
+import           System.Exit                (ExitCode (..), exitWith)
 
-import Language.Egison hiding (optShowVersion, optPrompt)
+import           Language.Egison
 import qualified Language.Egison.CmdOptions as ET
-import Language.Egison.Util
-import qualified Language.Egison.Parser          as Parser
-import qualified Paths_egison_tutorial as P
+import           Language.Egison.Util
+import qualified Language.Egison.Parser     as Parser
+import qualified Paths_egison_tutorial      as P
 
 main :: IO ()
 main = do args <- getArgs
@@ -139,6 +137,7 @@ yesOrNo question = do
    (Just "N") -> return False
    _ -> yesOrNo question
 
+nth :: Int -> [a] -> a
 nth n = head . drop (n - 1)
 
 selectSection :: Tutorial -> IO Section
