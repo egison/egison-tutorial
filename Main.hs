@@ -379,39 +379,39 @@ tutorial = Tutorial
     ],
   Section "Basics of pattern matching"
    [
-    Content "Let's try pattern-matching against a collection.\nThe \"join\" pattern divides a collection into two collections.\nPlease note that the \"match-all\" expression enumerates all results of pattern matching."
-     ["(match-all [1, 2, 3]     (list integer) [<join $hs $ts> [hs ts]])",
-      "(match-all [1, 2, 3, 4, 5] (list integer) [<join $hs $ts> [hs ts]])"]
+    Content "Let's try pattern-matching for a collection.\nThe \"join\" pattern (++) divides a collection into two collections.\nNote that the matchAll expression enumerates all the decompositions."
+     ["matchAll [1, 2, 3]       as list integer with $hs ++ $ts -> (hs, ts)",
+      "matchAll [1, 2, 3, 4, 5] as list integer with $hs ++ $ts -> (hs, ts)"]
      [],
-    Content "Try another pattern constructor \"cons\".\nThe \"cons\" pattern divides a collection into the head element and the rest collection.\n"
-     ["(match-all [1, 2, 3]     (list integer) [<cons $x $xs> [x xs]])",
-      "(match-all [1, 2, 3, 4, 5] (list integer) [<cons $x $xs> [x xs]])"]
+    Content "Try another pattern constructor \"cons\" (::).\nThe \"cons\" pattern (::) divides a collection into the head element and the rest collection.\n"
+     ["matchAll [1, 2, 3]       as list integer with $x :: $xs -> (x ,xs)",
+      "matchAll [1, 2, 3, 4, 5] as list integer with $x :: $xs -> (x, xs)"]
      [],
     Content "\"_\" is a wildcard and matches with any objects."
-     ["(match-all [1, 2, 3]     (list integer) [<cons $x  _>  x])",
-      "(match-all [1, 2, 3, 4, 5] (list integer) [<join $hs _> hs])"]
+     ["matchAll [1, 2, 3]       as list integer with $x :: _ -> x",
+      "matchAll [1, 2, 3, 4, 5] as list integer with $hs ++ _ -> hs"]
      [],
-    Content "We can write non-linear patterns.\nA non-linear pattern is a pattern that allows multiple occurrences of the same variables in a pattern.\nA pattern that begins with \",\" matches the object when it is equal with the expression after \",\"."
-     ["(match-all {1 1 2 3 3 2} (list integer) [<join _ <cons $x <cons ,x _>>> x])",
-      "(match-all {1 1 2 3 3 2} (list integer) [<join _ <cons $x <cons ,(+ x 1) _>>> x])"]
+    Content "We can write non-linear patterns.\nA non-linear pattern is a pattern that allows multiple occurrences of the same variables in a pattern.\nA pattern that begins with \"#\" matches the target when it is equal with the expression after \"#\"."
+     ["matchAll [1, 1, 2, 3, 3, 2] as list integer with _ ++ $x :: #x :: _ -> x",
+      "matchAll [1, 1, 2, 3, 3, 2] as list integer with _ ++ $x :: #(x + 1) :: _ -> x"]
      [],
-    Content "Egison can handle pattern matching with infinite search space.\nFor example, we can enumerate twin primes using pattern matching as follows."
-     ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons ,(+ p 2) _>>> [p (+ p 2)]]))"]
+    Content "Egison can handle pattern matching with infinitely many results.\nFor example, we can enumerate twin primes using pattern matching as follows."
+     ["take 10 (matchAll primes as list integer with _ ++ $p :: #(p + 2) :: _ -> (p, p + 2))"]
      ["What is the 100th twin prime?"],
-    Content "Try to enumerate the first 10 prime pairs whose form is (p, p+6) like \"{{[5 11] [7 13] [11 17] [13 19] [17 23] ...}\"."
+    Content "Try to enumerate the first 10 prime pairs whose form is (p, p + 6) like \"[(5, 11), (7, 13), (11, 17), (13, 19), (17, 23), ...]\"."
      []
      [],
-    Content "A pattern that has \"!\" ahead of which is called a not-pattern.\nA not-pattern matches when the target does not match against the pattern."
-     ["(match-all {1 1 2 2 3 4 4 5} (list integer) [<join _ <cons $x <cons  ,x _>>> x])",
-      "(match-all {1 1 2 2 3 4 4 5} (list integer) [<join _ <cons $x <cons !,x _>>> x])"]
+    Content "A pattern that begins with \"!\" is called not-pattern.\nA not-pattern matches when the pattern does not match the target."
+     ["matchAll [1, 1, 2, 3, 3, 2] as list integer with _ ++ $x :: #x :: _ -> x",
+      "matchAll [1, 1, 2, 3, 3, 2] as list integer with _ ++ $x :: !#x :: _ -> x"]
      [],
-    Content "A pattern whose form is \"(& p1 p2 ...)\" is called an and-pattern.\nAn and-pattern is a pattern that matches the object, if and only if all the patterns are matched.\nThe and-pattern is used like an as-pattern in the following sample."
-     ["(match-all {1 2 4 5 6 8 9} (list integer) [<join _ <cons $x <cons (& !,(+ x 1) $y) _>>> [x y]])"]
+    Content "A pattern whose form is \"p1 & p2\" is called and-pattern.\nAn and-pattern is a pattern that matches the target if and only if both p1 and p2 matches.\nThe and-pattern in the following sample is used like an as-pattern."
+     ["take 10 (matchAll primes as list integer with _ ++ $p :: (!#(p + 2) & $q) :: _ -> (p, q))"]
      [],
-    Content "A pattern whose form is \"(| p1 p2 ...)\" is called an or-pattern.\nAn or-pattern matches with the object, if the object matches one of the given patterns.\nIn the following sample, we enumerate prime triplets using it."
-     ["(take 10 (match-all primes (list integer) [<join _ <cons $p <cons (& $m (| ,(+ p 2) ,(+ p 4))) <cons ,(+ p 6) _>>>> [p m (+ p 6)]]))"]
+    Content "A pattern whose form is \"p1 | p2\" is called or-pattern.\nAn or-pattern matches with the target, if p1 or p2 matches the target.\nIn the following sample, we enumerate prime triplets."
+     ["take 10 (matchAll primes as list integer with _ ++ $p :: ($m & (#(p + 2) | #(p + 4))) :: #(p + 6) :: _ -> (p, m, (p + 6)))"]
      ["What is the 20th prime triplet?"],
-    Content "Try to enumerate the first 4 prime quadruples whose form is (p, p+2, p+6, p+8) like \"{{[5 7 11 13] [11 13 17 19] ...}\"."
+    Content "Try to enumerate the first 4 prime quadruples whose form is (p, p + 2, p + 6, p + 8) like \"[(5, 7, 11, 13), (11, 13, 17, 19), ...]\"."
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
@@ -440,7 +440,7 @@ tutorial = Tutorial
       "matchAll [1..30] as multiset integer with $x :: #x :: #x :: _ -> x",
       "matchAll [1..30] as multiset integer with $x :: #x :: #x :: #x _ -> x"]
      [],
-    Content "The following samples enumerate pairs and triplets of natural numbers.\nNote that Egison really enumerates all the results."
+    Content "Egison is designed to enumerate all the infinitely many pattern-matching results.\nThe following samples enumerate pairs and triplets of natural numbers."
      ["matchAll nats as set integer with $x :: $y :: _ -> (x, y)",
       "matchAll nats as set integer with $x :: $y :: $z :: _ -> (x, y, z)"]
      [],
@@ -451,28 +451,28 @@ tutorial = Tutorial
   Section "Symbolic computation"
    [
     Content "Egison treats unbound variables as a symbol."
-     ["(+ x 1)",
-      "(+ x x)",
-      "(+ (* 2 x) y)"]
+     ["x + 1",
+      "x + x",
+      "2 * x + y"]
      [],
     Content "Egison automatically expands an expression to the canonical form."
-     ["(* (+ x y) (+ x y))",
-      "(** (+ x y) 2)",
-      "(** (+ x y) 3)"]
+     ["(x + y) * (x + y)",
+      "(x + y)^2",
+      "(x + y)^3"]
      [],
     Content "Egison can handle complex numbers.\n\"i\" represents the imaginary unit."
-     ["(* i i)",
-      "(** (+ 1 i) 2)",
-      "(** (+ 1 i) 4)"]
+     ["i * i",
+      "(1 + i)^2",
+      "(1 + i)^4"]
      [],
-    Content "Egison can handle algebraic numbers such as \"(sqrt 2)\" and \"(sqrt 3)\"."
-     ["(sqrt 12)",
-      "(* (sqrt 2) (sqrt 2))",
-      "(* (sqrt 2) (sqrt 3))",
-      "(** (rt 3 2) 3)"]
+    Content "Egison can handle algebraic numbers such as \"sqrt 2\" and \"sqrt 3\"."
+     ["sqrt 12",
+      "sqrt 2 * sqrt 2",
+      "sqrt 2 * sqrt 3",
+      "(rt 3 2)^3"]
      [],
-    Content "Egison can handle the trigonometric functions such as \"(cos θ)\" and \"(sin θ)\"."
-     ["(+ (cos θ)^2 (sin θ)^2)"]
+    Content "Egison can handle the trigonometric functions such as \"cos θ\" and \"sin θ\"."
+     ["(cos θ)^2 + (sin θ)^2"]
      [],
     Content "Here are several samples for symbolic computation in Egison.\nPlease visit the link!\nhttps://www.egison.org/math/"
      [
