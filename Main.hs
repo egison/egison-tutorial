@@ -109,7 +109,7 @@ printVersionNumber = do
 
 showBanner :: IO ()
 showBanner = do
-  putStrLn $ "Egison Tutorial Version " ++ showVersion P.version ++ " (C) 2013-2020 Satoshi Egi"
+  putStrLn $ "Egison Tutorial Version " ++ showVersion P.version
   putStrLn $ "Welcome to Egison Tutorial!"
   putStrLn $ "** Information **"
   putStrLn $ "We can use a \"Tab\" key to complete keywords on the interpreter."
@@ -299,7 +299,7 @@ tutorial = Tutorial
      ["2 / 3 + 1 / 5", "42 / 84"]
      [],
     Content "We support floats, too."
-     ["f.+ 10.2 1.3", "f.* 10.2 1.3"]
+     ["10.2 + 1.3", "10.2 + 1"]
      [],
     Content "We can convert a rational number to a float number with \"rtof\"."
      ["rtof (1 / 5)", "rtof (1 / 100)"]
@@ -346,14 +346,14 @@ tutorial = Tutorial
     Content "We can bind a value to a variable with \":=\" (not \"=\").\nWe can easily get the value we bound to a variable."
      ["x := 10", "x", "y := 1 + x", "y"]
      [],
-    Content "We support recursive definitions. It enables us to define a collection with infinite elements.\nNote that \"@\" expands the collection placed after \"@\" as a subcollection of the outer collection."
-     ["(define $ones {1 @ones})", "(take 100 ones)", "(define $nats {1 @(map (+ $ 1) nats)})", "(take 100 nats)", "(define $odds {1 @(map (+ $ 2) odds)})", "(take 100 odds)"]
+    Content "We support recursive definitions. It enables us to define a collection with infinite elements."
+     ["ones := 1 :: ones", "take 100 ones", "nats := 1 :: map (\n -> n + 1) nats", "take 100 nats", "odds := 1 :: map (\n -> n + 2) odds", "take 100 odds"]
      ["Try to define the infinite list of even numbers like [2, 4, 6, 8, 10, ...]."],
-    Content "We can create a function with a \"lambda\" expression. Let's define functions and test them."
+    Content "We can create a function with a \"lambda\" (\\) expression. Let's define functions and test them."
      ["(define $increment (lambda [$x] (+ x 1)))", "(increment 10)", "(define $multiply (lambda [$x $y] (* x y)))", "(multiply 10 20)", "(define $sum (lambda [$n] (foldl + 0 (take n nats))))", "(sum 10)"]
      ["Try to define a \"fact\" function, which takes a natural number \"n\" and returns \"n * (n - 1) * ... * 2 * 1\"."],
-    Content "We can compare numbers using functions that return \"#t\" or \"#f\".\n\"#t\" means the true.\n\"#f\" means the false.\nFunctions that return \"#t\" or \"#f\" are called \"predicates\"."
-     ["(eq? 1 1)", "(gt? 1 1)", "(lt? 1 1)",  "(gte? 1 1)", "(lte? 1 1)"]
+    Content "We can compare numbers using functions that return \"True\" or \"False\".\n\"True\" means the true.\n\"False\" means the false.\nFunctions that return \"True\" or \"False\" are called \"predicates\"."
+     ["1 = 1", "1 < 1", "1 <= 1",  "1 > 1", "1 >= 1"]
      [],
     Content "With the \"take-while\" function, we can extract all head elements that satisfy the predicate.\n\"primes\" is a infinite list that contains all prime numbers."
      ["(take-while (lt? $ 100) primes)", "(take-while (lt? $ 1000) primes)"]
@@ -418,12 +418,12 @@ tutorial = Tutorial
      []
      []
     ],
-  Section "Pattern matching against various data types"
+  Section "Pattern matching for multisets and sets"
    [
-    Content "We can also pattern-match against multisets and sets.\nWe can change the interpretation of patterns by changing the matcher (the second argument of the match-all expression).\nThe meaning of the cons pattern is generalized to divide a collection into \"an\" element and the rest."
-     ["(match-all [1, 2, 3] (list integer)     [<cons $x $xs> [x xs]])",
-      "(match-all [1, 2, 3] (multiset integer) [<cons $x $xs> [x xs]])",
-      "(match-all [1, 2, 3] (set integer)      [<cons $x $xs> [x xs]])"]
+    Content "We can describe pattern matching for multisets and sets.\nWe can change the interpretation of patterns by changing the matcher, the second argument of the matchAll expression).\nThe meaning of the cons pattern (::) is generalized to divide a collection into \"an\" element and the rest."
+     ["matchAll [1, 2, 3] as list integer with\n  | $x :: $xs -> (x, xs)",
+      "matchAll [1, 2, 3] as multiset integer with\n  | $x :: $xs -> (x, xs)",
+      "matchAll [1, 2, 3] as set integer with\n  | $x :: $xs -> (x, xs)"]
      [],
     Content "Try another pattern constructor \"join\".\nThe \"join\" pattern divides a collection into two collections."
      ["(match-all [1, 2, 3, 4, 5] (list integer)     [<join $xs $ys> [xs ys]])",
@@ -572,33 +572,3 @@ tutorial = Tutorial
     ]
 
   ]
---  Section "Define your own functions"
---   [
---    Content "Did we think how about \"n\" combinations of the elements of the collection?\nWe already have a solution.\nWe can write a pattern that include \"...\" as the following demonstrations."
---     ["(match-all [1, 2, 3, 4, 5] (list integer) [(loop $i [1 3] <join _ <cons $a_i ...>> _) a])", "(match-all [1, 2, 3, 4, 5] (list integer) [(loop $i [1 4] <join _ <cons $a_i ...>> _) a])"]
---     [],
---    Content "Let's try \"if\" expressions."
---     ["(if #t 1 2)", "(if #f 1 2)", "(let {[$x 10]} (if (eq? x 10) 1 2))"]
---     [],
---    Content "Using \"define\" and \"if\", we can write recursive functions as follows."
---     ["(define $your-take (lambda [$n $xs] (if (eq? n 0) {} {(car xs) @(your-take (- n 1) (cdr xs))})))", "(your-take 10 nats)"]
---     ["Try to write a \"your-while\" function."],
---    Content "Try to write a \"your-map\" function.\nWe may need \"empty?\" function inside \"your-map\" function."
---     ["(empty? {})", "(empty? [1, 2, 3])"]
---     []
---  Section "Writing scripts in Egison"
---   [
---    Content "Let's write a famous Hello world program in Egison.\nTry the following expression.\nIt is evaluated to the \"io-function\".\nTo execute an io-function, we use \"io\" primitive as follows."
---     ["(io (print \"Hello, world!\"))"]
---     [],
---    Content "We can execute multiple io-functions in sequence as follows.\nThe io-functions is executed from the head."
---     ["(io (do {[(print \"a\")] [(print \"b\")] [(print \"c\")]} []))", "(io (do {[(write-string \"Type your name: \")] [(flush)] [$name (read-line)] [(print {@\"Hello, \" @name @\"!\"})]} []))"]
---     [],
---    Content "The following is a hello world program in Egison.\nTry to create a file with the following content and save it as \"hello.egi\", and execute it in the terminal as \"% egison hello.egi\"\n"
---     ["(define $main (lambda [$args] (print \"Hello, world!\")))"]
---     [],
---    Content "That's all. Thank you for finishing our tutorail! Did you enjoy it?\nIf you got into Egison programming. I'd like you to try Rosseta Code.\nThere are a lot of interesting problems.\n\n  http://rosettacode.org/wiki/Category:Egison"
---     []
---     []
---    ]
---  ]
