@@ -20,7 +20,7 @@ source-repository head
 
 Executable egison-tutorial
   Main-is:             Main.hs
-  Build-depends: egison >= 3.10.0
+  Build-depends: egison >= 4.0.0
                , base >= 4.0 && < 5
                , haskeline
                , transformers
