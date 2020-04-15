@@ -35,14 +35,10 @@ We can change the interpretation of patterns by changing the matcher, the second
 The meaning of the cons pattern (::) is generalized to divide a collection into "an" element and the rest.
 
 Examples:
-  matchAll [1, 2, 3] as list integer with
-  | $x :: $xs -> (x, xs)
-  matchAll [1, 2, 3] as multiset integer with
-  | $x :: $xs -> (x, xs)
-  matchAll [1, 2, 3] as set integer with
-  | $x :: $xs -> (x, xs)
+  matchAll [1, 2, 3] as list integer with $x :: $xs -> (x, xs)
+  matchAll [1, 2, 3] as multiset integer with $x :: $xs -> (x, xs)
+  matchAll [1, 2, 3] as set integer with $x :: $xs -> (x, xs)
 ====================
-> matchAll [1, 2, 3] as list integer with
-  | $x :: $xs -> (x, xs)
+> matchAll [1, 2, 3] as list integer with $x :: $xs -> (x, xs)
 [(1, [2, 3])]
 ```

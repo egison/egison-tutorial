@@ -482,42 +482,42 @@ tutorial = Tutorial
   Section "Differential geometry: tensor analysis"
    [
     Content "We can handle vectors.\nWe construct vectors with \"[| |]\"."
-     ["[| 1 2 3 |]",
-      "(+ [| 1 2 3 |] [| 1 2 3 |])"
+     ["[| 1, 2, 3 |]",
+      "[| 1, 2, 3 |] + [| 1, 2, 3 |]"
       ]
      [],
-    Content "We can append an index to a vector."
-     ["(+ [| 1 2 3 |]_i [| 1 2 3 |]_i)",
-      "(+ [| 1 2 3 |]_i [| 1 2 3 |]_j)"
+    Content "We can append a symbolical index to vectors."
+     ["[| 1, 2, 3 |]_i + [| 1, 2, 3 |]_i",
+      "[| 1, 2, 3 |]_i + [| 1, 2, 3 |]_j"
       ]
      [],
     Content "The \".\" function is a function for multiplying tensors."
-     ["(. [| 1 2 3 |]_i [| 1 2 3 |]_i)",
-      "(. [| 1 2 3 |]_i [| 1 2 3 |]_j)"
+     ["[| 1, 2, 3 |]_i . [| 1, 2, 3 |]_i",
+      "[| 1, 2, 3 |]_i . [| 1, 2, 3 |]_j"
       ]
      [],
     Content "We can handle both of superscripts (~) and subscripts(_).\nThe \".\" function supports Einstein summation notation."
-     ["(. [| 1 2 3 |]~i [| 1 2 3 |]_i)"
+     ["[| 1, 2, 3 |]~i . [| 1, 2, 3 |]_i"
       ]
      [],
     Content "Matrix is represented as a vector of vectors."
-     ["[| [| 1 2 3 |] [| 10 20 30 |] |]"
+     ["[| [| 1, 2, 3 |], [| 10, 20, 30 |] |]"
       ]
      [],
     Content "Matrix multiplication is represented as follows using tensor index notation."
-     ["(. [| [| a b |] [| c d |] |]~i_j [| [| x y |] [| z w |] |]~j_k)"
+     ["[| [| a, b |], [| c, d |] |]~i_j . [| [| x, y |], [| z, w |] |]~j_k"
       ]
      [],
     Content "The function defined using scalar parameters (prepended by \"$\") are automatically mapped to each component of tensors."
-     ["(define $min (lambda [$x $y] (if (lt? x y) x y)))",
-      "(min [| 1 2 3 |]_i [| 10 20 30 |]_i)",
-      "(min [| 1 2 3 |]_i [| 10 20 30 |]_j)"
+     ["min $x $y := if x < y then x else y",
+      "min [| 1, 2, 3 |]_i [| 10, 20, 30 |]_i",
+      "min [| 1, 2, 3 |]_i [| 10, 20, 30 |]_j"
       ]
      [],
-    Content "The function defined using tensor parameters (prepended by \"%\") treats a tensor as a whole."
-     ["(define $det2 (lambda [%X] (- (* X_1_1 X_2_2) (* X_1_2 X_2_1))))",
-      "(det2 [| [| 2 1 |] [| 1 2 |] |])",
-      "(det2 [| [| a b |] [| c d |] |])"
+    Content "The function defined using tensor parameters (prepended by \"%\") treats a tensor as a whole.\nIf we prepend "
+     ["det2 %X := X_1_1 * X_2_2 -  X_1_2 * X_2_1",
+      "det2 [| [| 2, 1 |], [| 1, 2 |] |]",
+      "det2 [| [| a, b |], [| c, d |] |]"
       ]
      [],
     Content "Here are several samples of tensor analysis in programming.\nPlease visit the link!\nhttps://www.egison.org/math/"
@@ -531,32 +531,32 @@ tutorial = Tutorial
   Section "Differential geometry: differential forms"
    [
     Content "By default, the same indices are completed to each tensor of the arguments."
-     ["(+ [| 1 2 3 |] [| 1 2 3 |]) ;=> (+ [| 1 2 3 |]_t1 [| 1 2 3 |]_t1)"
+     ["[| 1, 2, 3 |] + [| 1, 2, 3 |] -- => [| 1, 2, 3 |]_t1 + [| 1, 2, 3 |]_t1"
       ]
      [],
     Content "When “!” is prepended to the function application, the different indices are completed to each tensor of the arguments."
-     ["!(+ [| 1 2 3 |] [| 1 2 3 |]) ;=> (+ [| 1 2 3 |]_t1 [| 1 2 3 |]_t2)"
+     ["[| 1, 2, 3 |] !+ [| 1, 2, 3 |] -- => [| 1, 2, 3 |]_t1 + [| 1, 2, 3 |]_t2"
       ]
      [],
     Content "1-forms on Euclid space and Wedge product are represented as follows.\n\"!\" is effectively used in the definition of Wedge product."
-     ["(define $dx [| 1 0 0 |])",
-      "(define $dy [| 0 1 0 |])",
-      "(define $dz [| 0 0 1 |])",
-      "(define $wedge (lambda [%A %B] !(. A B)))",
-      "(wedge dx dy)"
+     ["dx := [| 1, 0, 0 |]",
+      "dy := [| 0, 1, 0 |]",
+      "dz := [| 0, 0, 1 |]",
+      "wedge %A %B := A !. B",
+      "wedge dx dy"
       ]
      [],
-    Content "The \"df-normalize\" function converts a differential form to the antisymmetric tensor."
-     ["(wedge dx dy)",
-      "(df-normalize (wedge dx dy))"
+    Content "The \"dfNormalize\" function converts a differential form to the antisymmetric tensor."
+     ["wedge dx dy",
+      "dfNormalize (wedge dx dy)"
       ]
      [],
     Content "Exterior derivative is defined as follows.\n\"!\" is effectively used in the definition of exterior derivative."
-     ["(define $params [| x y z |])",
-      "(define $d (lambda [%A] !((flip ∂/∂) params A)))",
-      "(d (f x y z))",
-      "(d (d (f x y z)))",
-      "(df-normalize (d (d (f x y z))))"
+     ["params := [| x, y, z |]",
+      "d %A := !((flip ∂/∂) params A)",
+      "d (f x y z)",
+      "d (d (f x y z))",
+      "dfNormalize (d (d (f x y z)))"
       ]
      [],
     Content "Here are several samples for representing differential forms in programming.\nPlease visit the link!\nhttps://www.egison.org/math/"
