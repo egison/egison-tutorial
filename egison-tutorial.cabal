@@ -1,5 +1,5 @@
 Name:                egison-tutorial
-Version:             3.10.0
+Version:             4.0.0
 Synopsis:            A tutorial program for the Egison programming language
 Description:         A tutorial program for the Egison programming language.
                      Egison is the programming langugage that realized non-linear pattern-matching against unfree data types.
