@@ -359,7 +359,7 @@ tutorial = Tutorial
      ["takeWhile (\\n -> n < 100) primes", "takeWhile (\\n -> n < 1000) primes"]
      [],
     Content "With the \"filter\" function, we can extract all elements that satisfy the predicate."
-     ["take 100 (filter isEven nats)", "take 100 (filter isPrime nats)", "take 100 (filter (\\p -> (modulo p 4) == 1) primes)"]
+     ["take 100 (filter isEven nats)", "take 100 (filter isPrime nats)", "take 100 (filter (\\p -> (modulo p 4) = 1) primes)"]
      ["Try to enumerate the first 100 primes that are congruent to 3 modulo 4."],
     Content "We combine objects by enclosing them by \"(\", and \")\".\nThese things are called \"tuples\".\nNote that a tuple that consists of only one element is equal to that element itself."
      ["(1, 2)", "(1, 2, 3)", "(1)", "((1))"]
