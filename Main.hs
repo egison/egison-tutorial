@@ -373,7 +373,7 @@ tutorial = Tutorial
     ],
   Section "Basics of pattern matching"
    [
-    Content "Let's try pattern-matching for a collection.\nThe \"join\" pattern (++) divides a collection into two collections.\nNote that the matchAll expression enumerates all the decompositions."
+    Content "Let's try pattern matching for a collection.\nThe \"join\" pattern (++) divides a collection into two collections.\nNote that the matchAll expression enumerates all the decompositions."
      ["matchAll [1, 2, 3]       as list integer with $hs ++ $ts -> (hs, ts)",
       "matchAll [1, 2, 3, 4, 5] as list integer with $hs ++ $ts -> (hs, ts)"]
      [],
@@ -385,7 +385,7 @@ tutorial = Tutorial
      ["matchAll [1, 2, 3]       as list integer with $x :: _ -> x",
       "matchAll [1, 2, 3, 4, 5] as list integer with $hs ++ _ -> hs"]
      [],
-    Content "We can write non-linear patterns.\nA non-linear pattern is a pattern that allows multiple occurrences of the same variables in a pattern.\nA pattern that begins with \"#\" matches the target when it is equal with the expression after \"#\"."
+    Content "We can write non-linear patterns.\nA non-linear pattern is a pattern that allows multiple occurrences of the same variables in a pattern.\nA pattern that begins with \"#\" matches the target when it is equal with the evaluation result of the expression after \"#\"."
      ["matchAll [1, 1, 2, 3, 3, 2] as list integer with _ ++ $x :: #x :: _ -> x",
       "matchAll [1, 1, 2, 3, 3, 2] as list integer with _ ++ $x :: #(x + 1) :: _ -> x"]
      [],
@@ -395,14 +395,14 @@ tutorial = Tutorial
     Content "Try to enumerate the first 10 prime pairs whose form is (p, p + 6) like \"[(5, 11), (7, 13), (11, 17), (13, 19), (17, 23), ...]\"."
      []
      [],
-    Content "A pattern that begins with \"!\" is called not-pattern.\nA not-pattern matches when the pattern does not match the target."
+    Content "A pattern that begins with \"!\" is called not-pattern.\nA not-pattern matches when the content of the not-pattern does not match the target."
      ["matchAll [1, 1, 2, 3, 3, 2] as list integer with _ ++ $x :: #x :: _ -> x",
       "matchAll [1, 1, 2, 3, 3, 2] as list integer with _ ++ $x :: !#x :: _ -> x"]
      [],
-    Content "A pattern whose form is \"p1 & p2\" is called and-pattern.\nAn and-pattern is a pattern that matches the target if and only if both p1 and p2 matches.\nThe and-pattern in the following sample is used like an as-pattern."
+    Content "A pattern whose form is \"p1 & p2\" is called and-pattern.\nAn and-pattern is a pattern that matches the target if and only if both \"p1\" and \"p2\" matches.\nThe and-pattern in the following sample is used like an as-pattern."
      ["take 10 (matchAll primes as list integer with _ ++ $p :: (!#(p + 2) & $q) :: _ -> (p, q))"]
      [],
-    Content "A pattern whose form is \"p1 | p2\" is called or-pattern.\nAn or-pattern matches with the target, if p1 or p2 matches the target.\nIn the following sample, we enumerate prime triplets."
+    Content "A pattern whose form is \"p1 | p2\" is called or-pattern.\nAn or-pattern matches with the target, if \"p1\" or \"p2\" matches the target.\nIn the following sample, we enumerate prime triplets."
      ["take 10 (matchAll primes as list integer with _ ++ $p :: ($m & (#(p + 2) | #(p + 4))) :: #(p + 6) :: _ -> (p, m, (p + 6)))"]
      ["What is the 20th prime triplet?"],
     Content "Try to enumerate the first 4 prime quadruples whose form is (p, p + 2, p + 6, p + 8) like \"[(5, 7, 11, 13), (11, 13, 17, 19), ...]\"."
@@ -414,7 +414,7 @@ tutorial = Tutorial
     ],
   Section "Pattern matching for multisets and sets"
    [
-    Content "We can describe pattern matching for multisets and sets.\nWe can change the interpretation of patterns by changing the matcher, the second argument of the matchAll expression).\nThe meaning of the cons pattern (::) is generalized to divide a collection into \"an\" element and the rest."
+    Content "We can describe pattern matching for multisets and sets.\nWe can change the interpretation of patterns by changing the matcher, the second argument of the matchAll expression.\nThe meaning of the cons pattern (::) is generalized to divide a collection into \"an\" element and the rest."
      ["matchAll [1, 2, 3] as list integer     with $x :: $xs -> (x, xs)",
       "matchAll [1, 2, 3] as multiset integer with $x :: $xs -> (x, xs)",
       "matchAll [1, 2, 3] as set integer      with $x :: $xs -> (x, xs)"]
@@ -424,7 +424,7 @@ tutorial = Tutorial
       "matchAll [1, 2, 3, 4, 5] as multiset integer with $xs ++ $ys -> (xs, ys)",
       "matchAll [1, 2, 3, 4, 5] as set integer      with $xs ++ $ys -> (xs, ys)"]
      [],
-    Content "Try non-linear pattern matching against multiset."
+    Content "Try non-linear pattern matching for multiset."
      ["matchAll [1, 2, 1, 3, 2] as multiset integer with $x :: #x :: _ -> x",
       "matchAll [1, 2, 1, 3, 2] as multiset integer with $x :: #(x + 2) :: _ -> x",
       "matchAll [1, 2, 1, 3, 2] as multiset integer with $x :: !(#(x + 2) :: _) -> x"]
@@ -434,7 +434,7 @@ tutorial = Tutorial
       "matchAll [1..30] as multiset integer with $x :: #x :: #x :: _ -> x",
       "matchAll [1..30] as multiset integer with $x :: #x :: #x :: #x _ -> x"]
      [],
-    Content "Egison is designed to enumerate all the infinitely many pattern-matching results.\nThe following samples enumerate pairs and triplets of natural numbers."
+    Content "Egison is designed to enumerate all the infinitely many pattern-matching results.\nThe following samples enumerate all the pairs and triplets of natural numbers."
      ["matchAll nats as set integer with $x :: $y :: _ -> (x, y)",
       "matchAll nats as set integer with $x :: $y :: $z :: _ -> (x, y, z)"]
      [],
