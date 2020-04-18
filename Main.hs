@@ -290,42 +290,39 @@ tutorial = Tutorial
  [Section "Arithmetic"
    [
     Content "We can do arithmetic operations with \"+\", \"-\", \"*\", \"/\", \"^\" and \"modulo\"."
-     ["1 + 2", "30 - 15", "10 * 20", "20 / 5", "2 ^ 10", "modulo 17 4"]
-     [],
-    Content "We can nest expressions."
-     ["10 * 20 + 2", "10 * 20 / (10 + 20)"]
+     ["1 + 2", "30 - 15", "10 * 20", "20 / 5", "2 ^ 10", "modulo 17 4", "10 * 20 + 2", "10 * 20 / (10 + 20)"]
      ["Try calculating \"(100 - 1) * (100 + 1)\"."],
     Content "We support rational numbers."
      ["2 / 3 + 1 / 5", "42 / 84"]
      [],
-    Content "We support floats, too."
+    Content "We support floating-point numbers, too."
      ["10.2 + 1.3", "10.2 + 1"]
      [],
-    Content "We can convert a rational number to a float number with \"rtof\"."
+    Content "We can convert a rational number to a float number using \"rtof\"."
      ["rtof (1 / 5)", "rtof (1 / 100)"]
      [],
-    Content "We can handle collections of numbers.\nWe construct collections with \"[]\"."
+    Content "We can handle collections of numbers.\nWe construct a collection by enclosing its elements with \"[]\"."
      ["[]", "[10]", "[1, 2, 3, 4, 5]"]
      [],
     Content "We can decompose a collection using the \"head\" and \"tail\" function."
      ["head [1, 2, 3, 4, 5]", "tail [1, 2, 3, 4, 5]", "head (tail [1, 2, 3, 4, 5])"]
      ["Try to extract the third element of the collection \"[1, 2, 3, 4, 5]\" with \"head\" and \"tail\"."],
-    Content "With the \"take\" function, we can extract a head part of a collection."
-     ["take 0 [1, 2, 3, 4, 5]", "take 3 [1, 2, 3, 4, 5]"]
+    Content "Using the \"take\" function, we can extract a head part of a collection."
+     ["take 3 [1, 2, 3, 4, 5]", "take 0 [1, 2, 3, 4, 5]"]
      [],
     Content "We can handle infinite lists.\nFor example, \"nats\" and \"primes\" are an infinite list that contains all natural numbers and prime numbers respectively.\nTry to extract a head part from them."
      ["take 10 nats", "take 30 nats", "take 10 primes", "take 30 primes"]
      ["What is the 100th prime number?"],
-    Content "Functions are written as \"\\x -> ... \"."
+    Content "Functions are written like \"\\x -> ... \"."
      ["(\\x -> x + 1) 2", "(\\x y -> x + y) 2 3"]
      [],
     Content "We can use section notation of Haskell."
      ["(+) 2 3", "(* 2) 3", "(4 -) 3"]
      [],
-    Content "With the \"map\" function, we can operate each element of the collection at once."
+    Content "Using the \"map\" function, we can operate each element of the collection at once."
      ["take 100 (map (* 2) nats)", "take 100 (map (\\x -> modulo x 3) nats)"]
      [],
-    Content "With the \"foldl\" function, we can gather together all elements of the collection using an operator you like."
+    Content "Using the \"foldl\" function, we can gather together all elements of the collection using an operator you like."
      ["foldl (+) 0 [1, 2, 3, 4, 5]", "foldl (*) 1 [1, 2, 3, 4, 5]"]
      ["Try to get the sum of from 1 to 100."],
     Content "Try to create a sequence of numbers \"[1, 1/2, 1/3, 1/4, ..., 1/100]\"."
@@ -352,16 +349,16 @@ tutorial = Tutorial
     Content "Let's define functions and test them."
      ["increment x := x + 1", "increment 10", "multiply x y := x * y", "multiply 10 20", "fact n := foldl (*) 1 (take n nats)", "fact 10"]
      [],
-    Content "We can compare numbers using functions that return boolean values, \"True\" and \"False\".\nFunctions that return boolean values are called \"predicates\"."
+    Content "We can compare numbers using functions, \"=\", \"<\", \"<=\", \">\", \">=\".\nThese functions return boolean values, \"True\" and \"False\".\nFunctions that return boolean values are called \"predicates\"."
      ["1 = 1", "1 < 1", "1 <= 1",  "1 > 1", "1 >= 1"]
      [],
     Content "Using the \"takeWhile\" function, we can get the prefix of the second argument list whose elements satisfy the predicate of the first argument.\n\"primes\" is a infinite list that contains all prime numbers."
      ["takeWhile (\\n -> n < 100) primes", "takeWhile (\\n -> n < 1000) primes"]
      [],
-    Content "With the \"filter\" function, we can extract all elements that satisfy the predicate."
+    Content "Using the \"filter\" function, we can extract all elements that satisfy the given predicate."
      ["take 100 (filter isEven nats)", "take 100 (filter isPrime nats)", "take 100 (filter (\\p -> (modulo p 4) == 1) primes)"]
      ["Try to enumerate the first 100 primes that are congruent to 3 modulo 4."],
-    Content "We combine objects by enclosing them by \"(\", and \")\".\nThese things are called \"tuples\".\nNote that a tuple that consists of only one element is equal to that element itself."
+    Content "We can create a tuple by enclosing objects by \"(\", and \")\".\n\nNote that a tuple that consists of only one element is equal to that element itself."
      ["(1, 2)", "(1, 2, 3)", "(1)", "((1))"]
      [],
     Content "Using the \"zip\" function, we can combine two lists as follows."
