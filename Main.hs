@@ -166,17 +166,17 @@ getNumber n = do
       getNumber n
 
 -- |Get Egison expression from the prompt. We can handle multiline input.
-getEgisonExprOrNewLine :: Options -> InputT IO (Either (Maybe String) (String, EgisonTopExpr))
+getEgisonExprOrNewLine :: Options -> InputT IO (Either Bool (String, EgisonTopExpr))
 getEgisonExprOrNewLine opts = getEgisonExprOrNewLine' opts ""
 
-getEgisonExprOrNewLine' :: Options -> String -> InputT IO (Either (Maybe String) (String, EgisonTopExpr))
+getEgisonExprOrNewLine' :: Options -> String -> InputT IO (Either Bool (String, EgisonTopExpr))
 getEgisonExprOrNewLine' opts prev = do
   mLine <- case prev of
              "" -> getInputLine $ optPrompt opts
              _  -> getInputLine $ replicate (length $ optPrompt opts) ' '
   case mLine of
-    Nothing -> return $ Left Nothing
-    Just [] -> return $ Left $ Just ""
+    Nothing -> return $ Left False -- The user's input is 'Control-D'.
+    Just [] -> return $ Left True  -- The user's input is 'Enter'.
     Just line -> do
       let input = prev ++ line
       let parsedExpr = Parser.parseTopExpr input
@@ -219,7 +219,8 @@ repl env prompt = do
     home <- getHomeDirectory
     input <- liftIO $ runInputT (replSettings home) $ getEgisonExprOrNewLine defaultOptions
     case input of
-      Left Nothing -> do
+      -- The user input 'Control-D'.
+      Left False -> do
         b <- yesOrNo "Do you want to quit?"
         if b
           then return ()
@@ -228,7 +229,8 @@ repl env prompt = do
             if b
               then loop env contents True
               else loop env (content:contents) False
-      Left (Just "") -> do
+      -- The user input just 'Enter'.
+      Left True -> do
         b <- yesOrNo "Do you want to proceed next?"
         if b
           then loop env contents True
