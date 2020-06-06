@@ -292,48 +292,45 @@ tutorial = Tutorial
  [Section "Arithmetic"
    [
     Content "We can do arithmetic operations with \"+\", \"-\", \"*\", \"/\", \"^\" and \"modulo\"."
-     ["1 + 2", "30 - 15", "10 * 20", "20 / 5", "2 ^ 10", "modulo 17 4", "10 * 20 + 2", "10 * 20 / (10 + 20)"]
-     ["Try calculating \"(100 - 1) * (100 + 1)\"."],
+     ["1 + 2", "30 - 15", "10 * 20", "20 / 5", "2 ^ 10", "modulo 17 4"]
+     [],
     Content "We support rational numbers."
      ["2 / 3 + 1 / 5", "42 / 84"]
      [],
     Content "We support floating-point numbers, too."
      ["10.2 + 1.3", "10.2 + 1"]
      [],
-    Content "We can convert a rational number to a float number using \"rtof\"."
+    Content "We can convert a rational number to a floating-point number using \"rtof\"."
      ["rtof (1 / 5)", "rtof (1 / 100)"]
      [],
-    Content "We can handle collections of numbers.\nWe construct a collection by enclosing its elements with \"[]\"."
+    Content "We can handle lists of numbers.\nWe construct a list by enclosing its elements with \"[]\"."
      ["[]", "[10]", "[1, 2, 3, 4, 5]"]
      [],
-    Content "We can decompose a collection using the \"head\" and \"tail\" function."
+    Content "We can decompose a list using the \"head\" and \"tail\" function."
      ["head [1, 2, 3, 4, 5]", "tail [1, 2, 3, 4, 5]", "head (tail [1, 2, 3, 4, 5])"]
-     ["Try to extract the third element of the collection \"[1, 2, 3, 4, 5]\" with \"head\" and \"tail\"."],
-    Content "Using the \"take\" function, we can extract a head part of a collection."
+     ["Try to extract the third element of the list \"[1, 2, 3, 4, 5]\" with \"head\" and \"tail\"."],
+    Content "Using the \"take\" function, we can extract a head part of a list."
      ["take 3 [1, 2, 3, 4, 5]", "take 0 [1, 2, 3, 4, 5]"]
      [],
     Content "We can handle infinite lists.\nFor example, \"nats\" and \"primes\" are an infinite list that contains all natural numbers and prime numbers respectively.\nTry to extract a head part from them."
      ["take 10 nats", "take 30 nats", "take 10 primes", "take 30 primes"]
      ["What is the 100th prime number?"],
-    Content "Functions are written like \"\\x -> ... \"."
-     ["(\\x -> x + 1) 2", "(\\x y -> x + y) 2 3"]
+    Content "We can change an infix operator to a prefix operator by enclosing the operator by \"()\".\nThis notation is similar to the section notation in Haskell."
+     ["(+) 2 3", "(/ 2) 3", "(2 /) 3"]
      [],
-    Content "We can use section notation of Haskell."
-     ["(+) 2 3", "(* 2) 3", "(4 -) 3"]
+    Content "We can create functions using the \"lambda\" notation.\nFunctions are written like \"\\x -> ... \".\n\"(\\x -> x + 2)\" is equal to \"(+ 2)\".\n\"(\\x y -> x + y)\" is equal to \"(+)\"."
+     ["(\\x -> x + 2) 10", "(\\x y -> x + y) 2 3"]
      [],
-    Content "Using the \"map\" function, we can operate each element of the collection at once."
+    Content "The \"map\" function applies the first argument function to each element of the second argument list.\nThe \"map\" function is one of the most important function in functional programming."
      ["take 100 (map (* 2) nats)", "take 100 (map (\\x -> modulo x 3) nats)"]
-     [],
-    Content "Using the \"foldl\" function, we can gather together all elements of the collection using an operator you like."
+     ["Try to create a sequence of numbers \"[1, 1/2, 1/3, 1/4, ..., 1/100]\"."],
+    Content "The \"foldl\" function gathers together all elements of the third argument list using the operator specified by the first argument.\nThe second argument is an initial value.\nThe \"foldl\" function is also important in functional programming."
      ["foldl (+) 0 [1, 2, 3, 4, 5]", "foldl (*) 1 [1, 2, 3, 4, 5]"]
      ["Try to get the sum of from 1 to 100."],
-    Content "Try to create a sequence of numbers \"[1, 1/2, 1/3, 1/4, ..., 1/100]\"."
-     []
-     [],
-    Content "Try calculating \"1 + 1/2 + 1/3 + 1/4 + ... + 1/100\".\nRemember that we can convert a rational number to a float number with \"rtof\"."
+    Content "Try calculating \"1 + 1/2 + 1/3 + 1/4 + ... + 1/100\".\nRemember that we can convert a rational number to a floating-point number with \"rtof\"."
      ["rtof (2 / 3)"]
      [],
-    Content "Try calculating \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2\".\nIn fact, \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...\" converges to \"f./ (f.* f.pi f.pi) 6.0\"."
+    Content "Try calculating \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2\".\nIn fact, \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...\" converges to \"pi * pi / 6\"."
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
@@ -345,7 +342,7 @@ tutorial = Tutorial
     Content "We can bind a value to a variable with \":=\" (not \"=\").\nWe can easily get the value we bound to a variable."
      ["x := 10", "x", "y := 1 + x", "y"]
      [],
-    Content "We support recursive definitions. It enables us to define a collection with infinite elements."
+    Content "We support recursive definitions. It enables us to define a list with infinite elements."
      ["ones := 1 :: ones", "take 100 ones", "nats := 1 :: map (\\n -> n + 1) nats", "take 100 nats", "odds := 1 :: map (\\n -> n + 2) odds", "take 100 odds"]
      ["Try to define the infinite list of even numbers like [2, 4, 6, 8, 10, ...]."],
     Content "Let's define functions and test them."
@@ -375,11 +372,11 @@ tutorial = Tutorial
     ],
   Section "Basics of pattern matching"
    [
-    Content "Let's try pattern matching for a collection.\nThe \"join\" pattern (++) divides a collection into two collections.\nNote that the matchAll expression enumerates all the decompositions."
+    Content "Let's try pattern matching for a list.\nThe \"join\" pattern (++) divides a list into two lists.\nNote that the matchAll expression enumerates all the decompositions."
      ["matchAll [1, 2, 3]       as list integer with $hs ++ $ts -> (hs, ts)",
       "matchAll [1, 2, 3, 4, 5] as list integer with $hs ++ $ts -> (hs, ts)"]
      [],
-    Content "Try another pattern constructor \"cons\" (::).\nThe \"cons\" pattern (::) divides a collection into the head element and the rest collection.\n"
+    Content "Try another pattern constructor \"cons\" (::).\nThe \"cons\" pattern (::) divides a list into the head element and the rest.\n"
      ["matchAll [1, 2, 3]       as list integer with $x :: $xs -> (x ,xs)",
       "matchAll [1, 2, 3, 4, 5] as list integer with $x :: $xs -> (x, xs)"]
      [],
