@@ -319,7 +319,7 @@ tutorial = Tutorial
      ["(+) 2 3", "(/ 2) 3", "(2 /) 3"]
      [],
     Content "We can create functions using the \"lambda\" notation.\nFunctions are written like \"\\x -> ... \".\n\"(\\x -> x + 2)\" is equal to \"(+ 2)\".\n\"(\\x y -> x + y)\" is equal to \"(+)\"."
-     ["(\\x -> x + 2) 10", "(\\x y -> x + y) 2 3"]
+     ["(\\x -> x + 2) 10", "(\\x y -> x + y) 2 3", "(\\x y -> (x + y) / 2) 10 20"]
      [],
     Content "The \"map\" function applies the first argument function to each element of the second argument list.\nThe \"map\" function is one of the most important function in functional programming."
      ["take 100 (map (* 2) nats)", "take 100 (map (\\x -> modulo x 3) nats)"]
@@ -327,10 +327,10 @@ tutorial = Tutorial
     Content "The \"foldl\" function gathers together all elements of the third argument list using the operator specified by the first argument.\nThe second argument is an initial value.\nThe \"foldl\" function is also important in functional programming."
      ["foldl (+) 0 [1, 2, 3, 4, 5]", "foldl (*) 1 [1, 2, 3, 4, 5]"]
      ["Try to get the sum of from 1 to 100."],
-    Content "Try calculating \"1 + 1/2 + 1/3 + 1/4 + ... + 1/100\".\nRemember that we can convert a rational number to a floating-point number with \"rtof\"."
+    Content "Try to calculate \"1 + 1/2 + 1/3 + 1/4 + ... + 1/100\".\nRemember that we can convert a rational number to a floating-point number with \"rtof\"."
      ["rtof (2 / 3)"]
      [],
-    Content "Try calculating \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2\".\nIn fact, \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...\" converges to \"pi * pi / 6\"."
+    Content "Try to calculate \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2\".\nIn fact, \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...\" converges to \"pi * pi / 6\"."
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
@@ -339,10 +339,10 @@ tutorial = Tutorial
     ],
   Section "Basics of functional programming"
    [
-    Content "We can bind a value to a variable with \":=\" (not \"=\").\nWe can easily get the value we bound to a variable."
+    Content "We can bind a value to a variable using \":=\" (not \"=\")."
      ["x := 10", "x", "y := 1 + x", "y"]
      [],
-    Content "We support recursive definitions. It enables us to define a list with infinite elements."
+    Content "We support recursive definitions.\nRecursive definitions enable us to define a list with infinitely many elements."
      ["ones := 1 :: ones", "take 100 ones", "nats := 1 :: map (\\n -> n + 1) nats", "take 100 nats", "odds := 1 :: map (\\n -> n + 2) odds", "take 100 odds"]
      ["Try to define the infinite list of even numbers like [2, 4, 6, 8, 10, ...]."],
     Content "Let's define functions and test them."
@@ -357,7 +357,7 @@ tutorial = Tutorial
     Content "Using the \"filter\" function, we can extract all elements that satisfy the given predicate."
      ["take 100 (filter isEven nats)", "take 100 (filter isPrime nats)", "take 100 (filter (\\p -> (modulo p 4) = 1) primes)"]
      ["Try to enumerate the first 100 primes that are congruent to 3 modulo 4."],
-    Content "We can create a tuple by enclosing objects by \"(\", and \")\".\n\nNote that a tuple that consists of only one element is equal to that element itself."
+    Content "We can create a tuple by enclosing objects by \"()\".\n\nNote that a tuple that consists of only one element is equal to that element itself."
      ["(1, 2)", "(1, 2, 3)", "(1)", "((1))"]
      [],
     Content "Using the \"zip\" function, we can combine two lists as follows."
