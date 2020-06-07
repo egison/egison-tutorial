@@ -12,13 +12,14 @@ Author:              Satoshi Egi
 Maintainer:          Satoshi Egi <egi@egison.org>
 Category:            Compilers/Interpreters
 Build-type:          Simple
-Cabal-version:       >=1.8
+Cabal-version:       2.0
 
 source-repository head
   type: git
   location: https://github.com/egison/egison-tutorial.git
 
 Executable egison-tutorial
+  default-language:    Haskell2010
   Main-is:             Main.hs
   Build-depends: egison >= 4.0.3
                , base >= 4.0 && < 5
@@ -30,3 +31,4 @@ Executable egison-tutorial
                , regex-posix
   ghc-options:  -Wall -Wno-name-shadowing
   Other-modules:   Paths_egison_tutorial
+  autogen-modules: Paths_egison_tutorial
