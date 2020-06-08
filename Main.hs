@@ -295,7 +295,7 @@ tutorial = Tutorial
      ["1 + 2", "30 - 15", "10 * 20", "20 / 5", "2 ^ 10", "modulo 17 4"]
      [],
     Content "We support rational numbers."
-     ["2 / 3 + 1 / 5", "42 / 84"]
+     ["2 / 3 + 1 / 5", "4 / 8"]
      [],
     Content "We support floating-point numbers, too."
      ["10.2 + 1.3", "10.2 + 1"]
@@ -306,32 +306,29 @@ tutorial = Tutorial
     Content "We can handle lists of numbers.\nWe construct a list by enclosing its elements with \"[]\"."
      ["[]", "[10]", "[1, 2, 3, 4, 5]"]
      [],
-    Content "We can decompose a list using the \"head\" and \"tail\" function."
-     ["head [1, 2, 3, 4, 5]", "tail [1, 2, 3, 4, 5]", "head (tail [1, 2, 3, 4, 5])"]
-     ["Try to extract the third element of the list \"[1, 2, 3, 4, 5]\" with \"head\" and \"tail\"."],
+    Content "Using the \"sum\" function, we can get the summation of the argument list."
+     ["sum []", "sum [10]", "sum [1, 2, 3, 4, 5]"]
+     [],
     Content "Using the \"take\" function, we can extract a head part of a list."
      ["take 3 [1, 2, 3, 4, 5]", "take 0 [1, 2, 3, 4, 5]"]
      [],
     Content "We can handle infinite lists.\nFor example, \"nats\" and \"primes\" are an infinite list that contains all natural numbers and prime numbers respectively.\nTry to extract a head part from them."
      ["take 10 nats", "take 30 nats", "take 10 primes", "take 30 primes"]
      ["What is the 100th prime number?"],
-    Content "We can change an infix operator to a prefix operator by enclosing the operator by \"()\".\nThis notation is similar to the section notation in Haskell."
+    Content "We can change an infix operator to a prefix operator by enclosing the operator by \"()\".\nFor example, \"(+) 2 3\" is equivalent to \"2 + 3\".\nThis notation is similar to the section notation in Haskell."
      ["(+) 2 3", "(/ 2) 3", "(2 /) 3"]
      [],
-    Content "We can create functions using the \"lambda\" notation.\nFunctions are written like \"\\x -> ... \".\n\"(\\x -> x + 2)\" is equal to \"(+ 2)\".\n\"(\\x y -> x + y)\" is equal to \"(+)\"."
-     ["(\\x -> x + 2) 10", "(\\x y -> x + y) 2 3", "(\\x y -> (x + y) / 2) 10 20"]
-     [],
     Content "The \"map\" function applies the first argument function to each element of the second argument list.\nThe \"map\" function is one of the most important function in functional programming."
-     ["take 100 (map (* 2) nats)", "take 100 (map (\\x -> modulo x 3) nats)"]
+     ["map (* 2) [1, 2, 3, 4, 5]", "take 10 (map (* 2) nats)"]
      ["Try to create a sequence of numbers \"[1, 1/2, 1/3, 1/4, ..., 1/100]\"."],
-    Content "The \"foldl\" function gathers together all elements of the third argument list using the operator specified by the first argument.\nThe second argument is an initial value.\nThe \"foldl\" function is also important in functional programming."
-     ["foldl (+) 0 [1, 2, 3, 4, 5]", "foldl (*) 1 [1, 2, 3, 4, 5]"]
-     ["Try to get the sum of from 1 to 100."],
-    Content "Try to calculate \"1 + 1/2 + 1/3 + 1/4 + ... + 1/100\".\nRemember that we can convert a rational number to a floating-point number with \"rtof\"."
-     ["rtof (2 / 3)"]
+    Content "We can create functions using the \"lambda\" notation.\nFunctions are written like \"\\x -> ... \".\n\"(\\x -> x + 2)\" is equal to \"(+ 2)\".\n\"(\\x y -> x + y)\" is equal to \"(+)\"."
+     ["(\\x -> x + 2) 10", "take 10 (map (\\x -> x + 2) nats)"]
      [],
-    Content "Try to calculate \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2\".\nIn fact, \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...\" converges to \"pi * pi / 6\"."
+    Content "Try to calculate \"1 + 1/2 + 1/3 + 1/4 + ... + 1/100\"."
      []
+     [],
+    Content "Try to calculate \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2\".\nIn fact, \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...\" converges to \"pi * pi / 6\".\nRemember that we can convert a rational number to a floating-point number with \"rtof\"."
+     ["rtof (2 / 3)"]
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
      []
@@ -346,8 +343,11 @@ tutorial = Tutorial
      ["ones := 1 :: ones", "take 100 ones", "nats := 1 :: map (\\n -> n + 1) nats", "take 100 nats", "odds := 1 :: map (\\n -> n + 2) odds", "take 100 odds"]
      ["Try to define the infinite list of even numbers like [2, 4, 6, 8, 10, ...]."],
     Content "Let's define functions and test them."
-     ["increment x := x + 1", "increment 10", "multiply x y := x * y", "multiply 10 20", "fact n := foldl (*) 1 (take n nats)", "fact 10"]
+     ["increment x := x + 1", "increment 10", "avrage x y := (x + y) / 2", "average 10 20"]
      [],
+    Content "The \"foldl\" function gathers together all elements of the third argument list using the operator specified by the first argument.\nThe second argument is an initial value."
+     ["foldl (+) 0 [1, 2, 3, 4, 5]", "foldl (*) 1 [1, 2, 3, 4, 5]", "sum xs := foldl (+) 0 xs", "sum [1, 2, 3, 4, 5]"]
+     ["Try to get the sum of from 1 to 100."],
     Content "We can compare numbers using functions, \"=\", \"<\", \"<=\", \">\", \">=\".\nThese functions return boolean values, \"True\" and \"False\".\nFunctions that return boolean values are called \"predicates\"."
      ["1 = 1", "1 < 1", "1 <= 1",  "1 > 1", "1 >= 1"]
      [],
@@ -413,7 +413,7 @@ tutorial = Tutorial
     ],
   Section "Pattern matching for multisets and sets"
    [
-    Content "We can describe pattern matching for multisets and sets.\nWe can change the interpretation of patterns by changing the matcher, the second argument of the matchAll expression.\nThe meaning of the cons pattern (::) is generalized to divide a collection into \"an\" element and the rest."
+    Content "We can pattern-match a list as a multiset or set.\nWe can change the interpretation of patterns by changing the matcher, the second argument of the matchAll expression.\nThe meaning of the cons pattern (::) is generalized to divide a collection into \"an\" element and the rest."
      ["matchAll [1, 2, 3] as list integer     with $x :: $xs -> (x, xs)",
       "matchAll [1, 2, 3] as multiset integer with $x :: $xs -> (x, xs)",
       "matchAll [1, 2, 3] as set integer      with $x :: $xs -> (x, xs)"]
