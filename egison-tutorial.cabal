@@ -1,5 +1,5 @@
 Name:                egison-tutorial
-Version:             4.0.1
+Version:             4.1.0
 Synopsis:            A tutorial program for the Egison programming language
 Description:         A tutorial program for the Egison programming language.
                      Egison is the programming langugage that realized non-linear pattern-matching against unfree data types.
@@ -21,7 +21,7 @@ source-repository head
 Executable egison-tutorial
   default-language:    Haskell2010
   Main-is:             Main.hs
-  Build-depends: egison >= 4.0.3
+  Build-depends: egison >= 4.1.0
                , base >= 4.0 && < 5
                , haskeline
                , transformers

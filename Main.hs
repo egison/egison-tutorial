@@ -291,8 +291,8 @@ tutorial :: Tutorial
 tutorial = Tutorial
  [Section "Arithmetic"
    [
-    Content "We can do arithmetic operations with \"+\", \"-\", \"*\", \"/\", \"^\" and \"modulo\"."
-     ["1 + 2", "30 - 15", "10 * 20", "20 / 5", "2 ^ 10", "modulo 17 4"]
+    Content "We can do arithmetic operations with \"+\", \"-\", \"*\", \"/\", and \"^\"."
+     ["1 + 2", "30 - 15", "10 * 20", "20 / 5", "2 ^ 10"]
      [],
     Content "We support rational numbers."
      ["2 / 3 + 1 / 5", "4 / 8"]
@@ -315,18 +315,12 @@ tutorial = Tutorial
     Content "We can handle infinite lists.\nFor example, \"nats\" and \"primes\" are an infinite list that contains all natural numbers and prime numbers respectively.\nTry to extract a head part from them."
      ["take 10 nats", "take 30 nats", "take 10 primes", "take 30 primes"]
      ["What is the 100th prime number?"],
-    Content "We can change an infix operator to a prefix operator by enclosing the operator by \"()\".\nFor example, \"(+) 2 3\" is equivalent to \"2 + 3\".\nThis notation is similar to the section notation in Haskell."
-     ["(+) 2 3", "(/ 2) 3", "(2 /) 3"]
+    Content "We can create functions using the \"lambda\" notation.\nFunctions are written like \"\\x -> ... \"."
+     ["(\\x -> x + 2) 10", "(\\x -> x ^ 2) 10"]
      [],
     Content "The \"map\" function applies the first argument function to each element of the second argument list.\nThe \"map\" function is one of the most important function in functional programming."
-     ["map (* 2) [1, 2, 3, 4, 5]", "take 10 (map (* 2) nats)"]
+     ["map (\\x -> x * 2) [1, 2, 3, 4, 5]", "map (\\x -> 1 / x) [1, 2, 3, 4, 5]"]
      ["Try to create a sequence of numbers \"[1, 1/2, 1/3, 1/4, ..., 1/100]\"."],
-    Content "We can create functions using the \"lambda\" notation.\nFunctions are written like \"\\x -> ... \".\n\"(\\x -> x + 2)\" is equal to \"(+ 2)\".\n\"(\\x y -> x + y)\" is equal to \"(+)\"."
-     ["(\\x -> x + 2) 10", "take 10 (map (\\x -> x + 2) nats)"]
-     [],
-    Content "Try to calculate \"1 + 1/2 + 1/3 + 1/4 + ... + 1/100\"."
-     []
-     [],
     Content "Try to calculate \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ... + (1/100)^2\".\nIn fact, \"1 + (1/2)^2 + (1/3)^2 + (1/4)^2 + ...\" converges to \"pi * pi / 6\".\nRemember that we can convert a rational number to a floating-point number with \"rtof\"."
      ["rtof (2 / 3)"]
      [],
@@ -337,16 +331,19 @@ tutorial = Tutorial
   Section "Basics of functional programming"
    [
     Content "We can bind a value to a variable using \":=\" (not \"=\")."
-     ["x := 10", "x", "y := 1 + x", "y"]
+     ["def x := 10", "x", "def y := 1 + x", "y"]
      [],
-    Content "We support recursive definitions.\nRecursive definitions enable us to define a list with infinitely many elements."
-     ["ones := 1 :: ones", "take 100 ones", "nats := 1 :: map (\\n -> n + 1) nats", "take 100 nats", "odds := 1 :: map (\\n -> n + 2) odds", "take 100 odds"]
+    Content "We support recursive definitions.\nRecursive definitions enable us to define a list with infinitely many elements.\nThe \"::\" infix operator adds the first argument to the head of the second argument list."
+     ["def ones := 1 :: ones", "take 100 ones", "def nats := 1 :: map (\\n -> n + 1) nats", "take 100 nats", "def odds := 1 :: map (\\n -> n + 2) odds", "take 100 odds"]
      ["Try to define the infinite list of even numbers like [2, 4, 6, 8, 10, ...]."],
     Content "Let's define functions and test them."
-     ["increment x := x + 1", "increment 10", "avrage x y := (x + y) / 2", "average 10 20"]
+     ["def increment x := x + 1", "increment 10", "def avrage x y := (x + y) / 2", "average 10 20"]
+     [],
+    Content "We can change an infix operator to a prefix operator by enclosing the operator by \"()\".\nFor example, \"(+) 2 3\" is equivalent to \"2 + 3\"."
+     ["(+) 2 3", "(/) 3 2"]
      [],
     Content "The \"foldl\" function gathers together all elements of the third argument list using the operator specified by the first argument.\nThe second argument is an initial value."
-     ["foldl (+) 0 [1, 2, 3, 4, 5]", "foldl (*) 1 [1, 2, 3, 4, 5]", "sum xs := foldl (+) 0 xs", "sum [1, 2, 3, 4, 5]"]
+     ["foldl (+) 0 [1, 2, 3, 4, 5]", "foldl (*) 1 [1, 2, 3, 4, 5]", "def sum xs := foldl (+) 0 xs", "sum [1, 2, 3, 4, 5]"]
      ["Try to get the sum of from 1 to 100."],
     Content "We can compare numbers using functions, \"=\", \"<\", \"<=\", \">\", \">=\".\nThese functions return boolean values, \"True\" and \"False\".\nFunctions that return boolean values are called \"predicates\"."
      ["1 = 1", "1 < 1", "1 <= 1",  "1 > 1", "1 >= 1"]
@@ -363,7 +360,7 @@ tutorial = Tutorial
     Content "Using the \"zip\" function, we can combine two lists as follows."
      ["take 100 (zip nats nats)", "take 100 (zip primes primes)"]
      ["Try to generate the prime table as \"[(1, 2), (2, 3), (3, 5), (4, 7), (5, 11), ...]\"."],
-    Content "Try to create a Fibonacci sequence \"[1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ...]\".\n\nHint:\n  Replace \"???\" in the following expression to a proper function.\n  fibs := 1 :: 1 :: map ??? (zip fibs (tail fibs))"
+    Content "Try to create a Fibonacci sequence \"[1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ...]\".\n\nHint:\n  Replace \"???\" in the following expression to a proper function.\n  def fibs := 1 :: 1 :: map ??? (zip fibs (tail fibs))"
      []
      [],
     Content "This is the end of this section.\nPlease play freely or proceed to the next section.\nThank you for enjoying our tutorial!"
@@ -505,13 +502,13 @@ tutorial = Tutorial
       ]
      [],
     Content "The function defined using scalar parameters (prepended by \"$\") are automatically mapped to each component of tensors."
-     ["min $x $y := if x < y then x else y",
+     ["def min $x $y := if x < y then x else y",
       "min [| 1, 2, 3 |]_i [| 10, 20, 30 |]_i",
       "min [| 1, 2, 3 |]_i [| 10, 20, 30 |]_j"
       ]
      [],
     Content "The function defined using tensor parameters (prepended by \"%\") treats a tensor as a whole.\nIf we prepend "
-     ["det2 %X := X_1_1 * X_2_2 -  X_1_2 * X_2_1",
+     ["def det2 %X := X_1_1 * X_2_2 -  X_1_2 * X_2_1",
       "det2 [| [| 2, 1 |], [| 1, 2 |] |]",
       "det2 [| [| a, b |], [| c, d |] |]"
       ]
@@ -535,10 +532,10 @@ tutorial = Tutorial
       ]
      [],
     Content "1-forms on Euclid space and Wedge product are represented as follows.\n\"!\" is effectively used in the definition of Wedge product."
-     ["dx := [| 1, 0, 0 |]",
-      "dy := [| 0, 1, 0 |]",
-      "dz := [| 0, 0, 1 |]",
-      "wedge %A %B := A !. B",
+     ["def dx := [| 1, 0, 0 |]",
+      "def dy := [| 0, 1, 0 |]",
+      "def dz := [| 0, 0, 1 |]",
+      "def wedge %A %B := A !. B",
       "wedge dx dy"
       ]
      [],
@@ -548,8 +545,8 @@ tutorial = Tutorial
       ]
      [],
     Content "Exterior derivative is defined as follows.\n\"!\" is effectively used in the definition of exterior derivative."
-     ["params := [| x, y, z |]",
-      "d %A := !((flip ∂/∂) params A)",
+     ["def params := [| x, y, z |]",
+      "def d %A := !((flip ∂/∂) params A)",
       "d (f x y z)",
       "d (d (f x y z))",
       "dfNormalize (d (d (f x y z)))"
