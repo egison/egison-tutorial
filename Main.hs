@@ -12,7 +12,7 @@ import           Text.Regex.Posix
 import           System.Environment
 import           System.Directory           (getHomeDirectory)
 import           System.FilePath            ((</>))
-import           System.Console.Haskeline   hiding (handle, catch, throwTo)
+import           System.Console.Haskeline
 import           System.Console.GetOpt
 import           System.Exit                (ExitCode (..), exitWith)
 
@@ -24,7 +24,7 @@ import qualified Paths_egison_tutorial       as P
 
 main :: IO ()
 main = do args <- getArgs
-          let (actions, nonOpts, _) = getOpt Permute tOptions args
+          let (actions, _, _) = getOpt Permute tOptions args
           let tOpts = foldl (flip id) defaultEgisonTutorialOpts actions
           runWithEgisonTutorialOpts tOpts
 
@@ -45,7 +45,7 @@ runWithEgisonTutorialOpts EgisonTutorialOpts{ tOptSection = Just sn, tOptSubSect
   putStrLn ret
 runWithEgisonTutorialOpts EgisonTutorialOpts{ tOptShowHelp = True } = printHelp
 runWithEgisonTutorialOpts EgisonTutorialOpts{ tOptShowVersion = True } = printVersionNumber
-runWithEgisonTutorialOpts tOpts = evalRuntimeT ET.defaultOption run
+runWithEgisonTutorialOpts EgisonTutorialOpts{ tOptPrompt = prompt } = evalRuntimeT ET.defaultOption { optPrompt = prompt } run
 
 run :: RuntimeM ()
 run = do
@@ -175,14 +175,15 @@ getNumber n = do
       getNumber n
 
 -- |Get Egison expression from the prompt. We can handle multiline input.
-getEgisonExprOrNewLine :: EgisonOpts -> InputT RuntimeM (Either Bool (String, TopExpr))
-getEgisonExprOrNewLine opts = getEgisonExprOrNewLine' opts ""
+getEgisonExprOrNewLine :: InputT RuntimeM (Either Bool (String, TopExpr))
+getEgisonExprOrNewLine = getEgisonExprOrNewLine' ""
 
-getEgisonExprOrNewLine' :: EgisonOpts -> String -> InputT RuntimeM (Either Bool (String, TopExpr))
-getEgisonExprOrNewLine' opts prev = do
+getEgisonExprOrNewLine' :: String -> InputT RuntimeM (Either Bool (String, TopExpr))
+getEgisonExprOrNewLine' prev = do
+  opts <- lift ask
   mLine <- case prev of
              "" -> getInputLine $ optPrompt opts
-             _  -> getInputLine $ replicate (length $ optPrompt opts) ' '
+             _  -> getInputLine $ replicate (length (optPrompt opts)) ' '
   case mLine of
     Nothing -> return $ Left False -- The user's input is 'Control-D'.
     Just [] -> return $ Left True  -- The user's input is 'Enter'.
@@ -191,10 +192,10 @@ getEgisonExprOrNewLine' opts prev = do
       parsedExpr <- lift $ Parser.parseTopExpr input
       case parsedExpr of
         Left err | show err =~ "unexpected end of input" ->
-          getEgisonExprOrNewLine' opts $ input ++ "\n"
+          getEgisonExprOrNewLine' (input ++ "\n")
         Left err -> do
           liftIO $ print err
-          getEgisonExprOrNewLine opts
+          getEgisonExprOrNewLine
         Right topExpr -> return $ Right (input, topExpr)
 
 replSettings :: MonadIO m => FilePath -> Env -> Settings m
@@ -215,17 +216,17 @@ repl :: Env -> RuntimeM ()
 repl env = do
   section <- liftIO $ selectSection tutorial
   case section of
-    Section _ cs -> loop env cs True
+    Section _ cs -> repl' env cs True
  where
-  loop :: Env -> [Content] -> Bool -> RuntimeM ()
-  loop env [] _ = do
+  repl' :: Env -> [Content] -> Bool -> RuntimeM ()
+  repl' env [] _ = do
     repl env
-  loop env (content:contents) b = (do
+  repl' env (content:contents) b = (do
     if b
       then liftIO $ putStrLn $ show content
       else return ()
     home <- liftIO $ getHomeDirectory
-    input <- runInputT (replSettings home env) $ getEgisonExprOrNewLine ET.defaultOption
+    input <- runInputT (replSettings home env) $ getEgisonExprOrNewLine
     case input of
       -- The user input 'Control-D'.
       Left False -> do
@@ -235,28 +236,28 @@ repl env = do
           else do
             b <- liftIO $ yesOrNo "Do you want to proceed next?"
             if b
-              then loop env contents True
-              else loop env (content:contents) False
+              then repl' env contents True
+              else repl' env (content:contents) False
       -- The user input just 'Enter'.
       Left True -> do
         b <- liftIO $ yesOrNo "Do you want to proceed next?"
         if b
-          then loop env contents True
-          else loop env (content:contents) False
+          then repl' env contents True
+          else repl' env (content:contents) False
       Right (topExpr, _) -> do
-        result <- fromEvalT (runTopExpr env topExpr)
+        result <- fromEvalT (runTopExprStr env topExpr)
         case result of
           Left err -> do
             liftIO $ putStrLn $ show err
-            loop env (content:contents) False
-          Right (Just ret, env') -> liftIO (putStrLn (show ret)) >> loop env' (content:contents) False
-          Right (Nothing, env') -> loop env' (content:contents) False)
+            repl' env (content:contents) False
+          Right (Just output, env') -> liftIO (putStrLn output) >> repl' env' (content:contents) False
+          Right (Nothing, env') -> repl' env' (content:contents) False)
     `catch`
     (\e -> case e of
-             UserInterrupt -> liftIO (putStrLn "") >> loop env (content:contents) False
-             StackOverflow -> liftIO (putStrLn "Stack over flow!") >> loop env (content:contents) False
-             HeapOverflow -> liftIO (putStrLn "Heap over flow!") >> loop env (content:contents) False
-             _ -> liftIO (putStrLn "error!") >> loop env (content:contents) False
+             UserInterrupt -> liftIO (putStrLn "") >> repl' env (content:contents) False
+             StackOverflow -> liftIO (putStrLn "Stack over flow!") >> repl' env (content:contents) False
+             HeapOverflow -> liftIO (putStrLn "Heap over flow!") >> repl' env (content:contents) False
+             _ -> liftIO (putStrLn "error!") >> repl' env (content:contents) False
      )
 
 data Tutorial = Tutorial [Section]
