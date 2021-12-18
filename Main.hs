@@ -1,7 +1,9 @@
 module Main where
 
-import           Control.Exception          (AsyncException(..), catch)
+import           Control.Exception                (AsyncException (..))
+import           Control.Monad.Catch              (catch)
 import           Control.Monad.Except
+import           Control.Monad.Reader
 
 import           Data.Version
 import           Data.List
@@ -15,78 +17,85 @@ import           System.Console.GetOpt
 import           System.Exit                (ExitCode (..), exitWith)
 
 import           Language.Egison
-import qualified Language.Egison.CmdOptions  as ET
+import qualified Language.Egison.CmdOptions as ET
 import           Language.Egison.Completion  (completeEgison)
 import qualified Language.Egison.Parser.NonS as Parser
 import qualified Paths_egison_tutorial       as P
 
 main :: IO ()
 main = do args <- getArgs
-          let (actions, nonOpts, _) = getOpt Permute options args
-          let opts = foldl (flip id) defaultOptions actions
-          case opts of
-            Options {optShowSections = True} -> putStrLn $ show tutorial
-            Options {optSection = Just sn, optSubSection = Just ssn} -> do
-              let sn' = (read sn) :: Int
-              let ssn' = (read ssn) :: Int
-              let ret = case tutorial of
-                          Tutorial ss ->
-                            if 0 < sn' && sn' <= length ss
-                              then case nth sn' ss of
-                                     Section _ cs ->
-                                       if 0 < ssn' && ssn' <= length cs
-                                         then showContent $ nth ssn' cs
-                                         else "error: content out of range"
-                              else "error: section out of range"
-              putStrLn ret
-            Options {optShowHelp = True} -> printHelp
-            Options {optShowVersion = True} -> printVersionNumber
-            Options {optPrompt = prompt} -> do
-                env <- initialEnv ET.defaultOption
-                case nonOpts of
-                    [] -> showBanner >> repl env prompt
-                    _ -> printHelp
+          let (actions, nonOpts, _) = getOpt Permute tOptions args
+          let tOpts = foldl (flip id) defaultEgisonTutorialOpts actions
+          runWithEgisonTutorialOpts tOpts
 
-data Options = Options {
-    optShowVersion :: Bool,
-    optShowHelp :: Bool,
-    optPrompt :: String,
-    optShowSections :: Bool,
-    optSection :: Maybe String,
-    optSubSection :: Maybe String
+runWithEgisonTutorialOpts :: EgisonTutorialOpts -> IO ()
+runWithEgisonTutorialOpts EgisonTutorialOpts{ tOptShowSections = True } = putStrLn $ show tutorial
+runWithEgisonTutorialOpts EgisonTutorialOpts{ tOptSection = Just sn, tOptSubSection = Just ssn } = do
+  let sn' = (read sn) :: Int
+  let ssn' = (read ssn) :: Int
+  let ret = case tutorial of
+              Tutorial ss ->
+                if 0 < sn' && sn' <= length ss
+                  then case nth sn' ss of
+                         Section _ cs ->
+                           if 0 < ssn' && ssn' <= length cs
+                             then showContent $ nth ssn' cs
+                             else "error: content out of range"
+                  else "error: section out of range"
+  putStrLn ret
+runWithEgisonTutorialOpts EgisonTutorialOpts{ tOptShowHelp = True } = printHelp
+runWithEgisonTutorialOpts EgisonTutorialOpts{ tOptShowVersion = True } = printVersionNumber
+runWithEgisonTutorialOpts tOpts = evalRuntimeT ET.defaultOption run
+
+run :: RuntimeM ()
+run = do
+  opts <- ask
+  coreEnv <- initialEnv
+  mEnv <- fromEvalT $ evalTopExprs coreEnv $ map Load (optLoadLibs opts) ++ map LoadFile (optLoadFiles opts)
+  case mEnv of
+    Left err  -> liftIO $ print err
+    Right env -> repl env
+
+data EgisonTutorialOpts = EgisonTutorialOpts {
+    tOptShowVersion :: Bool,
+    tOptShowHelp :: Bool,
+    tOptPrompt :: String,
+    tOptShowSections :: Bool,
+    tOptSection :: Maybe String,
+    tOptSubSection :: Maybe String
     }
 
-defaultOptions :: Options
-defaultOptions = Options {
-    optShowVersion = False,
-    optShowHelp = False,
-    optPrompt = "> ",
-    optShowSections = False,
-    optSection = Nothing,
-    optSubSection = Nothing
+defaultEgisonTutorialOpts :: EgisonTutorialOpts
+defaultEgisonTutorialOpts = EgisonTutorialOpts {
+    tOptShowVersion = False,
+    tOptShowHelp = False,
+    tOptPrompt = "> ",
+    tOptShowSections = False,
+    tOptSection = Nothing,
+    tOptSubSection = Nothing
     }
 
-options :: [OptDescr (Options -> Options)]
-options = [
+tOptions :: [OptDescr (EgisonTutorialOpts -> EgisonTutorialOpts)]
+tOptions = [
   Option ['v', 'V'] ["version"]
-    (NoArg (\opts -> opts {optShowVersion = True}))
+    (NoArg (\tOpts -> tOpts {tOptShowVersion = True}))
     "show version number",
   Option ['h', '?'] ["help"]
-    (NoArg (\opts -> opts {optShowHelp = True}))
+    (NoArg (\tOpts -> tOpts {tOptShowHelp = True}))
     "show usage information",
   Option ['p'] ["prompt"]
-    (ReqArg (\prompt opts -> opts {optPrompt = prompt})
+    (ReqArg (\prompt tOpts -> tOpts {tOptPrompt = prompt})
             "String")
     "set prompt string",
   Option ['l'] ["list"]
-    (NoArg (\opts -> opts {optShowSections = True}))
+    (NoArg (\tOpts -> tOpts {tOptShowSections = True}))
     "show section list",
   Option ['s'] ["section"]
-    (ReqArg (\sn opts -> opts {optSection = Just sn})
+    (ReqArg (\sn tOpts -> tOpts {tOptSection = Just sn})
             "String")
     "set section number",
   Option ['c'] ["subsection"]
-    (ReqArg (\ssn opts -> opts {optSubSection = Just ssn})
+    (ReqArg (\ssn tOpts -> tOpts {tOptSubSection = Just ssn})
             "String")
     "set subsection number"
   ]
@@ -95,7 +104,7 @@ printHelp :: IO ()
 printHelp = do
   putStrLn "Usage: egison-tutorial [options]"
   putStrLn ""
-  putStrLn "Options:"
+  putStrLn "EgisonTutorialOpts:"
   putStrLn "  --help                Display this information"
   putStrLn "  --version             Display egison version information"
   putStrLn "  --prompt string       Set prompt of the interpreter"
@@ -166,10 +175,10 @@ getNumber n = do
       getNumber n
 
 -- |Get Egison expression from the prompt. We can handle multiline input.
-getEgisonExprOrNewLine :: Options -> InputT IO (Either Bool (String, EgisonTopExpr))
+getEgisonExprOrNewLine :: EgisonOpts -> InputT RuntimeM (Either Bool (String, TopExpr))
 getEgisonExprOrNewLine opts = getEgisonExprOrNewLine' opts ""
 
-getEgisonExprOrNewLine' :: Options -> String -> InputT IO (Either Bool (String, EgisonTopExpr))
+getEgisonExprOrNewLine' :: EgisonOpts -> String -> InputT RuntimeM (Either Bool (String, TopExpr))
 getEgisonExprOrNewLine' opts prev = do
   mLine <- case prev of
              "" -> getInputLine $ optPrompt opts
@@ -179,7 +188,7 @@ getEgisonExprOrNewLine' opts prev = do
     Just [] -> return $ Left True  -- The user's input is 'Enter'.
     Just line -> do
       let input = prev ++ line
-      let parsedExpr = Parser.parseTopExpr input
+      parsedExpr <- lift $ Parser.parseTopExpr input
       case parsedExpr of
         Left err | show err =~ "unexpected end of input" ->
           getEgisonExprOrNewLine' opts $ input ++ "\n"
@@ -188,9 +197,9 @@ getEgisonExprOrNewLine' opts prev = do
           getEgisonExprOrNewLine opts
         Right topExpr -> return $ Right (input, topExpr)
 
-replSettings :: MonadIO m => FilePath -> Settings m
-replSettings home = Settings
-  { complete       = completeEgison
+replSettings :: MonadIO m => FilePath -> Env -> Settings m
+replSettings home env = Settings
+  { complete       = completeEgison env
   , historyFile    = Just (home </> ".egison_history")
   , autoAddHistory = True
   }
@@ -202,52 +211,52 @@ nonReplSettings = Settings
   , autoAddHistory = False
   }
 
-repl :: Env -> String -> IO ()
-repl env prompt = do
-  section <- selectSection tutorial
+repl :: Env -> RuntimeM ()
+repl env = do
+  section <- liftIO $ selectSection tutorial
   case section of
     Section _ cs -> loop env cs True
  where
-  loop :: Env -> [Content] -> Bool -> IO ()
+  loop :: Env -> [Content] -> Bool -> RuntimeM ()
   loop env [] _ = do
---    liftIO $ showFinishMessage
-    liftIO $ repl env prompt
+    repl env
   loop env (content:contents) b = (do
     if b
       then liftIO $ putStrLn $ show content
       else return ()
-    home <- getHomeDirectory
-    input <- liftIO $ runInputT (replSettings home) $ getEgisonExprOrNewLine defaultOptions
+    home <- liftIO $ getHomeDirectory
+    input <- runInputT (replSettings home env) $ getEgisonExprOrNewLine ET.defaultOption
     case input of
       -- The user input 'Control-D'.
       Left False -> do
-        b <- yesOrNo "Do you want to quit?"
+        b <- liftIO $ yesOrNo "Do you want to quit?"
         if b
           then return ()
           else do
-            b <- yesOrNo "Do you want to proceed next?"
+            b <- liftIO $ yesOrNo "Do you want to proceed next?"
             if b
               then loop env contents True
               else loop env (content:contents) False
       -- The user input just 'Enter'.
       Left True -> do
-        b <- yesOrNo "Do you want to proceed next?"
+        b <- liftIO $ yesOrNo "Do you want to proceed next?"
         if b
           then loop env contents True
           else loop env (content:contents) False
       Right (topExpr, _) -> do
-        result <- liftIO $ runEgisonTopExpr ET.defaultOption env topExpr
+        result <- fromEvalT (runTopExpr env topExpr)
         case result of
           Left err -> do
             liftIO $ putStrLn $ show err
             loop env (content:contents) False
-          Right env' -> loop env' (content:contents) False)
+          Right (Just ret, env') -> liftIO (putStrLn (show ret)) >> loop env' (content:contents) False
+          Right (Nothing, env') -> loop env' (content:contents) False)
     `catch`
     (\e -> case e of
-             UserInterrupt -> putStrLn "" >> loop env (content:contents) False
-             StackOverflow -> putStrLn "Stack over flow!" >> loop env (content:contents) False
-             HeapOverflow -> putStrLn "Heap over flow!" >> loop env (content:contents) False
-             _ -> putStrLn "error!" >> loop env (content:contents) False
+             UserInterrupt -> liftIO (putStrLn "") >> loop env (content:contents) False
+             StackOverflow -> liftIO (putStrLn "Stack over flow!") >> loop env (content:contents) False
+             HeapOverflow -> liftIO (putStrLn "Heap over flow!") >> loop env (content:contents) False
+             _ -> liftIO (putStrLn "error!") >> loop env (content:contents) False
      )
 
 data Tutorial = Tutorial [Section]

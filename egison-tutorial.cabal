@@ -29,6 +29,7 @@ Executable egison-tutorial
                , directory
                , filepath
                , regex-posix
+	       , exceptions
   ghc-options:  -Wall -Wno-name-shadowing
   Other-modules:   Paths_egison_tutorial
   autogen-modules: Paths_egison_tutorial
